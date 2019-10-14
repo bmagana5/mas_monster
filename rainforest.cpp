@@ -157,6 +157,7 @@ class Global {
 	int deflection;
 	int showCredits;
 	int highScore;
+	int showPauseScreen;
 	char buf[2048];
 	char tmpbuf[256];
 	Global() {
@@ -629,7 +630,7 @@ int checkKeys(XEvent *e)
                 g.highScore = 0;
 	    }	    
 	    break;
-	case XK_b:
+	case XK_space:
 	    g.showBigfoot ^= 1;
 	    if (g.showBigfoot) {
 		bigfoot.pos[0] = -250.0;
@@ -641,8 +642,8 @@ int checkKeys(XEvent *e)
 	case XK_d:
 	    g.deflection ^= 1;
 	    break;
-	case XK_f:
-	    g.forest ^= 1;
+	case XK_p:
+	    g.showPauseScreen ^= 1;
 	    break;
 	case XK_s:
 	    g.silhouette ^= 1;
@@ -654,7 +655,7 @@ int checkKeys(XEvent *e)
 	case XK_u:
 	    g.showUmbrella ^= 1;
 	    break;
-	case XK_p:
+	case XK_f:
 	    umbrella.shape ^= 1;
 	    break;
 	case XK_r:
@@ -1063,6 +1064,15 @@ void render()
 	char tmp[20] = "";
 	parseScores(r, g.buf, tmp);
     }
+    if (g.showPauseScreen)
+    {
+	//glClearColor(0, 0, 0, 0);
+        //glClear(GL_COLOR_BUFFER_BIT);
+	r.bot = 300;
+        r.left = 300;
+	ggprint8b(&r, 40, 0x00ffff44, "SPACE - Resume Game");
+	ggprint8b(&r, 40, 0x00ffff44, "R - Restart");
+    }
     glDisable(GL_TEXTURE_2D);
     //glColor3f(1.0f, 0.0f, 0.0f);
     //glBegin(GL_QUADS);
@@ -1085,19 +1095,19 @@ void render()
     //
     //
     unsigned int c = 0x00ffff44;
-    r.bot = 300;
-    r.left = 250;
+    r.bot = g.yres - 20;
+    r.left = 10;
     r.center = 0;
 
-    ggprint8b(&r, 50, c, "SPACE - Start Game");
-    ggprint8b(&r, 50, c, "C - Credits");
+    ggprint8b(&r, 40, c, "SPACE - Start Game");
+    ggprint8b(&r, 40, c, "C - Credits");
     //ggprint8b(&r, 16, c, "F - Forest");
     //ggprint8b(&r, 16, c, "S - Silhouette");
     //ggprint8b(&r, 16, c, "T - Trees");
     //ggprint8b(&r, 16, c, "U - Umbrella");
     //ggprint8b(&r, 16, c, "R - Rain");
     //ggprint8b(&r, 16, c, "D - Deflection");
-    ggprint8b(&r, 50, c, "P - Pause");
-    ggprint8b(&r, 50, c, "E - Score Board");
+    ggprint8b(&r, 40, c, "P - Pause");
+    ggprint8b(&r, 40, c, "E - Score Board");
 }
 
