@@ -121,7 +121,7 @@ class Image {
 		unlink(ppmname);
 	}
 };
-Image img[8] = {
+Image img[9] = {
     "./images/bigfoot.png",
     "./images/creepyforest.jpg",
     "./images/forestTrans.png",
@@ -129,7 +129,8 @@ Image img[8] = {
     "./images/scroll2.jpg",
     "./images/imag3.png",
     "./images/brianpic.png",
-    "./images/krystalPic.png"};
+    "./images/krystalPic.png",
+    "./images/angelaPic.png"};
 	
 class Global {
     public:
@@ -146,6 +147,7 @@ class Global {
 	GLuint graceloveTexture;
 	GLuint brianTexture;
 	GLuint krystalTexture;
+	GLuint angelaTexture;
 	int showBigfoot;
 	int forest;
 	int silhouette;
@@ -392,6 +394,7 @@ unsigned char *buildAlphaData(Image *img)
 GLuint glTexture;
 GLuint brTexture;
 GLuint krTexture;
+GLuint agTexture;
 
 void initOpengl(void)
 {
@@ -430,6 +433,7 @@ void initOpengl(void)
     glGenTextures(1, &g.graceloveTexture);
     glGenTextures(1, &g.brianTexture);
     glGenTextures(1, &g.krystalTexture);
+    glGenTextures(1, &g.angelaTexture);
     //-------------------------------------------------------------------------
     //bigfoot
     //
@@ -545,6 +549,17 @@ void initOpengl(void)
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h,
 	    0, GL_RGB, GL_UNSIGNED_BYTE, img[7].data);
     krTexture = g.krystalTexture;
+    //-------------------------------------------------------------------------
+    //Angela 
+    w = img[8].width;
+    h = img[8].height;
+    glBindTexture(GL_TEXTURE_2D, g.angelaTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h,
+	    0, GL_RGB, GL_UNSIGNED_BYTE, img[8].data);
+    agTexture = g.angelaTexture;
 }
 
 void initSounds()
@@ -1035,9 +1050,9 @@ void render()
     	showCredits(r/*, img[5].width, img[5].height, 0.0f, 0.0f, 
 			glTexture*/); //g.creditsTexture
 	showPicture(glTexture, 400, 250);
-	showPicture(brTexture, 200, 200);
+	showPicture(brTexture, 220, 200);
 	showPicture(krTexture, 400, 100);
-	/*showPicture(glTexture);*/
+	showPicture(glTexture, 220, 350);
 	
     }
     if (g.highScore)
