@@ -11,8 +11,8 @@
 
 void printAngela(Rect r)
 {
-    	r.bot = 300;
-	r.left = 300;
+    	r.bot = 340;
+	r.left = 275;
 	ggprint8b(&r, 50, 0x00ffff00, "Angela");
 }
 

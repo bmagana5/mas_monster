@@ -1047,8 +1047,7 @@ void render()
     //dumb bitch edit
     if(g.showCredits)
     {
-    	showCredits(r/*, img[5].width, img[5].height, 0.0f, 0.0f, 
-			glTexture*/); //g.creditsTexture
+    	showCredits(r); //g.creditsTexture
 	showPicture(glTexture, 400, 250);
 	showPicture(brTexture, 220, 200);
 	showPicture(krTexture, 400, 100);

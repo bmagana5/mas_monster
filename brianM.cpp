@@ -15,7 +15,7 @@
 void printBriansName(Rect r)
 {
     	r.bot = 200;
-	r.left = 300;
+	r.left = 275;
 	ggprint8b(&r, 50, 0x00ffff00, "Brian");
 }
 

@@ -25,8 +25,8 @@ void showCredits(Rect r/*, int x, int y, float tx, float ty, GLuint textid*/)
 
 void printKrystal(Rect r)
 {
-    r.bot = 150;
-    r.left = 300;
+    r.bot = 100;
+    r.left = 310;
     ggprint8b(&r, 50, 0x00ffff00, "Krystal");
 }
 
