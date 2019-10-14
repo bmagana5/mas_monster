@@ -1085,19 +1085,19 @@ void render()
     //
     //
     unsigned int c = 0x00ffff44;
-    r.bot = g.yres - 20;
-    r.left = 10;
+    r.bot = 300;
+    r.left = 250;
     r.center = 0;
 
-    ggprint8b(&r, 16, c, "B - Bigfoot");
-    ggprint8b(&r, 16, c, "C - Credits");
-    ggprint8b(&r, 16, c, "F - Forest");
-    ggprint8b(&r, 16, c, "S - Silhouette");
-    ggprint8b(&r, 16, c, "T - Trees");
-    ggprint8b(&r, 16, c, "U - Umbrella");
-    ggprint8b(&r, 16, c, "R - Rain");
-    ggprint8b(&r, 16, c, "D - Deflection");
-    ggprint8b(&r, 16, c, "N - Sounds");
-    ggprint8b(&r, 16, c, "E - Score Board");
+    ggprint8b(&r, 50, c, "SPACE - Start Game");
+    ggprint8b(&r, 50, c, "C - Credits");
+    //ggprint8b(&r, 16, c, "F - Forest");
+    //ggprint8b(&r, 16, c, "S - Silhouette");
+    //ggprint8b(&r, 16, c, "T - Trees");
+    //ggprint8b(&r, 16, c, "U - Umbrella");
+    //ggprint8b(&r, 16, c, "R - Rain");
+    //ggprint8b(&r, 16, c, "D - Deflection");
+    ggprint8b(&r, 50, c, "P - Pause");
+    ggprint8b(&r, 50, c, "E - Score Board");
 }
 
