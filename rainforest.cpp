@@ -130,7 +130,7 @@ Image img[9] = {
     "./images/imag3.png",
     "./images/brianpic.png",
     "./images/krystalPic.png",
-    "./images/angelaPic.png"};
+    "./images/angelapic.png"};
 	
 class Global {
     public:
@@ -1052,7 +1052,7 @@ void render()
 	showPicture(glTexture, 400, 250);
 	showPicture(brTexture, 220, 200);
 	showPicture(krTexture, 400, 100);
-	showPicture(glTexture, 220, 350);
+	showPicture(agTexture, 220, 350);
 	
     }
     if (g.highScore)
