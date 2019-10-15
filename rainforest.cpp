@@ -121,7 +121,7 @@ class Image {
 		unlink(ppmname);
 	}
 };
-Image img[9] = {
+Image img[10] = {
     "./images/bigfoot.png",
     "./images/creepyforest.jpg",
     "./images/forestTrans.png",
@@ -130,7 +130,8 @@ Image img[9] = {
     "./images/imag3.png",
     "./images/brianpic.png",
     "./images/krystalPic.png",
-    "./images/angelapic.png"};
+    "./images/angelapic.png",
+    "./images/monsterDash2.png"};
 	
 class Global {
     public:
@@ -148,6 +149,7 @@ class Global {
 	GLuint brianTexture;
 	GLuint krystalTexture;
 	GLuint angelaTexture;
+	GLuint logoTexture;
 	int showBigfoot;
 	int forest;
 	int silhouette;
@@ -396,6 +398,7 @@ GLuint glTexture;
 GLuint brTexture;
 GLuint krTexture;
 GLuint agTexture;
+GLuint lgTexture;
 
 void initOpengl(void)
 {
@@ -435,6 +438,7 @@ void initOpengl(void)
     glGenTextures(1, &g.brianTexture);
     glGenTextures(1, &g.krystalTexture);
     glGenTextures(1, &g.angelaTexture);
+    glGenTextures(1, &g.logoTexture);
     //-------------------------------------------------------------------------
     //bigfoot
     //
@@ -561,6 +565,19 @@ void initOpengl(void)
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h,
 	    0, GL_RGB, GL_UNSIGNED_BYTE, img[8].data);
     agTexture = g.angelaTexture;
+    //-------------------------------------------------------------------------
+    // logo 
+    w = img[9].width;
+    h = img[9].height;
+    glBindTexture(GL_TEXTURE_2D, g.logoTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *ltData = buildAlphaData(&img[9]);	
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, ltData);
+    free(ltData);
+    lgTexture = g.logoTexture;
 }
 
 void initSounds()
@@ -1098,16 +1115,20 @@ void render()
     r.bot = g.yres - 20;
     r.left = 10;
     r.center = 0;
+    int widt = 80, xoff = 320, yoff = 300;
+
+    //showPicture(lgTexture, 320, 300);
+    glBindTexture(GL_TEXTURE_2D, g.logoTexture);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-widt+xoff, -widt+yoff);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-widt+xoff, widt+yoff);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(widt+xoff, widt+yoff);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i(widt+xoff, -widt+yoff);
+    glEnd();
 
     ggprint8b(&r, 40, c, "SPACE - Start Game");
-    ggprint8b(&r, 40, c, "C - Credits");
-    //ggprint8b(&r, 16, c, "F - Forest");
-    //ggprint8b(&r, 16, c, "S - Silhouette");
-    //ggprint8b(&r, 16, c, "T - Trees");
-    //ggprint8b(&r, 16, c, "U - Umbrella");
-    //ggprint8b(&r, 16, c, "R - Rain");
-    //ggprint8b(&r, 16, c, "D - Deflection");
-    ggprint8b(&r, 40, c, "P - Pause");
+    ggprint8b(&r, 40, c, "   C - Credits");
+    ggprint8b(&r, 40, c, "    P - Pause");
     ggprint8b(&r, 40, c, "E - Score Board");
 }
 
