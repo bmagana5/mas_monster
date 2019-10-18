@@ -132,7 +132,7 @@ Image img[10] = {
     "./images/krystalPic.png",
     "./images/angelapic.png",
     "./images/monsterDash2.png"};
-	
+
 class Global {
     public:
 	int done;
@@ -160,9 +160,11 @@ class Global {
 	int showCredits;
 	int highScore;
 	int showPauseScreen;
+	int mainMenu;
 	char buf[2048];
 	char tmpbuf[256];
 	Global() {
+	    mainMenu = 1;
 	    logOpen();
 	    done=0;
 	    xres=800;
@@ -638,13 +640,14 @@ int checkKeys(XEvent *e)
 	shift=1;
 	return 0;
     }
+
     switch (key) {
 	case XK_e:
-            if (!g.highScore) {
-	    	highScore(g.buf, g.tmpbuf);
+	    if (!g.highScore) {
+		highScore(g.buf, g.tmpbuf);
 		g.highScore ^= 1;
 	    } else {
-                g.highScore = 0;
+		g.highScore = 0;
 	    }	    
 	    break;
 	case XK_space:
@@ -1012,20 +1015,58 @@ void render()
     //Clear the screen
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
+
     //
     //draw a quad with texture
     float wid = 120.0f;
     glColor3f(1.0, 1.0, 1.0);
     if (g.forest) {
+	//show forest
+	unsigned int c = 0x00ffff44;
+	
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
 	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
 	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
 	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+	r.bot = g.yres - 20;
+	r.left = 10;
+	r.center = 0;
+
 	glEnd();
+	int widt = 80, xoff = 320, yoff = 300;
+	//showLogo
+	glBindTexture(GL_TEXTURE_2D, g.logoTexture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-widt+xoff, -widt+yoff);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-widt+xoff, widt+yoff);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(widt+xoff, widt+yoff);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(widt+xoff, -widt+yoff);
+	glEnd();
+
+	//print menu options
+	ggprint8b(&r, 40, c, "SPACE - Start Game");
+	ggprint8b(&r, 40, c, "   C - Credits");
+	ggprint8b(&r, 40, c, "    P - Pause");
+	ggprint8b(&r, 40, c, "E - Score Board");
+
+
     }
+
     if (g.showBigfoot) {
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+    	glClear(GL_COLOR_BUFFER_BIT);
+	
+ 	//BACKGROUND GOES HERE
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+		
 	glPushMatrix();
 	glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
 	if (!g.silhouette) {
@@ -1065,40 +1106,60 @@ void render()
     //dumb bitch edit
     if(g.showCredits)
     {
-    	showCredits(r); //g.creditsTexture
+	//keep trees in background
+    	glClearColor(1.0, 1.0, 1.0, 1.0);
+    	glClear(GL_COLOR_BUFFER_BIT);
+	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+	r.bot = g.yres - 20;
+	r.left = 10;
+	r.center = 0;
+	glEnd();
+	
+	//show the credits and credit pictures
+	showCredits(r); //g.creditsTexture
 	showPicture(glTexture, 400, 250);
 	showPicture(brTexture, 220, 200);
 	showPicture(krTexture, 400, 100);
 	showPicture(agTexture, 220, 350);
-	
+
     }
     if (g.highScore)
     {
 	glClearColor(0, 0, 0, 0);
-        glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(1.0, 1.0, 1.0, 1.0);
+    	glClear(GL_COLOR_BUFFER_BIT);
+	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+	r.bot = g.yres - 20;
+	r.left = 10;
+	r.center = 0;
+	glEnd();
+	
 	r.bot = 300;
-        r.left = 300;
+	r.left = 300;
 	char tmp[20] = "";
 	parseScores(r, g.buf, tmp);
     }
     if (g.showPauseScreen)
     {
 	//glClearColor(0, 0, 0, 0);
-        //glClear(GL_COLOR_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	r.bot = 300;
-        r.left = 300;
+	r.left = 300;
 	ggprint8b(&r, 40, 0x00ffff44, "SPACE - Resume Game");
 	ggprint8b(&r, 40, 0x00ffff44, "R - Restart");
     }
     glDisable(GL_TEXTURE_2D);
-    //glColor3f(1.0f, 0.0f, 0.0f);
-    //glBegin(GL_QUADS);
-    //	glVertex2i(10,10);
-    //	glVertex2i(10,60);
-    //	glVertex2i(60,60);
-    //	glVertex2i(60,10);
-    //glEnd();
-    //return;
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     if (g.showRain)
@@ -1109,26 +1170,5 @@ void render()
     if (g.showUmbrella)
 	drawUmbrella();
     glBindTexture(GL_TEXTURE_2D, 0);
-    //
-    //
-    unsigned int c = 0x00ffff44;
-    r.bot = g.yres - 20;
-    r.left = 10;
-    r.center = 0;
-    int widt = 80, xoff = 320, yoff = 300;
-
-    //showPicture(lgTexture, 320, 300);
-    glBindTexture(GL_TEXTURE_2D, g.logoTexture);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(-widt+xoff, -widt+yoff);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(-widt+xoff, widt+yoff);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i(widt+xoff, widt+yoff);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i(widt+xoff, -widt+yoff);
-    glEnd();
-
-    ggprint8b(&r, 40, c, "SPACE - Start Game");
-    ggprint8b(&r, 40, c, "   C - Credits");
-    ggprint8b(&r, 40, c, "    P - Pause");
-    ggprint8b(&r, 40, c, "E - Score Board");
 }
 
