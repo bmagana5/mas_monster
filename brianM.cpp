@@ -9,8 +9,14 @@
 // 	4. review that the fix is working properly
 #include "fonts.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <GL/glx.h>
+#ifdef USE_OPENAL_SOUND
+#include </usr/include/AL/alut.h>
+#endif
 
 void printBriansName(Rect r)
 {
@@ -35,3 +41,73 @@ void parseScores(Rect r, char *buf, char *tmp)
 		} else i++;
 	}
 }
+
+#ifdef USE_OPENAL_SOUND
+
+void initAudio(char audio[][32], ALuint *alBuffer, ALuint *alSource, int n)
+{
+	alutInit(0, NULL);
+	if (alGetError() != AL_NO_ERROR) {
+		printf("ERROR: alutInit()\n");
+		exit(1);
+	}
+	alGetError();
+
+	//Setup for listener
+	float vec[6] = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f};
+	alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+	alListenerfv(AL_ORIENTATION, vec);
+	alListeneri(AL_GAIN, 1.0f);
+
+	//set up buffers to hold sound info
+	for (int i = 0; i < n; i++) {
+		alBuffer[i] = 
+			alutCreateBufferFromFile(audio[i]);
+	}
+	// source refers to the sound
+	// generate n source, and store in matching buffers.
+	alGenSources(n, alSource);
+	for (int i = 0; i < n; i++) {
+		alSourcei(alSource[i], AL_BUFFER, alBuffer[i]);
+		printf("alBuffer is %d\n", alBuffer[i]);
+		printf("alSource is %d\n", alSource[i]);
+	}
+	for (int i = 0; i < n; i++) {
+		// set volume and pitch to normal
+		if (i == 0) {
+			alSourcef(alSource[i], AL_GAIN, 0.5f);
+			alSourcef(alSource[i], AL_LOOPING, AL_TRUE);
+		} else {
+			alSourcef(alSource[i], AL_GAIN, 1.0f);
+			alSourcef(alSource[i], AL_LOOPING, AL_FALSE);
+		}
+		alSourcef(alSource[i], AL_PITCH, 1.0f);
+		if (alGetError() != AL_NO_ERROR) {
+			printf("ERROR: setting source\n");
+			exit(1);
+		}
+	}
+	/*for (int i = 1; i < n; i++) {
+		alSourcePlay(alSource[i]);
+		usleep(500000);
+	}*/
+}
+#endif
+
+#ifdef USE_OPENAL_SOUND
+void cleanupAudio(ALuint *alBuffer, ALuint *alSource, int n)
+{
+	// close out sources
+	for (int i = 0; i < n; i++)  
+		alDeleteSources(1, &(alSource[i]));
+	// delete out buffers
+	for (int i = 0; i < n; i++)  
+		alDeleteBuffers(1, &(alBuffer[i]));
+	// close OpenAL
+	ALCcontext *Context = alcGetCurrentContext();
+	ALCdevice *Device = alcGetContextsDevice(Context);
+	alcMakeContextCurrent(NULL);
+	alcDestroyContext(Context);
+	alcCloseDevice(Device);
+}
+#endif
