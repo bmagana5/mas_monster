@@ -21,6 +21,9 @@
 //#include <GL/glu.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
+#ifdef USE_OPENAL_SOUND
+#include </usr/include/AL/alut.h>
+#endif
 #include "log.h"
 //#include "ppm.h"
 #include "fonts.h"
@@ -49,6 +52,10 @@ extern void showCredits(Rect);
 extern void highScore(char *, char *);
 extern void parseScores(Rect, char *, char *);
 extern void showPicture(GLuint, int, int);
+#ifdef USE_OPENAL_SOUND
+extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
+extern void cleanupAudio(ALuint *, ALuint *, int);
+#endif
 //-----------------------------------------------------------------------------
 //Setup timers
 //clock_gettime(CLOCK_REALTIME, &timePause);
@@ -67,6 +74,18 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
     memcpy(dest, source, sizeof(struct timespec));
 }
 //-----------------------------------------------------------------------------
+
+//define audio globals
+#ifdef USE_OPENAL_SOUND
+const int TOTAL_SOUNDS = 3;
+char audio[TOTAL_SOUNDS][32] = {
+	"../audio/monstermash.wav",
+	"../audio/bigjump.wav",
+	"../audio/smalljump.wav"};
+ALuint alBuffer[TOTAL_SOUNDS];
+ALuint alSource[TOTAL_SOUNDS];
+#endif
+
 
 class Image {
     public:
@@ -121,7 +140,7 @@ class Image {
 		unlink(ppmname);
 	}
 };
-Image img[10] = {
+Image img[11] = {
     "./images/bigfoot.png",
     "./images/creepyforest.jpg",
     "./images/forestTrans.png",
@@ -131,13 +150,23 @@ Image img[10] = {
     "./images/brianpic.png",
     "./images/krystalPic.png",
     "./images/angelapic.png",
-    "./images/monsterDash2.png"};
+    "./images/monsterDash2.png",
+    "./images/pixelforest.jpg"};
+
+class Texture {
+	public:
+		Image *backImage;
+		GLuint backTexture;
+		float xc[2];
+		float yc[2];
+};
 
 class Global {
     public:
 	int done;
 	int xres, yres;
 
+	Texture tex;
 	//names of texutres
 	GLuint bigfootTexture;
 	GLuint silhouetteTexture;
@@ -304,6 +333,9 @@ class X11_wrapper {
 
 //function prototypes
 void initOpengl(void);
+#ifdef USE_OPENAL_SOUND
+void initSounds(void);
+#endif
 void checkMouse(XEvent *e);
 int checkKeys(XEvent *e);
 void init();
@@ -315,6 +347,9 @@ int main()
 {
     initOpengl();
     init();
+#ifdef USE_OPENAL_SOUND
+    initSounds();
+#endif
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
     int done = 0;
@@ -357,6 +392,9 @@ int main()
     }
     //cleanupXWindows();
     cleanup_fonts();
+#ifdef USE_OPENAL_SOUND
+    cleanupAudio(alBuffer, alSource, TOTAL_SOUNDS);
+#endif
     return 0;
 }
 
@@ -582,10 +620,12 @@ void initOpengl(void)
     lgTexture = g.logoTexture;
 }
 
+#ifdef USE_OPENAL_SOUND
 void initSounds()
 {
-
+	initAudio(audio, alBuffer, alSource, TOTAL_SOUNDS);
 }
+#endif
 
 void init() {
     umbrella.pos[0] = 220.0;
@@ -957,6 +997,7 @@ void physics()
 	moveBigfoot();
     if (g.showRain)
 	checkRaindrops();
+    //if (g.kineticBackground);
 }
 
 void drawUmbrella()
