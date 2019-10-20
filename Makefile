@@ -8,7 +8,7 @@ AUDIO = -D USE_OPENAL_SOUND \
 	/usr/lib/x86_64-linux-gnu/libopenal.so \
 	/usr/lib/x86_64-linux-gnu/libalut.so
 
-all: rainforest sound_rainforest
+all: rainforest
 
 
 rainforest: rainforest.cpp log.cpp $(DEVSOURCE) credits.cpp 
@@ -16,13 +16,7 @@ rainforest: rainforest.cpp log.cpp $(DEVSOURCE) credits.cpp
 		libggfonts.a $(WFLAGS) $(SSLFLAGS) $(LFLAGS) \
 		-o rainforest
 
-sound_rainforest: rainforest.cpp log.cpp $(DEVSOURCE) credits.cpp 
-		g++ $(CFLAGS) rainforest.cpp $(DEVSOURCE) log.cpp credits.cpp \
-		libggfonts.a $(WFLAGS) $(SSLFLAGS) $(LFLAGS) \
-		$(AUDIO) \
-		-o sound_rainforest 
-
 clean:
-	rm -f rainforest x.x sound_rainforest
+	rm -f rainforest x.x
 	rm -f *.o
 
