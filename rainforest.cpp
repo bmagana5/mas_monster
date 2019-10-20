@@ -479,6 +479,7 @@ void initOpengl(void)
     glGenTextures(1, &g.krystalTexture);
     glGenTextures(1, &g.angelaTexture);
     glGenTextures(1, &g.logoTexture);
+    glGenTextures(1, &g.tex.backTexture);
     //-------------------------------------------------------------------------
     //bigfoot
     //
@@ -618,6 +619,20 @@ void initOpengl(void)
 	    GL_RGBA, GL_UNSIGNED_BYTE, ltData);
     free(ltData);
     lgTexture = g.logoTexture;
+    //-------------------------------------------------------------------------
+    // moving background
+    g.tex.backImage = &img[10];
+    w = g.tex.backImage->width;
+    h = g.tex.backImage->height;
+    glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+		    GL_RGB, GL_UNSIGNED_BYTE, g.tex.backImage->data);
+    g.tex.xc[0] = 0.0;
+    g.tex.xc[1] = 0.25;
+    g.tex.yc[0] = 0.0;
+    g.tex.yc[1] = 1.0;
 }
 
 #ifdef USE_OPENAL_SOUND
@@ -993,8 +1008,11 @@ if (maxrain < n)
 
 void physics()
 {
-    if (g.showBigfoot)
+    if (g.showBigfoot) {
 	moveBigfoot();
+	for (int i = 0; i < 2; i++) 
+		g.tex.xc[i] += 0.003;
+    }
     if (g.showRain)
 	checkRaindrops();
     //if (g.kineticBackground);
@@ -1100,14 +1118,16 @@ void render()
     	glClear(GL_COLOR_BUFFER_BIT);
 	
  	//BACKGROUND GOES HERE
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-		
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
+		glTexCoord2f(g.tex.xc[0], g.tex.yc[0]); glVertex2i(0, g.yres);	
+		glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);	
+		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
+	glEnd();
+
 	glPushMatrix();
 	glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
 	if (!g.silhouette) {

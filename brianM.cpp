@@ -69,8 +69,6 @@ void initAudio(char audio[][32], ALuint *alBuffer, ALuint *alSource, int n)
 	alGenSources(n, alSource);
 	for (int i = 0; i < n; i++) {
 		alSourcei(alSource[i], AL_BUFFER, alBuffer[i]);
-		printf("alBuffer is %d\n", alBuffer[i]);
-		printf("alSource is %d\n", alSource[i]);
 	}
 	for (int i = 0; i < n; i++) {
 		// set volume and pitch to normal
