@@ -147,7 +147,7 @@ Image img[11] = {
     "./images/umbrella.png",
     "./images/scroll2.jpg",
     "./images/imag3.png",
-    "./images/brianpic.png",
+    "./images/brianpic.gif",
     "./images/krystalPic.png",
     "./images/angelapic.png",
     "./images/monsterDash2.png",
