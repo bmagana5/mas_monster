@@ -17,7 +17,7 @@ extern void credits(Rect);
 
 void showCredits(Rect r/*, int x, int y, float tx, float ty, GLuint textid*/)
 {
-   // glClearColor(0, 0, 0, 0);
+    //glClearColor(0, 0, 0, 0);
     //glClear(GL_COLOR_BUFFER_BIT);
     credits(r);
     //showPicture(x, y, tx, ty, textid);

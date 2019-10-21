@@ -189,7 +189,7 @@ class Global {
 	int showCredits;
 	int highScore;
 	int showPauseScreen;
-	int mainMenu;
+	int  mainMenu;
 	char buf[2048];
 	char tmpbuf[256];
 	Global() {
@@ -707,9 +707,9 @@ int checkKeys(XEvent *e)
 	    break;
 	case XK_space:
 	    g.showBigfoot ^= 1;
-	    if (g.showBigfoot) {
+	    /*if (g.showBigfoot) {
 		bigfoot.pos[0] = -250.0;
-	    }
+	    }*/
 	    break;
 	case XK_c:
 	    g.showCredits ^= 1;
@@ -1077,7 +1077,7 @@ void render()
 
     //
     //draw a quad with texture
-    float wid = 120.0f;
+    //float wid = 120.0f;
     glColor3f(1.0, 1.0, 1.0);
     if (g.forest) {
 	//show forest
@@ -1128,8 +1128,8 @@ void render()
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
 	glEnd();
 
-	glPushMatrix();
-	glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
+	/*glPushMatrix();
+	//glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
 	if (!g.silhouette) {
 	    glBindTexture(GL_TEXTURE_2D, g.bigfootTexture);
 	} else {
@@ -1151,9 +1151,9 @@ void render()
 	    glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
 	}
 	glEnd();
-	glPopMatrix();
+	glPopMatrix();*/
 	//
-	if (g.trees && g.silhouette) {
+	/*if (g.trees && g.silhouette) {
 	    glBindTexture(GL_TEXTURE_2D, g.forestTransTexture);
 	    glBegin(GL_QUADS);
 	    glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -1161,14 +1161,18 @@ void render()
 	    glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
 	    glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
 	    glEnd();
-	}
+	}*/
 	glDisable(GL_ALPHA_TEST);
     }
     //dumb bitch edit
     if(g.showCredits)
     {
 	//keep trees in background
-    	glClearColor(1.0, 1.0, 1.0, 1.0);
+	r.bot = g.yres - 20;
+	r.left = 10;
+	r.center = 0;
+    	glClearColor(0, 0, 0, 0);
+    	//glClearColor(1.0, 1.0, 1.0, 1.0);
     	glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
@@ -1176,9 +1180,7 @@ void render()
 	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
 	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
 	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-	r.bot = g.yres - 20;
-	r.left = 10;
-	r.center = 0;
+
 	glEnd();
 	
 	//show the credits and credit pictures
@@ -1192,8 +1194,8 @@ void render()
     if (g.highScore)
     {
 	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(1.0, 1.0, 1.0, 1.0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(1.0, 1.0, 1.0, 1.0);
     	glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
@@ -1213,12 +1215,25 @@ void render()
     }
     if (g.showPauseScreen)
     {
-	//glClearColor(0, 0, 0, 0);
+	glClearColor(0, 0, 0, 0);
 	//glClear(GL_COLOR_BUFFER_BIT);
+	r.bot = g.yres - 20;
+	r.left = 10;
+	r.center = 0;
+    	//glClearColor(1.0, 1.0, 1.0, 1.0);
+    	glClear(GL_COLOR_BUFFER_BIT);
+	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+
+	glEnd();
 	r.bot = 300;
 	r.left = 300;
-	ggprint8b(&r, 40, 0x00ffff44, "SPACE - Resume Game");
-	ggprint8b(&r, 40, 0x00ffff44, "R - Restart");
+	ggprint8b(&r, 40, 0x00ffff44, "P - Resume Game");
+	ggprint8b(&r, 40, 0x00ffff44, "  R - Restart");
     }
     glDisable(GL_TEXTURE_2D);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
