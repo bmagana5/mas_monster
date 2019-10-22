@@ -61,8 +61,8 @@ extern void cleanupAudio(ALuint *, ALuint *, int);
 //clock_gettime(CLOCK_REALTIME, &timePause);
 const double physicsRate = 1.0 / 30.0;
 const double oobillion = 1.0 / 1e9;
-struct timespec timeStart, timeCurrent;
-struct timespec timePause;
+struct timespec timeStart, timeEnd, timeCurrent;
+struct timespec timePause, moveTime;
 double physicsCountdown=0.0;
 double timeSpan=0.0;
 unsigned int upause=0;
@@ -72,6 +72,9 @@ double timeDiff(struct timespec *start, struct timespec *end) {
 }
 void timeCopy(struct timespec *dest, struct timespec *source) {
     memcpy(dest, source, sizeof(struct timespec));
+}
+void recordTime(struct timespec *t) {
+	clock_gettime(CLOCK_REALTIME, t);	
 }
 //-----------------------------------------------------------------------------
 
@@ -92,7 +95,11 @@ class Image {
 	int width, height;
 	unsigned char *data;
 	~Image() { delete [] data; }
+	Image(){}
 	Image(const char *fname) {
+		readImage(fname);
+	}
+	void readImage(const char *fname) {
 	    if (fname[0] == '\0')
 		return;
 	    //printf("fname **%s**\n", fname);
@@ -152,6 +159,24 @@ Image img[11] = {
     "./images/angelapic.png",
     "./images/monsterDash2.png",
     "./images/pixelforest.jpg"};
+
+class Player {
+	public:
+		int move, currentFrame, frame_count;
+		float delay;
+		GLuint glTexture;
+		Image img;
+		Player(const char *file)
+		{
+			img.readImage(file);
+			move = 0;
+			currentFrame = 0;
+			// this value represents frames in spritesheet; unique
+			frame_count = 6;
+			delay = 0.1;
+		}
+};
+Player player("images/childrun.gif");
 
 class Texture {
 	public:
@@ -402,11 +427,14 @@ unsigned char *buildAlphaData(Image *img)
 {
     //add 4th component to RGB stream...
     int i;
-    int a,b,c;
     unsigned char *newdata, *ptr;
     unsigned char *data = (unsigned char *)img->data;
     newdata = (unsigned char *)malloc(img->width * img->height * 4);
     ptr = newdata;
+    unsigned char a, b, c;
+    unsigned char t0 = *(data+0);
+    unsigned char t1 = *(data+1);
+    unsigned char t2 = *(data+2);
     for (i=0; i<img->width * img->height * 3; i+=3) {
 	a = *(data+0);
 	b = *(data+1);
@@ -426,7 +454,10 @@ unsigned char *buildAlphaData(Image *img)
 	//*(ptr+3) = d;
 	//-----------------------------------------------
 	//this code optimizes the commented code above.
-	*(ptr+3) = (a|b|c);
+	if (a==t0 && b==t1 && c==t2)
+		*(ptr+3) = 0;
+	else
+		*(ptr+3) = (a|b|c);
 	//-----------------------------------------------
 	ptr += 4;
 	data += 3;
@@ -480,6 +511,7 @@ void initOpengl(void)
     glGenTextures(1, &g.angelaTexture);
     glGenTextures(1, &g.logoTexture);
     glGenTextures(1, &g.tex.backTexture);
+    glGenTextures(1, &player.glTexture);
     //-------------------------------------------------------------------------
     //bigfoot
     //
@@ -633,6 +665,19 @@ void initOpengl(void)
     g.tex.xc[1] = 0.25;
     g.tex.yc[0] = 0.0;
     g.tex.yc[1] = 1.0;
+    //------------------------------------------------------------------------
+    // player character
+    w = player.img.width;
+    h = player.img.height;
+    glBindTexture(GL_TEXTURE_2D, player.glTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //
+    // must build a new set of data to include alpha val in rgba...
+    unsigned char *playerData = buildAlphaData(&player.img);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+		    GL_RGBA, GL_UNSIGNED_BYTE, playerData);
 }
 
 #ifdef USE_OPENAL_SOUND
@@ -706,7 +751,9 @@ int checkKeys(XEvent *e)
 	    }	    
 	    break;
 	case XK_space:
+	    recordTime(&moveTime);
 	    g.showBigfoot ^= 1;
+	    player.move ^= 1;
 	    /*if (g.showBigfoot) {
 		bigfoot.pos[0] = -250.0;
 	    }*/
@@ -1008,14 +1055,24 @@ if (maxrain < n)
 
 void physics()
 {
-    if (g.showBigfoot) {
-	moveBigfoot();
-	for (int i = 0; i < 2; i++) 
-		g.tex.xc[i] += 0.003;
-    }
-    if (g.showRain)
-	checkRaindrops();
-    //if (g.kineticBackground);
+	if (g.showBigfoot) {
+		moveBigfoot();
+		for (int i = 0; i < 2; i++) 
+			g.tex.xc[i] += 0.003;
+	}
+	if (g.showRain)
+		checkRaindrops();
+	if (player.move) {
+		// enable character move
+		recordTime(&timeCurrent);
+		double timeSpan = timeDiff(&moveTime, &timeCurrent);
+		if (timeSpan > player.delay) {
+			++player.currentFrame;
+			if (player.currentFrame >= player.frame_count)
+				player.currentFrame -= player.frame_count;
+			recordTime(&moveTime);
+		}
+	}
 }
 
 void drawUmbrella()
@@ -1114,8 +1171,8 @@ void render()
     }
 
     if (g.showBigfoot) {
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-    	glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(1.0, 1.0, 1.0, 1.0);
+    	//glClear(GL_COLOR_BUFFER_BIT);
 	
  	//BACKGROUND GOES HERE
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -1128,6 +1185,52 @@ void render()
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
 	glEnd();
 
+	//PLAYER CHARACTER GOES HERE
+	//glClearColor(0.1, 0.1, 0.1, 1.0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	
+	float cx = g.xres*0.13;
+	float cy = g.yres*0.13;
+	//show ground
+	glBegin(GL_QUADS);
+		glColor3f(0.2, 0.2, 0.2);
+		glVertex2i(0, g.yres*0.05);
+		glVertex2i(g.xres, g.yres*0.05);
+		glColor3f(0.4, 0.4, 0.4);
+		glVertex2i(g.xres, 0);
+		glVertex2i(0, 0);
+	glEnd();
+	float h = g.yres*0.08;
+	float w = g.xres*0.08;
+	//float h = player.img.height;
+	//float w = player.img.width / player.frame_count;
+	//
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, player.glTexture);
+	//
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255, 255, 255, 255);
+	// denominator corresponds to # of frames
+	// player.currentFrame is incremented in physics()
+	// this ensures that ix remains between 0 and (player.frame_count - 1)
+	int ix = player.currentFrame % player.frame_count;
+	int iy = 0;
+	if (player.currentFrame >= player.frame_count)
+		iy = 1;
+	float tx = (float)ix / (float)player.frame_count;
+	float ty = (float)iy / 2.0;
+	// x_off is percentage that each frame takes up in the sprite sheet
+	float x_off = 1.0 / (float)player.frame_count;
+	glBegin(GL_QUADS);
+		glTexCoord2f(tx, ty+1.0);	glVertex2i(cx-w, cy-h);
+		glTexCoord2f(tx, ty);		glVertex2i(cx-w, cy+h);
+		glTexCoord2f(tx+x_off, ty);	glVertex2i(cx+w, cy+h);
+		glTexCoord2f(tx+x_off, ty+1.0);	glVertex2i(cx+w, cy-h);
+	glEnd();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
 	/*glPushMatrix();
 	//glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
 	if (!g.silhouette) {
@@ -1171,7 +1274,7 @@ void render()
 	r.bot = g.yres - 20;
 	r.left = 10;
 	r.center = 0;
-    	glClearColor(0, 0, 0, 0);
+    	glClearColor(1.0, 1.0, 1.0, 1.0);
     	//glClearColor(1.0, 1.0, 1.0, 1.0);
     	glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
@@ -1193,10 +1296,10 @@ void render()
     }
     if (g.highScore)
     {
-	glClearColor(0, 0, 0, 0);
-	//glClear(GL_COLOR_BUFFER_BIT);
 	//glClearColor(1.0, 1.0, 1.0, 1.0);
-    	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+    	//glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -1215,7 +1318,7 @@ void render()
     }
     if (g.showPauseScreen)
     {
-	glClearColor(0, 0, 0, 0);
+	glClearColor(1.0, 1.0, 1.0, 1.0);
 	//glClear(GL_COLOR_BUFFER_BIT);
 	r.bot = g.yres - 20;
 	r.left = 10;
