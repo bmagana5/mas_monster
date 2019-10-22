@@ -172,11 +172,11 @@ class Player {
 			move = 0;
 			currentFrame = 0;
 			// this value represents frames in spritesheet; unique
-			frame_count = 6;
+			frame_count = 8;
 			delay = 0.1;
 		}
 };
-Player player("images/childrun.gif");
+Player player("images/drac_run_spriteSheet.gif");
 
 class Texture {
 	public:
