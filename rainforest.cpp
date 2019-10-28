@@ -707,20 +707,20 @@ void checkMouse(XEvent *e)
     static int savey = 0;
     //
     if (e->type == ButtonRelease) {
-	return;
+        return;
     }
     if (e->type == ButtonPress) {
-	if (e->xbutton.button==1) {
-	    //Left button is down
-	}
-	if (e->xbutton.button==3) {
-	    //Right button is down
-	}
+        if (e->xbutton.button==1) {
+            //Left button is down
+        }
+        if (e->xbutton.button==3) {
+            //Right button is down
+        }
     }
     if (savex != e->xbutton.x || savey != e->xbutton.y) {
-	//Mouse moved
-	savex = e->xbutton.x;
-	savey = e->xbutton.y;
+        //Mouse moved
+        savex = e->xbutton.x;
+        savey = e->xbutton.y;
     }
 }
 
