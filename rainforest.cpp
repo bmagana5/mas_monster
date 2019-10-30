@@ -319,7 +319,7 @@ class X11_wrapper {
 	void setTitle() {
 	    //Set the window title bar.
 	    XMapWindow(dpy, win);
-	    XStoreName(dpy, win, "3350 - Animation Template");
+	    XStoreName(dpy, win, "MAS - Monster Dash");
 	}
 	void setupScreenRes(const int w, const int h) {
 	    g.xres = w;
@@ -755,7 +755,7 @@ int checkKeys(XEvent *e)
 	    break;
 	case XK_space:
 	    recordTime(&moveTime);
-	    g.showBigfoot ^= 1;
+	    g.showBigfoot = 1;
 	    player.move ^= 1;
 	    /*if (g.showBigfoot) {
 		bigfoot.pos[0] = -250.0;
