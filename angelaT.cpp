@@ -16,6 +16,7 @@ void printAngela(Rect r)
 	ggprint8b(&r, 50, 0x00ffff00, "Angela");
 }
 
+/*
 void showAngelaPicture (int x, int y, float tx, float ty, GLuint picid) 
 {
     int wid = 40;
@@ -40,7 +41,7 @@ void showAngelaPicture (int x, int y, float tx, float ty, GLuint picid)
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_ALPHA_TEST);
 }
-
+*/
 /* Quiz Debugging 
  *
  * 1. Recognize that the bug exists 
