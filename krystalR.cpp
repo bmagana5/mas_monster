@@ -6,14 +6,10 @@
 //3 Fix
 //4 Review
 //-------------------------------CREDITS BEGIN--------------------------------//
+
 #include "fonts.h"
 #include <GL/glx.h>
-//extern void printBriansName(Rect);
-//extern void displayGracelove(Rect);
-//extern void printAngela(Rect);
-//void printKrystal(Rect);
 extern void credits(Rect);
-//extern void showPicture(int, int, float, float, GLuint);
 
 void showCredits(Rect r/*, int x, int y, float tx, float ty, GLuint textid*/)
 {
@@ -34,11 +30,9 @@ void printKrystal(Rect r)
 
 
 //--------------------------------PHP BEGIN-----------------------------------//
-//lab3sget.c
 //Written by: Gordon Griesel
 //Purpose:    Example of HTTP request using SSL.
 //            Used to contact a web server and receive a page as text.
-//--------------------------------------------------------------------
 //Build:
 //  gcc lab3sget.c -Wall -olab3sget -lssl -lcrypto
 //Usage:
@@ -95,7 +89,6 @@ void highScore(char *buf, char *tmpbuf)
     ctx = SSL_CTX_new(method);
     SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
     
-    //next 2 lines of code are not currently needed.
     //Setup the socket used for connection.
     
     host = gethostbyname(hostname);
@@ -117,10 +110,8 @@ void highScore(char *buf, char *tmpbuf)
     SSL_connect(ssl);
     //Show the certificate data
     show_cert_data(ssl, outbio, hostname);
-    //
     //A non-blocking socket will make the ssl_read() not block.
     set_to_non_blocking(sd);
-    //
     //Send the http request to the host server.
     sprintf(req, "GET /%s HTTP/1.1\r\nHost: %s\r\nUser-Agent: %s\r\n\r\n", 
 	    pagename, hostname, USERAGENT);
@@ -222,3 +213,17 @@ void set_to_non_blocking(const int sock)
     }
 }
 //--------------------------------PHP END-------------------------------------//
+
+//-----------------------------RUNNING CLOCK START----------------------------//
+#include <chrono>
+#include <iostream>
+
+void new_clock(int main_menu, int pause_screen)
+{	
+    	while (main_menu == 0 && pause_screen == 0)
+	{
+		std::cout << "clock begin\n";
+	}
+	std::cout << "clock end\n";
+}
+//------------------------------RUNNING CLOCK END-----------------------------//
