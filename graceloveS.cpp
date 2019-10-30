@@ -42,3 +42,55 @@ void showPicture(GLuint textid, int xoff, int yoff)
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_ALPHA_TEST);
 }
+
+void showLogo(GLuint textid2, int widt, int xoff, int yoff)
+{
+	// show logo
+	glBindTexture(GL_TEXTURE_2D, textid2);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);	glVertex2i(-widt+xoff, -widt+yoff);
+		glTexCoord2f(0.0f, 0.0f);	glVertex2i(-widt+xoff, widt+yoff);
+		glTexCoord2f(1.0f, 0.0f);	glVertex2i(widt+xoff, widt+yoff);
+		glTexCoord2f(1.0f, 1.0f);	glVertex2i(widt+xoff, -widt+yoff);
+	glEnd();
+
+}
+
+
+void showMenu(Rect r)
+{
+    	r.bot = 155;
+	r.left = 260;
+	ggprint8b(&r, 40, 0x00ffff00, "SPACE - Start Game");
+	ggprint8b(&r, 40, 0x00ffff00, "     C - Credits  ");
+	ggprint8b(&r, 40, 0x00ffff00, "  E - Score Board ");
+}
+
+void showPause(Rect r, GLuint textid3, int xres, int yres)
+{
+        r.bot = yres - 20;
+        r.left = 10;
+        r.center = 0;
+        
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+        glBindTexture(GL_TEXTURE_2D, textid3);
+        glBegin(GL_QUADS);
+        	glTexCoord2f(0.0f, 1.0f); 	glVertex2i(0, 0);
+        	glTexCoord2f(0.0f, 0.0f); 	glVertex2i(0, yres);
+        	glTexCoord2f(1.0f, 0.0f); 	glVertex2i(xres, yres);
+        	glTexCoord2f(1.0f, 1.0f); 	glVertex2i(xres, 0);
+
+        glEnd();
+
+        r.bot = 300;
+        r.left = 250;
+        ggprint8b(&r, 40, 0x00ffff44, "P - Resume Game");
+        ggprint8b(&r, 40, 0x00ffff44, "     R - Restart  ");
+}
+
+
+
+
+
+

@@ -52,6 +52,9 @@ extern void showCredits(Rect);
 extern void highScore(char *, char *);
 extern void parseScores(Rect, char *, char *);
 extern void showPicture(GLuint, int, int);
+extern void showMenu(Rect);
+extern void showLogo(GLuint, int, int, int);
+extern void showPause(Rect, GLuint, int, int);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -1138,7 +1141,7 @@ void render()
     glColor3f(1.0, 1.0, 1.0);
     if (g.forest) {
 	//show forest
-	unsigned int c = 0x00ffff44;
+	//unsigned int c = 0x00ffff44;
 	
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
@@ -1153,20 +1156,10 @@ void render()
 	glEnd();
 	int widt = 80, xoff = 320, yoff = 300;
 	//showLogo
-	glBindTexture(GL_TEXTURE_2D, g.logoTexture);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(-widt+xoff, -widt+yoff);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-widt+xoff, widt+yoff);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(widt+xoff, widt+yoff);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(widt+xoff, -widt+yoff);
-	glEnd();
+	showLogo(g.logoTexture, widt, xoff, yoff);
 
 	//print menu options
-	ggprint8b(&r, 40, c, "SPACE - Start Game");
-	ggprint8b(&r, 40, c, "   C - Credits");
-	ggprint8b(&r, 40, c, "    P - Pause");
-	ggprint8b(&r, 40, c, "E - Score Board");
-
+	showMenu(r);
 
     }
 
@@ -1318,25 +1311,7 @@ void render()
     }
     if (g.showPauseScreen)
     {
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-	//glClear(GL_COLOR_BUFFER_BIT);
-	r.bot = g.yres - 20;
-	r.left = 10;
-	r.center = 0;
-    	//glClearColor(1.0, 1.0, 1.0, 1.0);
-    	glClear(GL_COLOR_BUFFER_BIT);
-	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-
-	glEnd();
-	r.bot = 300;
-	r.left = 300;
-	ggprint8b(&r, 40, 0x00ffff44, "P - Resume Game");
-	ggprint8b(&r, 40, 0x00ffff44, "  R - Restart");
+	showPause(r, g.forestTexture, g.xres, g.yres);
     }
     glDisable(GL_TEXTURE_2D);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
