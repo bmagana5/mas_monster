@@ -1,18 +1,12 @@
 ================================== TO DO =======================================
-1) 10/15: main menu - grace
-	-center menu
-	-start game . . .space bar
-	-show credits . . . c 
-	-show score board . . . e
-	
-2) 10/15: logo - angela
 3) one ingredient - angela
-4) 10/18: background gif - brian
-5) 10/18: walk cycle - krystal
 6) a rock - angela
-
+1) Updating point html file functionality - Brian
+2) Menu function & cleanup - Grace
+3) Running Timer- Krystal
+4) Spacebar Jump- Angela
 ================================= IN PROGRESS ==================================
--SPRITE CREATION
+-SPRITE CREATION, changing black on sprite
 
 
 ==================================== TESTING ===================================
@@ -22,4 +16,8 @@
 -CREDITS...............................................................Krystal 
 -CREDIT PICS.............................................................Grace
 -PHP HIGH SCORE DISPLAY..................................................Brian
--
+-MAIN MENU FUNCTIONALITY.................................................Grace
+-LOGO...................................................................Angela
+-SCROLLING BACKGROUND....................................................Brian
+-SPRITE CREATION........................................................Angela
+-WALK CYCLE.............................................................Angela
