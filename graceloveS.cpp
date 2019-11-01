@@ -48,10 +48,10 @@ void showLogo(GLuint textid2, int widt, int xoff, int yoff)
 	// show logo
 	glBindTexture(GL_TEXTURE_2D, textid2);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f);	glVertex2i(-widt+xoff, -widt+yoff);
-		glTexCoord2f(0.0f, 0.0f);	glVertex2i(-widt+xoff, widt+yoff);
-		glTexCoord2f(1.0f, 0.0f);	glVertex2i(widt+xoff, widt+yoff);
-		glTexCoord2f(1.0f, 1.0f);	glVertex2i(widt+xoff, -widt+yoff);
+		glTexCoord2f(0.0f, 1.0f);glVertex2i(-widt+xoff, -widt+yoff);
+		glTexCoord2f(0.0f, 0.0f);glVertex2i(-widt+xoff, widt+yoff);
+		glTexCoord2f(1.0f, 0.0f);glVertex2i(widt+xoff, widt+yoff);
+		glTexCoord2f(1.0f, 1.0f);glVertex2i(widt+xoff, -widt+yoff);
 	glEnd();
 
 }
