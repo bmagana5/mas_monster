@@ -215,15 +215,18 @@ void set_to_non_blocking(const int sock)
 //--------------------------------PHP END-------------------------------------//
 
 //-----------------------------RUNNING CLOCK START----------------------------//
-#include <chrono>
-#include <iostream>
+#include <unistd.h>
+#include <time>
+#include <cstring>
+const double physicsRate_ = 1.0/ 60.0;
+const double oobullion = 1.0 / 1e9;
+struct timespec timeStart, timeCurrent;
+struct timespec timePause;
+double physicsCountdown = 0.0;
+double timeSpan = 0.0;
 
 void new_clock(int main_menu, int pause_screen)
-{	
-    	while (main_menu == 0 && pause_screen == 0)
-	{
-		std::cout << "clock begin\n";
-	}
-	std::cout << "clock end\n";
+{
+	
 }
 //------------------------------RUNNING CLOCK END-----------------------------//
