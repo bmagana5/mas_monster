@@ -216,7 +216,7 @@ void set_to_non_blocking(const int sock)
 
 //-----------------------------RUNNING CLOCK START----------------------------//
 #include <unistd.h>
-#include <time>
+#include <ctime>
 #include <cstring>
 const double physicsRate_ = 1.0/ 60.0;
 const double oobullion = 1.0 / 1e9;
