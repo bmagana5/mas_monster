@@ -55,6 +55,7 @@ extern void showPicture(GLuint, int, int);
 extern void showMenu(Rect);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
+extern void new_clock(int, int); 
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -754,9 +755,10 @@ int checkKeys(XEvent *e)
 	    }	    
 	    break;
 	case XK_space:
-	    recordTime(&moveTime);
+	    //recordTime(&moveTime);
 	    g.showBigfoot = 1;
 	    player.move ^= 1;
+	    
 	    /*if (g.showBigfoot) {
 		bigfoot.pos[0] = -250.0;
 	    }*/
