@@ -218,12 +218,6 @@ void set_to_non_blocking(const int sock)
 #include <unistd.h>
 #include <ctime>
 #include <cstring>
-const double physicsRate_ = 1.0/ 60.0;
-const double oobullion = 1.0 / 1e9;
-struct timespec timeStart, timeCurrent;
-struct timespec timePause;
-double physicsCountdown = 0.0;
-double timeSpan = 0.0;
 int seconds = 0;
 int minutes  = 0;
 int hours = 0;
