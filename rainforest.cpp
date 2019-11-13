@@ -55,6 +55,8 @@ extern void showPicture(GLuint, int, int);
 extern void showMenu(Rect);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
+extern void new_clock();
+
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -1196,8 +1198,8 @@ void render()
     }
 
     if (g.showBigfoot) {
-	//glClearColor(1.0, 1.0, 1.0, 1.0);
-    	//glClear(GL_COLOR_BUFFER_BIT);
+	//do timer
+	new_clock();	
 	
  	//BACKGROUND GOES HERE
 	glClear(GL_COLOR_BUFFER_BIT);

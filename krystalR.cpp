@@ -227,7 +227,7 @@ double timeSpan = 0.0;
 int seconds = 0;
 int minutes  = 0;
 int hours = 0;
-void new_clock(int main_menu, int pause_screen)
+void new_clock()
 {
 	seconds++;
 	if (seconds >= 60) {
