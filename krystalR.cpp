@@ -218,10 +218,15 @@ void set_to_non_blocking(const int sock)
 #include <unistd.h>
 #include <ctime>
 #include <cstring>
+#include  <sstream>
+#include <stdlib.h>
+#include <iostream>
+
 int seconds = 0;
 int minutes  = 0;
 int hours = 0;
-void new_clock()
+
+void new_clock(Rect r)
 {
 	seconds++;
 	if (seconds >= 60) {
@@ -232,5 +237,9 @@ void new_clock()
 		minutes = 0;
 		hours++;
 	}
+	char str[80];
+	int n;
+	n = sprintf (str,"%02i:%02i:%02i", hours, minutes, seconds);
+	printf ("time: ", str, n);
 }
 //------------------------------RUNNING CLOCK END-----------------------------//
