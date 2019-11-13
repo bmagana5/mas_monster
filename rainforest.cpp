@@ -55,7 +55,7 @@ extern void showPicture(GLuint, int, int);
 extern void showMenu(Rect);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
-extern void new_clock();
+extern void new_clock(Rect);
 
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
@@ -1199,7 +1199,7 @@ void render()
 
     if (g.showBigfoot) {
 	//do timer
-	new_clock();	
+	new_clock(r);	
 	
  	//BACKGROUND GOES HERE
 	glClear(GL_COLOR_BUFFER_BIT);
