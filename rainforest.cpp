@@ -185,7 +185,7 @@ Player player("images/drac_run_spriteSheet.gif");
 
 class Obstacle {
     public:
-        GLunit glTexture;
+        //GLunit glTexture;
         Image img;
         Obstacle (const char *file) {
             img.readImage(file);
@@ -530,9 +530,9 @@ void initOpengl(void)
     glGenTextures(1, &g.logoTexture);
     glGenTextures(1, &g.tex.backTexture);
     glGenTextures(1, &player.glTexture);
-    glGenTextures(1, &ob[0].glTexture);
-    glGenTextures(1, &ob[1].glTexture);
-    glGenTextures(1, &ob[2].glTexture);
+   // glGenTextures(1, &ob[0].glTexture);
+   // glGenTextures(1, &ob[1].glTexture);
+   // glGenTextures(1, &ob[2].glTexture);
     
     //-------------------------------------------------------------------------
     //bigfoot
@@ -702,7 +702,7 @@ void initOpengl(void)
 		    GL_RGBA, GL_UNSIGNED_BYTE, playerData);
     //------------------------------------------------------------------------
     // obstacles
-    w = ob[0].img.width;
+    /*w = ob[0].img.width;
     h = ob[0].img.height;
     glBindTexture(GL_TEXTURE_2D, ob.glTexture);
     //
@@ -712,7 +712,7 @@ void initOpengl(void)
     // must build a new set of data to include alpha val in rgba...
     unsigned char *playerData = buildAlphaData(&player.img);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, playerData);
+            GL_RGBA, GL_UNSIGNED_BYTE, playerData);*/
 
 }
 
