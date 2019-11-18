@@ -56,7 +56,7 @@ extern void showMenu(Rect);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Rect);
-extern bool checkCollision(int, int, int, int, int, int);
+extern bool checkCollision(Vec, float, Vec, float);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -298,11 +298,12 @@ class Umbrella {
 	float radius;
 } umbrella;
 
-/*class Collision {
+class Collision {
     public:
-	float width;
+	Vec pos;
+	//float width;
 	float radius;
-} collision;*/
+} collision, collision1;
 
 class X11_wrapper {
     private:
@@ -747,6 +748,10 @@ void initSounds()
 void init() {
     umbrella.pos[0] = 220.0;
     umbrella.pos[1] = (double)(g.yres-200);
+    collision.pos[0] = 100;
+    collision.pos[1] = 550;
+    collision1.pos[0] = 50;
+    collision1.pos[1] = 550;
     VecCopy(umbrella.pos, umbrella.lastpos);
     umbrella.width = 200.0;
     umbrella.width2 = umbrella.width * 0.5;
@@ -1280,11 +1285,11 @@ void render()
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	showPicture(obsTexture, 550, 100);
-	bool collision = checkCollision(obsTexture.x, obsTexture.y, obsTexture.radius, player.x, player.y, player.radius);
+	/*bool collision = checkCollision(collision.pos[], collision.radius, collision1.pos[], collision1.radius);
 	if (!collision)
 	{
 		//end game
-	}
+	}*/
 	/*glPushMatrix();
 	//glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
 	if (!g.silhouette) {
