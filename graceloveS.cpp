@@ -89,8 +89,17 @@ void showPause(Rect r, GLuint textid3, int xres, int yres)
         ggprint8b(&r, 40, 0x00ffff44, "     R - Restart  ");
 }
 
+bool checkCollision(int x1, int y1, int rad1, int x2, int y2, int rad2)
+{
+	int xd, yd, Distance;
 
+	xd = x2-x1;
+	yd = y2-y1;
+	Distance = sqrt(xd*xd + yd*yd);
+	
+	if (rad1 + rad2 >= Distance)
+		return true;
 
-
-
+	return false;
+}
 

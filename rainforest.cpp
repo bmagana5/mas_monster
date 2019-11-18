@@ -56,7 +56,7 @@ extern void showMenu(Rect);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Rect);
-
+extern bool checkCollision(int, int, int, int, int, int);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -152,7 +152,7 @@ class Image {
 		unlink(ppmname);
 	}
 };
-Image img[11] = {
+Image img[12] = {
     "./images/bigfoot.png",
     "./images/creepyforest.jpg",
     "./images/forestTrans.png",
@@ -163,7 +163,9 @@ Image img[11] = {
     "./images/krystalPic.png",
     "./images/angelapic.png",
     "./images/monsterDash2.png",
-    "./images/pixelforest.jpg"};
+    "./images/pixelforest.jpg",
+    "./images/blackbox.png"
+};
 
 class Player {
 	public:
@@ -222,6 +224,7 @@ class Global {
 	GLuint krystalTexture;
 	GLuint angelaTexture;
 	GLuint logoTexture;
+	GLuint obsTexture;
 	int showBigfoot;
 	int forest;
 	int silhouette;
@@ -294,6 +297,12 @@ class Umbrella {
 	float width2;
 	float radius;
 } umbrella;
+
+/*class Collision {
+    public:
+	float width;
+	float radius;
+} collision;*/
 
 class X11_wrapper {
     private:
@@ -488,6 +497,7 @@ GLuint brTexture;
 GLuint krTexture;
 GLuint agTexture;
 GLuint lgTexture;
+GLuint obsTexture;
 
 void initOpengl(void)
 {
@@ -530,6 +540,7 @@ void initOpengl(void)
     glGenTextures(1, &g.logoTexture);
     glGenTextures(1, &g.tex.backTexture);
     glGenTextures(1, &player.glTexture);
+    glGenTextures(1, &g.obsTexture);
    // glGenTextures(1, &ob[0].glTexture);
    // glGenTextures(1, &ob[1].glTexture);
    // glGenTextures(1, &ob[2].glTexture);
@@ -554,7 +565,7 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3,
 	    img[1].width, img[1].height,
-	    0, GL_RGB, GL_UNSIGNED_BYTE, img[5].data);
+	    0, GL_RGB, GL_UNSIGNED_BYTE, img[1].data);
     //------------------------------------------------------------------------
     //
     //silhouette
@@ -713,7 +724,17 @@ void initOpengl(void)
     unsigned char *playerData = buildAlphaData(&player.img);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, playerData);*/
-
+    //------------------------------------------------------------------------
+    // obstacle 
+    w = 10;
+    h = 10;
+    glBindTexture(GL_TEXTURE_2D, g.obsTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h,
+	    0, GL_RGB, GL_UNSIGNED_BYTE, img[11].data);
+    obsTexture = g.obsTexture;
 }
 
 #ifdef USE_OPENAL_SOUND
@@ -1258,6 +1279,12 @@ void render()
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
+	showPicture(obsTexture, 550, 100);
+	bool collision = checkCollision(obsTexture.x, obsTexture.y, obsTexture.radius, player.x, player.y, player.radius);
+	if (!collision)
+	{
+		//end game
+	}
 	/*glPushMatrix();
 	//glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
 	if (!g.silhouette) {
