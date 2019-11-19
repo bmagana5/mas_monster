@@ -162,9 +162,9 @@ Image img[12] = {
     "./images/brianpic.gif",
     "./images/krystalPic.png",
     "./images/angelapic.png",
-    "./images/monsterDash2.png",
-    "./images/pixelforest.jpg",
-    "./images/blackbox.png"
+    "./images/monsterDash_logo_blkbg.gif",
+    "./images/pixelforest.jpg"
+    //"./images/blackbox.png"
 };
 
 class Player {
@@ -183,7 +183,7 @@ class Player {
 			delay = 0.1;
 		}
 };
-Player player("images/drac_run_spriteSheet.gif");
+Player player("images/new_drac_run_sprite.gif");
 
 class Obstacle {
     public:
