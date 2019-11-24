@@ -1,8 +1,8 @@
 CFLAGS = -I ./src
 ##LIB    = ./lib/fmod/libfmodex64.so
 DEVSOURCE = brianM.cpp krystalR.cpp graceloveS.cpp angelaT.cpp
-SOURCE = src/Image.cpp src/Player.cpp src/Obstacle.cpp
-HEADER = src/Image.h src/Player.h src/Obstacle.h
+SOURCE = src/Image.cpp src/Player.cpp src/Obstacle.cpp src/timers.cpp
+HEADER = src/Image.h src/Player.h src/Obstacle.h src/timers.h
 WFLAGS = -Wall -Wextra
 LFLAGS = -lrt -lX11 -lGLU -lGL -lm #-lXrandr
 SSLFLAGS = -lcrypto -lssl
