@@ -8,6 +8,12 @@
 //Texture maps are displayed.
 //Press B to see bigfoot roaming his forest.
 //
+//This program was edited and completed by:
+//Angela Tante
+//Brian Magana
+//Gracelove Simons
+//Krystal Raines
+//
 //
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,27 +27,18 @@
 //#include <GL/glu.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
+#include "log.h"
+#include "fonts.h"
+#include "defs.h"
+#include "timers.h"
+#include "Image.h"
+#include "Player.h"
+#include "Obstacle.h"
+
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
 #endif
-#include "log.h"
-//#include "ppm.h"
-#include "fonts.h"
 
-//defined types
-typedef double Flt;
-typedef double Vec[3];
-typedef Flt	Matrix[4][4];
-
-//macros
-#define rnd() (((double)rand())/(double)RAND_MAX)
-#define random(a) (rand()%a)
-#define MakeVector(x, y, z, v) (v)[0]=(x),(v)[1]=(y),(v)[2]=(z)
-#define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
-#define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
-#define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-			     (c)[1]=(a)[1]-(b)[1]; \
-(c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
@@ -65,22 +62,11 @@ extern void cleanupAudio(ALuint *, ALuint *, int);
 //Setup timers
 //clock_gettime(CLOCK_REALTIME, &timePause);
 const double physicsRate = 1.0 / 30.0;
-const double oobillion = 1.0 / 1e9;
 struct timespec timeStart, timeEnd, timeCurrent;
 struct timespec timePause, moveTime;
 double physicsCountdown=0.0;
 double timeSpan=0.0;
 unsigned int upause=0;
-double timeDiff(struct timespec *start, struct timespec *end) {
-    return (double)(end->tv_sec - start->tv_sec ) +
-	(double)(end->tv_nsec - start->tv_nsec) * oobillion;
-}
-void timeCopy(struct timespec *dest, struct timespec *source) {
-    memcpy(dest, source, sizeof(struct timespec));
-}
-void recordTime(struct timespec *t) {
-	clock_gettime(CLOCK_REALTIME, t);	
-}
 //-----------------------------------------------------------------------------
 
 //define audio globals
@@ -94,64 +80,6 @@ ALuint alBuffer[TOTAL_SOUNDS];
 ALuint alSource[TOTAL_SOUNDS];
 #endif
 
-
-class Image {
-    public:
-	int width, height;
-	unsigned char *data;
-	~Image() { delete [] data; }
-	Image(){}
-	Image(const char *fname) {
-		readImage(fname);
-	}
-	void readImage(const char *fname) {
-	    if (fname[0] == '\0')
-		return;
-	    //printf("fname **%s**\n", fname);
-	    int ppmFlag = 0;
-	    char name[40];
-	    strcpy(name, fname);
-	    int slen = strlen(name);
-	    char ppmname[80];
-	    if (strncmp(name+(slen-4), ".ppm", 4) == 0)
-		ppmFlag = 1;
-	    if (ppmFlag) {
-		strcpy(ppmname, name);
-	    } else {
-		name[slen-4] = '\0';
-		//printf("name **%s**\n", name);
-		sprintf(ppmname,"%s.ppm", name);
-		//printf("ppmname **%s**\n", ppmname);
-		char ts[100];
-		//system("convert eball.jpg eball.ppm");
-		sprintf(ts, "convert %s %s", fname, ppmname);
-		system(ts);
-	    }
-	    //sprintf(ts, "%s", name);
-	    FILE *fpi = fopen(ppmname, "r");
-	    if (fpi) {
-		char line[200];
-		fgets(line, 200, fpi);
-		fgets(line, 200, fpi);
-		//skip comments and blank lines
-		while (line[0] == '#' || strlen(line) < 2)
-		    fgets(line, 200, fpi);
-		sscanf(line, "%i %i", &width, &height);
-		fgets(line, 200, fpi);
-		//get pixel data
-		int n = width * height * 3;			
-		data = new unsigned char[n];			
-		for (int i=0; i<n; i++)
-		    data[i] = fgetc(fpi);
-		fclose(fpi);
-	    } else {
-		printf("ERROR opening image: %s\n",ppmname);
-		exit(0);
-	    }
-	    if (!ppmFlag)
-		unlink(ppmname);
-	}
-};
 Image img[12] = {
     "./images/bigfoot.png",
     "./images/creepyforest.jpg",
@@ -164,39 +92,22 @@ Image img[12] = {
     "./images/angelapic.png",
     "./images/monsterDash_logo_blkbg.gif",
     "./images/pixelforest.jpg"
-    "./images/blackbox.png"
+    //"./images/blackbox.png"
 };
 
-class Player {
-	public:
-		int move, currentFrame, frame_count;
-		float delay;
-		GLuint glTexture;
-		Image img;
-		Player(const char *file)
-		{
-			img.readImage(file);
-			move = 0;
-			currentFrame = 0;
-			// this value represents frames in spritesheet; unique
-			frame_count = 8;
-			delay = 0.1;
-		}
-};
 Player player("images/new_drac_run_sprite.gif");
 
-class Obstacle {
-    public:
-        //GLunit glTexture;
-        Image img;
-        Obstacle (const char *file) {
-            img.readImage(file);
-        }
-};
 Obstacle ob[3] = {
     "./images/stump.gif",
     "./images/potato.gif",
     "./images/butter.gif"};
+
+GLuint glTexture;
+GLuint brTexture;
+GLuint krTexture;
+GLuint agTexture;
+GLuint lgTexture;
+GLuint obsTexture;
 
 class Texture {
 	public:
@@ -301,7 +212,6 @@ class Umbrella {
 class Collision {
     public:
 	Vec pos;
-	Vec vel;
 	//float width;
 	float radius;
 } collision, collision1;
@@ -387,15 +297,15 @@ class X11_wrapper {
 
 //function prototypes
 void initOpengl(void);
-#ifdef USE_OPENAL_SOUND
-void initSounds(void);
-#endif
 void checkMouse(XEvent *e);
 int checkKeys(XEvent *e);
 void init();
 void physics(void);
 void render(void);
 
+#ifdef USE_OPENAL_SOUND
+void initSounds(void);
+#endif
 
 int main()
 {
@@ -494,12 +404,6 @@ unsigned char *buildAlphaData(Image *img)
     return newdata;
 }
 
-GLuint glTexture;
-GLuint brTexture;
-GLuint krTexture;
-GLuint agTexture;
-GLuint lgTexture;
-GLuint obsTexture;
 
 void initOpengl(void)
 {
@@ -988,19 +892,19 @@ void createRaindrop(const int n)
 	node->prev = NULL;
 	node->next = NULL;
 	node->sound=0;
-	node->pos[0] = rnd() * (float)g.xres;
-	node->pos[1] = rnd() * 100.0f + (float)g.yres;
+	node->pos[0] = rand() * (float)g.xres;
+	node->pos[1] = rand() * 100.0f + (float)g.yres;
 	VecCopy(node->pos, node->lastpos);
 	node->vel[0] = 
 	    node->vel[1] = 0.0f;
-	node->color[0] = rnd() * 0.2f + 0.8f;
-	node->color[1] = rnd() * 0.2f + 0.8f;
-	node->color[2] = rnd() * 0.2f + 0.8f;
-	node->color[3] = rnd() * 0.5f + 0.3f; //alpha
-	node->linewidth = random(8)+1;
+	node->color[0] = rand() * 0.2f + 0.8f;
+	node->color[1] = rand() * 0.2f + 0.8f;
+	node->color[2] = rand() * 0.2f + 0.8f;
+	node->color[3] = rand() * 0.5f + 0.3f; //alpha
+	node->linewidth = (rand()% 8)+1;
 	//larger linewidth = faster speed
 	node->maxvel[1] = (float)(node->linewidth*16);
-	node->length = node->maxvel[1] * 0.2f + rnd();
+	node->length = node->maxvel[1] * 0.2f + rand();
 	//put raindrop into linked list
 	node->next = rainhead;
 	if (rainhead != NULL)
@@ -1012,7 +916,7 @@ void createRaindrop(const int n)
 
 void checkRaindrops()
 {
-    if (random(100) < 50) {
+    if ((rand()%100) < 50) {
 	createRaindrop(ndrops);
     }
     //
@@ -1327,7 +1231,6 @@ void render()
 	}*/
 	glDisable(GL_ALPHA_TEST);
     }
-    //dumb bitch edit
     if(g.showCredits)
     {
 	//keep trees in background
