@@ -89,6 +89,15 @@ void showPause(Rect r, GLuint textid3, int xres, int yres)
         ggprint8b(&r, 40, 0x00ffff44, "     R - Restart  ");
 }
 
+void drawRad()
+{
+	// draw the radius on each image
+	// need center: (x,y)
+	// radius: r
+	// get new points by changing the angle w/ sin and cos
+
+}
+
 bool checkCollision(int x1, int y1, int rad1, int x2, int y2, int rad2)
 {
 	int xd, yd, Distance;

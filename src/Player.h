@@ -6,7 +6,7 @@
 
 class Player {
 	public:
-		int move, currentFrame, frame_count;
+		int move, currentFrame, frame_count, xpos, ypos;
 		float delay;
 		GLuint glTexture;
 		Image img;

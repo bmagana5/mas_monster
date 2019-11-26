@@ -53,7 +53,7 @@ extern void showMenu(Rect);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Rect);
-extern bool checkCollision(Vec, float, Vec, float);
+extern bool checkCollision(int, int, float, int, int, float);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -91,8 +91,8 @@ Image img[12] = {
     "./images/krystalPic.png",
     "./images/angelapic.png",
     "./images/monsterDash_logo_blkbg.gif",
-    "./images/pixelforest.jpg"
-    //"./images/blackbox.png"
+    "./images/pixelforest.jpg",
+    "./images/blackbox.jpg"
 };
 
 Player player("images/new_drac_run_sprite.gif");
@@ -213,7 +213,7 @@ class Collision {
     public:
 	Vec pos;
 	//float width;
-	float radius;
+	//float radius;
 } collision, collision1;
 
 class X11_wrapper {
@@ -720,7 +720,7 @@ int checkKeys(XEvent *e)
 	case XK_space:
 	    //recordTime(&moveTime);
 	    g.showBigfoot = 1;
-	    player.move ^= 1;
+	    player.move = 1;
 	    
 	    /*if (g.showBigfoot) {
 		bigfoot.pos[0] = -250.0;
@@ -1190,8 +1190,8 @@ void render()
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	showPicture(obsTexture, 550, 100);
-	/*bool collision = checkCollision(collision.pos[], collision.radius, collision1.pos[], collision1.radius);
-	if (!collision)
+	bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
+/*	if (!collision)
 	{
 		//end game
 	}*/

@@ -13,6 +13,8 @@ Player::Player(const char *file)
 	// unique, so adjust according to each sprite
 	frame_count = 8;
 	delay = 0.1;
+	/*xpos = ;
+	ypos = ;*/
 }
 
 #endif
