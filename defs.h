@@ -21,7 +21,7 @@ typedef Flt	Matrix[4][4];
 #define SGN(a) (((a)<0)?(-1):(1))
 #define SGND(a) (((a)<0.0)?(-1.0):(1.0))
 
-typedef struct t_rect {
+/*typedef struct t_rect {
 	int left;
 	int top;
 	int right;
@@ -31,7 +31,7 @@ typedef struct t_rect {
 	int center;
 	int centerx;
 	int centery;
-} Rect;
+} Rect;*/
 
 typedef struct t_mouse {
 	int x,y;
@@ -45,13 +45,13 @@ typedef struct t_texmap {
 	unsigned int *i;
 } Texmap;
 
-typedef struct t_screen {
+/*typedef struct t_screen {
 	int x_res, y_res;
 	int screen_x_res, screen_y_res;
 	float gl_perspective_viewangle;
 	Flt xcenter, ycenter;
 	Flt fy_res, fx_res;
-} Screen;
+} Screen;*/
 
 #endif
 

@@ -164,7 +164,7 @@ Image img[12] = {
     "./images/angelapic.png",
     "./images/monsterDash_logo_blkbg.gif",
     "./images/pixelforest.jpg"
-    //"./images/blackbox.png"
+    "./images/blackbox.png"
 };
 
 class Player {
@@ -301,6 +301,7 @@ class Umbrella {
 class Collision {
     public:
 	Vec pos;
+	Vec vel;
 	//float width;
 	float radius;
 } collision, collision1;

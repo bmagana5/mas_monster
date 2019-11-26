@@ -8,6 +8,12 @@
 //Texture maps are displayed.
 //Press B to see bigfoot roaming his forest.
 //
+//This program was edited and completed by:
+//Angela Tante
+//Brian Magana
+//Gracelove Simons
+//Krystal Raines
+//
 //
 #include <stdio.h>
 #include <stdlib.h>
@@ -886,19 +892,19 @@ void createRaindrop(const int n)
 	node->prev = NULL;
 	node->next = NULL;
 	node->sound=0;
-	node->pos[0] = rnd() * (float)g.xres;
-	node->pos[1] = rnd() * 100.0f + (float)g.yres;
+	node->pos[0] = rand() * (float)g.xres;
+	node->pos[1] = rand() * 100.0f + (float)g.yres;
 	VecCopy(node->pos, node->lastpos);
 	node->vel[0] = 
 	    node->vel[1] = 0.0f;
-	node->color[0] = rnd() * 0.2f + 0.8f;
-	node->color[1] = rnd() * 0.2f + 0.8f;
-	node->color[2] = rnd() * 0.2f + 0.8f;
-	node->color[3] = rnd() * 0.5f + 0.3f; //alpha
-	node->linewidth = random(8)+1;
+	node->color[0] = rand() * 0.2f + 0.8f;
+	node->color[1] = rand() * 0.2f + 0.8f;
+	node->color[2] = rand() * 0.2f + 0.8f;
+	node->color[3] = rand() * 0.5f + 0.3f; //alpha
+	node->linewidth = (rand()% 8)+1;
 	//larger linewidth = faster speed
 	node->maxvel[1] = (float)(node->linewidth*16);
-	node->length = node->maxvel[1] * 0.2f + rnd();
+	node->length = node->maxvel[1] * 0.2f + rand();
 	//put raindrop into linked list
 	node->next = rainhead;
 	if (rainhead != NULL)
@@ -910,7 +916,7 @@ void createRaindrop(const int n)
 
 void checkRaindrops()
 {
-    if (random(100) < 50) {
+    if ((rand()%100) < 50) {
 	createRaindrop(ndrops);
     }
     //
