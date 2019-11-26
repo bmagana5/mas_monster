@@ -164,7 +164,7 @@ Image img[12] = {
     "./images/angelapic.png",
     "./images/monsterDash_logo_blkbg.gif",
     "./images/pixelforest.jpg"
-    //"./images/blackbox.png"
+    "./images/blackbox.png"
 };
 
 class Player {
