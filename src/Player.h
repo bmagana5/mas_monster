@@ -6,11 +6,13 @@
 
 class Player {
 	public:
-		int move, currentFrame, frame_count, xpos, ypos;
+		int move, currentFrame, frame_count;
 		float delay;
 		GLuint glTexture;
 		Image img;
 		Player(const char *file);
+		Vec pos;
+		Vec vel;
 };
 
 #endif
