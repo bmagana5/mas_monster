@@ -54,6 +54,7 @@ extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Rect);
 extern bool checkCollision(int, int, float, int, int, float);
+extern void drawcircle(Vec);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -92,7 +93,7 @@ Image img[12] = {
     "./images/angelapic.png",
     "./images/monsterDash_logo_blkbg.gif",
     "./images/pixelforest.jpg",
-    "./images/blackbox.jpg"
+    "./images/blackbox.jpeg"
 };
 
 Player player("images/new_drac_run_sprite.gif");
@@ -1190,7 +1191,11 @@ void render()
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	showPicture(obsTexture, 550, 100);
-	bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
+	player.pos[0] = tx;
+	player.pos[1] = ty;
+	player.pos[2] = 10;
+	drawcircle(player.pos);
+	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
 /*	if (!collision)
 	{
 		//end game
