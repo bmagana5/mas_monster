@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <GL/glx.h>
 #include <math.h>
+#include "Player.h"
 void displayGracelove(Rect r)
 {
     	r.bot = 250;
@@ -89,13 +90,25 @@ void showPause(Rect r, GLuint textid3, int xres, int yres)
         ggprint8b(&r, 40, 0x00ffff44, "     R - Restart  ");
 }
 
-void drawRad()
+void drawcircle(Vec ob1)
 {
 	// draw the radius on each image
 	// need center: (x,y)
 	// radius: r
 	// get new points by changing the angle w/ sin and cos
+	//
+	glBegin(GL_LINE_LOOP);
+	int num_segs = 10;
+	float r = 15.0;
+	for (int i=0; i<num_segs; i++) {
+	    float theta = 2.0f * 3.1415296f * float(i) / float(num_segs);
 
+	    float x = r*cosf(theta);
+	    float y = r*sinf(theta);
+
+	    glVertex2f(x + ob1[0], y + ob1[1]);
+	}
+	glEnd();
 }
 
 bool checkCollision(int x1, int y1, int rad1, int x2, int y2, int rad2)
