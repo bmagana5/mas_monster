@@ -3,6 +3,7 @@
 
 #include <GL/glx.h>
 #include "Image.h" 
+#include "../defs.h" 
 
 class Player {
 	public:
@@ -10,9 +11,9 @@ class Player {
 		float delay;
 		GLuint glTexture;
 		Image img;
-		Player(const char *file);
 		Vec pos;
 		Vec vel;
+		Player(const char *file);
 };
 
 #endif

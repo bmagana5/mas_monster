@@ -8,7 +8,10 @@
 // 	3. fix it
 // 	4. review that the fix is working properly
 #include "fonts.h"
+#include "timers.h"
+#include "Player.h"
 #include <math.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -109,3 +112,21 @@ void cleanupAudio(ALuint *alBuffer, ALuint *alSource, int n)
 	alcCloseDevice(Device);
 }
 #endif
+
+void moveCharacter()
+{
+
+}
+
+void animateCharacter(Player *player, struct timespec *moveTime, 
+		struct timespec *timeCurrent)
+{
+	recordTime(timeCurrent);
+	double timeSpan = timeDiff(moveTime, timeCurrent);
+	if (timeSpan > player->delay) {
+		++player->currentFrame;
+		if (player->currentFrame >= player->frame_count)
+			player->currentFrame -= player->frame_count;
+		recordTime(moveTime);
+	}
+}
