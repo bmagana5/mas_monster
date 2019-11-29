@@ -35,6 +35,12 @@ typedef Flt	Matrix[4][4];
 	int centery;
 } Rect;*/
 
+struct Shape {
+	float width, height;
+	float radius;
+	Vec center;
+};
+
 typedef struct t_mouse {
 	int x,y;
 	int lastx,lasty;

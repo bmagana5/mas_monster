@@ -240,6 +240,7 @@ void new_clock(Rect r)
 	char str[80];
 	int n;
 	n = sprintf (str,"%02i:%02i:%02i", hours, minutes, seconds);
-	printf ("time: ", str, n);
+	system("clear");
+	printf ("time: %s %d\n", str, n);
 }
 //------------------------------RUNNING CLOCK END-----------------------------//

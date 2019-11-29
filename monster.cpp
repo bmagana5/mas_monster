@@ -114,66 +114,6 @@ GLuint agTexture;
 GLuint lgTexture;
 GLuint obsTexture;
 
-/*class Texture {
-	public:
-		Image *backImage;
-		GLuint backTexture;
-		float xc[2];
-		float yc[2];
-};
-
-class Global {
-    public:
-	int done;
-	int xres, yres;
-
-	Texture tex;
-	//names of texutres
-	GLuint bigfootTexture;
-	GLuint silhouetteTexture;
-	GLuint forestTexture;
-	GLuint forestTransTexture;
-	GLuint umbrellaTexture;
-	GLuint creditsTexture;
-	GLuint graceloveTexture;
-	GLuint brianTexture;
-	GLuint krystalTexture;
-	GLuint angelaTexture;
-	GLuint logoTexture;
-	GLuint obsTexture;
-	int showBigfoot;
-	int forest;
-	int silhouette;
-	int trees;
-	int showRain;
-	int showUmbrella;
-	int deflection;
-	int showCredits;
-	int highScore;
-	int showPauseScreen;
-	int  mainMenu;
-	char buf[2048];
-	char tmpbuf[256];
-	Global() {
-	    mainMenu = 1;
-	    logOpen();
-	    done=0;
-	    xres=800;
-	    yres=600;
-	    showBigfoot=0;
-	    forest=1;
-	    silhouette=1;
-	    trees=1;
-	    showRain=0;
-	    showUmbrella=0;
-	    deflection=0;
-	    showCredits=0;
-	    highScore=0;
-	}
-	~Global() {
-	    logClose();
-	}
-}; */
 Global g;
 
 class Bigfoot {
@@ -837,7 +777,7 @@ void render()
 	
  	//BACKGROUND GOES HERE
 	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 1.0, 1.0); // white
 	glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
 	glBegin(GL_QUADS);
 		glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
@@ -854,11 +794,16 @@ void render()
 	float cy = g.yres*0.1;
 	//show ground
 	glBegin(GL_QUADS);
+		// dark grey
 		glColor3f(0.2, 0.2, 0.2);
-		glVertex2i(0, g.yres*0.05);
-		glVertex2i(g.xres, g.yres*0.05);
+		glVertex2i(0, g.floor.height);
+		//glVertex2i(0, g.yres*0.05);
+		glVertex2i(g.floor.width, g.floor.height);
+		//glVertex2i(g.xres, g.yres*0.05);
+		// lighter grey
 		glColor3f(0.4, 0.4, 0.4);
-		glVertex2i(g.xres, 0);
+		glVertex2i(g.floor.width, 0);
+		//glVertex2i(g.xres, 0);
 		glVertex2i(0, 0);
 	glEnd();
 	float h = g.yres*0.08;
@@ -900,7 +845,7 @@ void render()
 	player.pos[2] = 10;
 	drawcircle(player.pos);*/
 	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
-/*	if (!collision)
+	/*if (!collision)
 	{
 		//end game
 	}*/

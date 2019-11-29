@@ -3,6 +3,7 @@
 
 #include <GL/glx.h>
 #include "Texture.h"
+#include "../defs.h"
 
 class Global {
 	public: 
@@ -33,6 +34,10 @@ class Global {
 		int  mainMenu;
 		char buf[2048];
 		char tmpbuf[256];
+
+		Shape floor;
+		Shape *platforms;
+
 		Global();
 		~Global();
 };
