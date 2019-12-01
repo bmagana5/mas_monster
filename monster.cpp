@@ -628,7 +628,10 @@ int checkKeys(XEvent *e)
 	    break;
 	case XK_space:
 	    // hardcoded value for now...
-	    player.vel[1] = 18.0;
+	    if (!player.jumping) {
+		    player.jumping = 1;
+		    player.vel[1] = 18.0;
+	    }
 	    break;
 	case XK_c:
 	    if (!g.play && !g.showPauseScreen && !g.highScore) {
