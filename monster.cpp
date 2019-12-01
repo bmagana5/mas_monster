@@ -104,8 +104,8 @@ Image img[12] = {
 
 // pass in Global object to use resolution x and y values to
 // determine player size in game
-Player player("images/new_drac_run_sprite.gif");
-//Player player("images/new_drac_run_sprite.gif", &g);
+//Player player("images/new_drac_run_sprite.gif");
+Player player("images/new_drac_run_sprite.gif", &g);
 
 Obstacle ob[3] = {
     "./images/stump.gif",
@@ -181,6 +181,9 @@ class X11_wrapper {
 	void reshapeWindow(int width, int height) {
 	    //window has been resized.
 	    setupScreenRes(width, height);
+	    // added the following to resize floor and character
+	    player.resize(&g);
+	    g.resizeObjects();
 	    //
 	    glViewport(0, 0, (GLint)width, (GLint)height);
 	    glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -625,7 +628,7 @@ int checkKeys(XEvent *e)
 	    break;
 	case XK_space:
 	    // hardcoded value for now...
-	    player.vel[1] = 20.0;
+	    player.vel[1] = 18.0;
 	    break;
 	case XK_c:
 	    if (!g.play && !g.showPauseScreen && !g.highScore) {

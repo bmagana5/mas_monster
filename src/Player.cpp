@@ -17,6 +17,7 @@ Player::Player(const char *file)
 	// using image height and width to determine player ingame dimmensions
 	height = img.height*0.6;
 	width = img.width / frame_count;
+	size_with_screen = 0;
 	/*xpos = ;
 	ypos = ;*/
 }
@@ -32,9 +33,20 @@ Player::Player(const char *file, const Global *g)
 	delay = 0.1;
 	/* adjust height and width of character here
 	 relative to game screen */
-	height = g->yres*0.06;
-	width = g->xres*0.06;
+	size_rate = 0.06;
+	height = g->yres*size_rate;
+	width = g->xres*size_rate;
+	size_with_screen = 1;
 	/*xpos = ;
 	ypos = ;*/
+}
+
+void Player::resize(Global *g)
+{
+	if (size_with_screen)
+	{
+		height = g->yres*size_rate;
+		width = g->xres*size_rate;
+	}
 }
 #endif
