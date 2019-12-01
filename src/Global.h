@@ -26,8 +26,6 @@ class Global {
 		int play;
 		int showBigfoot;
 		int forest;
-		int silhouette;
-		int trees;
 		int showCredits;
 		int highScore;
 		int showPauseScreen;

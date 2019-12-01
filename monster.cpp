@@ -600,45 +600,51 @@ int checkKeys(XEvent *e)
 
     switch (key) {
 	case XK_e:
-		if (!g.play) {
-			if (!g.highScore) {
-				highScore(g.buf, g.tmpbuf);
-				g.highScore ^= 1;
-			} else g.highScore = 0;
-		}	    
+	    if (!g.play && !g.showCredits && !g.showPauseScreen) {
+		if (!g.highScore) {
+			highScore(g.buf, g.tmpbuf);
+			g.highScore ^= 1;
+		} else g.highScore = 0;
+		g.forest ^= 1;
+	    }	    
+	    break;
+	case XK_Return:
+	    if (!g.play && !g.showPauseScreen && !g.showCredits && !g.highScore) {
+		    g.play ^= 1;
+		    player.move ^= 1;
+		    g.forest ^= 1;
+		    recordTime(&moveTime);
+	    }
 	    break;
 	case XK_space:
-	    recordTime(&moveTime);
-	    g.play ^= 1;
-	    g.showBigfoot = 1;
-	    player.move = 1;
-	    
-	    /*if (g.showBigfoot) {
-		bigfoot.pos[0] = -250.0;
-	    }*/
 	    break;
 	case XK_c:
-	    if (!g.play)
+	    if (!g.play && !g.showPauseScreen && !g.highScore) {
 	    	g.showCredits ^= 1;
+		g.forest ^= 1;
+	    }
 	    break;
 	case XK_d:
 	    break;
 	case XK_p:
-	    if (g.play)
-	    	g.showPauseScreen ^= 1;
+	    if (!g.forest && !g.showCredits && !g.highScore) {
+		    g.showPauseScreen ^= 1;
+		    g.play ^= 1;
+		    player.move ^= 1;
+	    }
 	    break;
 	case XK_s:
-	    g.silhouette ^= 1;
-	    printf("silhouette: %i\n", g.silhouette);
 	    break;
 	case XK_t:
-	    g.trees ^= 1;
 	    break;
 	case XK_u:
 	    break;
 	case XK_f:
 	    break;
 	case XK_r:
+	    if (g.showPauseScreen) {
+		    // reset game 
+	    }
 	    break;
 	case XK_Left:
 	    break;
@@ -753,15 +759,16 @@ void render()
 	
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+	glEnd();
+
 	r.bot = g.yres - 20;
 	r.left = 10;
 	r.center = 0;
 
-	glEnd();
 	int widt = 80, xoff = 320, yoff = 300;
 	//showLogo
 	showLogo(g.logoTexture, widt, xoff, yoff);
@@ -776,6 +783,7 @@ void render()
 	new_clock(r);	
 	
  	//BACKGROUND GOES HERE
+	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0); // white
 	glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
@@ -785,13 +793,6 @@ void render()
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);	
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
 	glEnd();
-
-	//PLAYER CHARACTER GOES HERE
-	//glClearColor(0.1, 0.1, 0.1, 1.0);
-	//glClear(GL_COLOR_BUFFER_BIT);
-	
-	float cx = g.xres*0.1;
-	float cy = g.yres*0.1;
 	//show ground
 	glBegin(GL_QUADS);
 		// dark grey
@@ -806,6 +807,13 @@ void render()
 		//glVertex2i(g.xres, 0);
 		glVertex2i(0, 0);
 	glEnd();
+	//PLAYER CHARACTER GOES HERE
+	// enabling the next two will clear the background
+	//glClearColor(0.1, 0.1, 0.1, 1.0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	
+	float cx = g.xres*0.1;
+	float cy = g.yres*0.1;
 	float h = g.yres*0.08;
 	float w = g.xres*0.08;
 	//float h = player.img.height;
@@ -815,8 +823,10 @@ void render()
 	glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, player.glTexture);
-	//
+	// enable alpha testing
 	glEnable(GL_ALPHA_TEST);
+	// specify alpha comparison func and referenece value that incoming
+	// alpha values are to be compared to
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255, 255, 255, 255);
 	// denominator corresponds to # of frames
@@ -839,6 +849,7 @@ void render()
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
+
 	showPicture(obsTexture, 550, 100);
 	/*player.pos[0] = tx;
 	player.pos[1] = ty;
@@ -885,22 +896,19 @@ void render()
 	}*/
 	glDisable(GL_ALPHA_TEST);
     }
-    if(g.showCredits)
-    {
+    if (g.showCredits) {
 	//keep trees in background
 	r.bot = g.yres - 20;
 	r.left = 10;
 	r.center = 0;
     	glClearColor(1.0, 1.0, 1.0, 1.0);
-    	//glClearColor(1.0, 1.0, 1.0, 1.0);
     	glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
 	glEnd();
 	
 	//show the credits and credit pictures
@@ -911,20 +919,19 @@ void render()
 	showPicture(agTexture, 220, 350);
 
     }
-    if (g.highScore)
-    {
+    if (g.highScore) {
 	//glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(1.0, 1.0, 1.0, 1.0);
     	//glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-	r.bot = g.yres - 20;
-	r.left = 10;
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+	//r.bot = g.yres - 20;
+	//r.left = 10;
 	r.center = 0;
 	glEnd();
 	
@@ -933,15 +940,14 @@ void render()
 	char tmp[20] = "";
 	parseScores(r, g.buf, tmp);
     }
-    if (g.showPauseScreen)
-    {
+    if (g.showPauseScreen) {
 	showPause(r, g.forestTexture, g.xres, g.yres);
     }
-    glDisable(GL_TEXTURE_2D);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glDisable(GL_BLEND);
-    glEnable(GL_TEXTURE_2D);
+    //glDisable(GL_TEXTURE_2D);
+    //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glDisable(GL_BLEND);
+    //glEnable(GL_TEXTURE_2D);
     //
     glBindTexture(GL_TEXTURE_2D, 0);
 }

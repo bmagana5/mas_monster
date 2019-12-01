@@ -14,8 +14,6 @@ Global::Global()
 	play = 0;
 	showBigfoot=0;
 	forest=1;
-	silhouette=1;
-	trees=1;
 	showCredits=0;
 	highScore=0;
 	
