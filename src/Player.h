@@ -3,6 +3,7 @@
 
 #include <GL/glx.h>
 #include "Image.h" 
+#include "Global.h" 
 #include "../defs.h" 
 
 class Player {
@@ -13,7 +14,10 @@ class Player {
 		Image img;
 		Vec pos;
 		Vec vel;
+		int height;
+		int width;
 		Player(const char *file);
+		Player(const char *file, const Global *g);
 };
 
 #endif

@@ -85,6 +85,8 @@ ALuint alBuffer[TOTAL_SOUNDS];
 ALuint alSource[TOTAL_SOUNDS];
 #endif
 
+Global g;
+
 Image img[12] = {
     "./images/bigfoot.png",
     "./images/creepyforest.jpg",
@@ -100,7 +102,10 @@ Image img[12] = {
     "./images/blackbox.jpeg"
 };
 
+// pass in Global object to use resolution x and y values to
+// determine player size in game
 Player player("images/new_drac_run_sprite.gif");
+//Player player("images/new_drac_run_sprite.gif", &g);
 
 Obstacle ob[3] = {
     "./images/stump.gif",
@@ -114,7 +119,6 @@ GLuint agTexture;
 GLuint lgTexture;
 GLuint obsTexture;
 
-Global g;
 
 class Bigfoot {
     public:
@@ -552,7 +556,8 @@ void init() {
     collision1.pos[0] = 50;
     collision1.pos[1] = 550;
     // initialize position and velocity of player
-    MakeVector(g.xres*0.01, g.yres*0.008, 0.0, player.pos);
+    MakeVector(player.width, player.height, 0.0, player.pos);
+    //MakeVector(g.xres*0.01, g.yres*0.008, 0.0, player.pos);
     MakeVector(6.0,0.0,0.0, player.vel);
 }
 
@@ -617,7 +622,8 @@ int checkKeys(XEvent *e)
 	    }
 	    break;
 	case XK_space:
-	    player.vel[1] = 12.0;
+	    // hardcoded value for now...
+	    player.vel[1] = 20.0;
 	    break;
 	case XK_c:
 	    if (!g.play && !g.showPauseScreen && !g.highScore) {
@@ -711,8 +717,7 @@ void physics()
 		animateCharacter(&player, &moveTime, &timeCurrent);
 		//moveBigfoot();
 		moveCharacter(&player, &g);
-		if (player.pos[0] == (float)(g.xres*0.5 - 
-					player.img.width / player.frame_count)) {
+		if (player.pos[0] == (float)(g.xres*0.5 - player.width)) {
 			for (int i = 0; i < 2; i++) 
 				g.tex.xc[i] += 0.003;
 		}
@@ -761,9 +766,9 @@ void render()
 	new_clock(r);	
 	
  	//BACKGROUND GOES HERE
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+	/*glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0, 1.0, 1.0); // white
+	glColor3f(1.0, 1.0, 1.0); // white*/
 	glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
 	glBegin(GL_QUADS);
 	    glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
@@ -776,31 +781,28 @@ void render()
 		// dark grey
 		glColor3f(0.2, 0.2, 0.2);
 		glVertex2i(0, g.floor.height);
-		//glVertex2i(0, g.yres*0.05);
 		glVertex2i(g.floor.width, g.floor.height);
-		//glVertex2i(g.xres, g.yres*0.05);
 		// lighter grey
 		glColor3f(0.4, 0.4, 0.4);
 		glVertex2i(g.floor.width, 0);
-		//glVertex2i(g.xres, 0);
 		glVertex2i(0, 0);
 	glEnd();
 	//PLAYER CHARACTER GOES HERE
-	// enabling the next two will clear the background
-	//glClearColor(0.1, 0.1, 0.1, 1.0);
-	//glClear(GL_COLOR_BUFFER_BIT);
 	
+	Player *p = &player;
+	// center coordinates
 	float cx = g.xres*0.1;
 	float cy = g.yres*0.1;
-	float h = g.yres*0.08;
-	float w = g.xres*0.08;
-	//float h = player.img.height;
-	//float w = player.img.width / player.frame_count;
-	//
+	
+	// gave Player obj 'player' height and width member variables
+	// no longer need 'h' and 'w'
+	//float h = g.yres*0.08;
+	//float w = g.xres*0.08;
+	
 	glPushMatrix();
-	glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
+	glTranslatef(p->pos[0], p->pos[1], p->pos[2]);
 	glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, player.glTexture);
+	glBindTexture(GL_TEXTURE_2D, p->glTexture);
 	// enable alpha testing
 	glEnable(GL_ALPHA_TEST);
 	// specify alpha comparison func and referenece value that incoming
@@ -810,20 +812,20 @@ void render()
 	// denominator corresponds to # of frames
 	// player.currentFrame is incremented in physics()
 	// this ensures that ix remains between 0 and (player.frame_count - 1)
-	int ix = player.currentFrame % player.frame_count;
+	int ix = p->currentFrame % p->frame_count;
 	int iy = 0;
-	if (player.currentFrame >= player.frame_count)
+	if (p->currentFrame >= p->frame_count)
 		iy = 1;
 	// width percentage for sprite 
-	float tx = (float)ix / (float)player.frame_count;
+	float tx = (float)ix / (float)p->frame_count;
 	float ty = (float)iy / 2.0;
 	// x_off is percentage that each frame takes up in the sprite sheet
-	float x_off = 1.0 / (float)player.frame_count;
+	float x_off = 1.0 / (float)p->frame_count;
 	glBegin(GL_QUADS);
-		glTexCoord2f(tx, ty+1.0);	glVertex2i(cx-w, cy-h);
-		glTexCoord2f(tx, ty);		glVertex2i(cx-w, cy+h);
-		glTexCoord2f(tx+x_off, ty);	glVertex2i(cx+w, cy+h);
-		glTexCoord2f(tx+x_off, ty+1.0);	glVertex2i(cx+w, cy-h);
+		glTexCoord2f(tx, ty+1.0);	glVertex2i(cx-p->width, cy-p->height);
+		glTexCoord2f(tx, ty);		glVertex2i(cx-p->width, cy+p->height);
+		glTexCoord2f(tx+x_off, ty);	glVertex2i(cx+p->width, cy+p->height);
+		glTexCoord2f(tx+x_off, ty+1.0);	glVertex2i(cx+p->width, cy-p->height);
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -837,40 +839,6 @@ void render()
 	/*if (!collision)
 	{
 		//end game
-	}*/
-	/*glPushMatrix();
-	//glTranslatef(bigfoot.pos[0], bigfoot.pos[1], bigfoot.pos[2]);
-	if (!g.silhouette) {
-	    glBindTexture(GL_TEXTURE_2D, g.bigfootTexture);
-	} else {
-	    glBindTexture(GL_TEXTURE_2D, g.silhouetteTexture);
-	    glEnable(GL_ALPHA_TEST);
-	    glAlphaFunc(GL_GREATER, 0.0f);
-	    glColor4ub(255,255,255,255);
-	}
-	glBegin(GL_QUADS);
-	if (bigfoot.vel[0] > 0.0) {
-	    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-	    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-	    glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-	    glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
-	} else {
-	    glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
-	    glTexCoord2f(1.0f, 0.0f); glVertex2i(-wid, wid);
-	    glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
-	    glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
-	}
-	glEnd();
-	glPopMatrix();*/
-	//
-	/*if (g.trees && g.silhouette) {
-	    glBindTexture(GL_TEXTURE_2D, g.forestTransTexture);
-	    glBegin(GL_QUADS);
-	    glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	    glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-	    glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-	    glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-	    glEnd();
 	}*/
 	glDisable(GL_ALPHA_TEST);
     }
