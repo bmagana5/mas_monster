@@ -556,7 +556,9 @@ void init() {
     collision1.pos[0] = 50;
     collision1.pos[1] = 550;
     // initialize position and velocity of player
-    MakeVector(player.width, player.height, 0.0, player.pos);
+    // please handle the next function call with care :)
+    MakeVector(player.width, g.floor.center[1] + g.floor.height - player.height*0.85, 
+		    0.0, player.pos);
     //MakeVector(g.xres*0.01, g.yres*0.008, 0.0, player.pos);
     MakeVector(6.0,0.0,0.0, player.vel);
 }
