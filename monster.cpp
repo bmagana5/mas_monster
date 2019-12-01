@@ -34,6 +34,8 @@
 #include "Image.h"
 #include "Player.h"
 #include "Obstacle.h"
+#include "Global.h"
+#include "Texture.h"
 
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
@@ -54,6 +56,9 @@ extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Rect);
 extern bool checkCollision(int, int, float, int, int, float);
+extern void drawcircle(Vec);
+extern void moveCharacter(Player *, const Global *);
+extern void animateCharacter(Player *, struct timespec *, struct timespec *);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -62,11 +67,11 @@ extern void cleanupAudio(ALuint *, ALuint *, int);
 //Setup timers
 //clock_gettime(CLOCK_REALTIME, &timePause);
 const double physicsRate = 1.0 / 30.0;
-struct timespec timeStart, timeEnd, timeCurrent;
-struct timespec timePause, moveTime;
 double physicsCountdown=0.0;
 double timeSpan=0.0;
 unsigned int upause=0;
+struct timespec timeStart, timeEnd, timeCurrent;
+struct timespec timePause, moveTime;
 //-----------------------------------------------------------------------------
 
 //define audio globals
@@ -92,7 +97,7 @@ Image img[12] = {
     "./images/angelapic.png",
     "./images/monsterDash_logo_blkbg.gif",
     "./images/pixelforest.jpg",
-    "./images/blackbox.jpg"
+    "./images/blackbox.jpeg"
 };
 
 Player player("images/new_drac_run_sprite.gif");
@@ -109,105 +114,13 @@ GLuint agTexture;
 GLuint lgTexture;
 GLuint obsTexture;
 
-class Texture {
-	public:
-		Image *backImage;
-		GLuint backTexture;
-		float xc[2];
-		float yc[2];
-};
-
-class Global {
-    public:
-	int done;
-	int xres, yres;
-
-	Texture tex;
-	//names of texutres
-	GLuint bigfootTexture;
-	GLuint silhouetteTexture;
-	GLuint forestTexture;
-	GLuint forestTransTexture;
-	GLuint umbrellaTexture;
-	GLuint creditsTexture;
-	GLuint graceloveTexture;
-	GLuint brianTexture;
-	GLuint krystalTexture;
-	GLuint angelaTexture;
-	GLuint logoTexture;
-	GLuint obsTexture;
-	int showBigfoot;
-	int forest;
-	int silhouette;
-	int trees;
-	int showRain;
-	int showUmbrella;
-	int deflection;
-	int showCredits;
-	int highScore;
-	int showPauseScreen;
-	int  mainMenu;
-	char buf[2048];
-	char tmpbuf[256];
-	Global() {
-	    mainMenu = 1;
-	    logOpen();
-	    done=0;
-	    xres=800;
-	    yres=600;
-	    showBigfoot=0;
-	    forest=1;
-	    silhouette=1;
-	    trees=1;
-	    showRain=0;
-	    showUmbrella=0;
-	    deflection=0;
-	    showCredits=0;
-	    highScore=0;
-	}
-	~Global() {
-	    logClose();
-	}
-} g;
+Global g;
 
 class Bigfoot {
     public:
 	Vec pos;
 	Vec vel;
 } bigfoot;
-
-class Raindrop {
-    public:
-	int type;
-	int linewidth;
-	int sound;
-	Vec pos;
-	Vec lastpos;
-	Vec vel;
-	Vec maxvel;
-	Vec force;
-	float length;
-	float color[4];
-	Raindrop *prev;
-	Raindrop *next;
-} *rainhead = NULL;
-int ndrops=1;
-int totrain=0;
-int maxrain=0;
-void deleteRain(Raindrop *node);
-void cleanupRaindrops(void);
-//
-#define UMBRELLA_FLAT  0
-#define UMBRELLA_ROUND 1
-class Umbrella {
-    public:
-	int shape;
-	Vec pos;
-	Vec lastpos;
-	float width;
-	float width2;
-	float radius;
-} umbrella;
 
 class Collision {
     public:
@@ -437,7 +350,6 @@ void initOpengl(void)
     glGenTextures(1, &g.bigfootTexture);
     glGenTextures(1, &g.silhouetteTexture);
     glGenTextures(1, &g.forestTexture);
-    glGenTextures(1, &g.umbrellaTexture);
     glGenTextures(1, &g.creditsTexture);
     glGenTextures(1, &g.graceloveTexture);
     glGenTextures(1, &g.brianTexture);
@@ -484,22 +396,6 @@ void initOpengl(void)
     //
     //must build a new set of data...
     unsigned char *silhouetteData = buildAlphaData(&img[0]);	
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-    free(silhouetteData);
-    //glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-    //	GL_RGB, GL_UNSIGNED_BYTE, bigfootImage->data);
-    //-------------------------------------------------------------------------
-    //
-    //umbrella
-    //
-    glBindTexture(GL_TEXTURE_2D, g.umbrellaTexture);
-    //
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    //
-    //must build a new set of data...
-    silhouetteData = buildAlphaData(&img[3]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 	    GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
     free(silhouetteData);
@@ -651,19 +547,13 @@ void initSounds()
 #endif
 
 void init() {
-    umbrella.pos[0] = 220.0;
-    umbrella.pos[1] = (double)(g.yres-200);
     collision.pos[0] = 100;
     collision.pos[1] = 550;
     collision1.pos[0] = 50;
     collision1.pos[1] = 550;
-    VecCopy(umbrella.pos, umbrella.lastpos);
-    umbrella.width = 200.0;
-    umbrella.width2 = umbrella.width * 0.5;
-    umbrella.radius = (float)umbrella.width2;
-    umbrella.shape = UMBRELLA_FLAT;
-    MakeVector(-150.0,180.0,0.0, bigfoot.pos);
-    MakeVector(6.0,0.0,0.0, bigfoot.vel);
+    // initialize position and velocity of player
+    MakeVector(g.xres*0.01, g.yres*0.008, 0.0, player.pos);
+    MakeVector(6.0,0.0,0.0, player.vel);
 }
 
 void checkMouse(XEvent *e)
@@ -710,84 +600,68 @@ int checkKeys(XEvent *e)
 
     switch (key) {
 	case XK_e:
-	    if (!g.highScore) {
-		highScore(g.buf, g.tmpbuf);
-		g.highScore ^= 1;
-	    } else {
-		g.highScore = 0;
+	    if (!g.play && !g.showCredits && !g.showPauseScreen) {
+		if (!g.highScore) {
+			highScore(g.buf, g.tmpbuf);
+			g.highScore ^= 1;
+		} else g.highScore = 0;
+		g.forest ^= 1;
 	    }	    
 	    break;
+	case XK_Return:
+	    if (!g.play && !g.showPauseScreen && !g.showCredits && !g.highScore) {
+		    g.play ^= 1;
+		    player.move ^= 1;
+		    g.forest ^= 1;
+		    recordTime(&moveTime);
+	    }
+	    break;
 	case XK_space:
-	    //recordTime(&moveTime);
-	    g.showBigfoot = 1;
-	    player.move = 1;
-	    
-	    /*if (g.showBigfoot) {
-		bigfoot.pos[0] = -250.0;
-	    }*/
+	    player.vel[1] = 12.0;
 	    break;
 	case XK_c:
-	    g.showCredits ^= 1;
+	    if (!g.play && !g.showPauseScreen && !g.highScore) {
+	    	g.showCredits ^= 1;
+		g.forest ^= 1;
+	    }
 	    break;
 	case XK_d:
-	    g.deflection ^= 1;
 	    break;
 	case XK_p:
-	    g.showPauseScreen ^= 1;
+	    if (!g.forest && !g.showCredits && !g.highScore) {
+		    g.showPauseScreen ^= 1;
+		    g.play ^= 1;
+		    player.move ^= 1;
+	    }
 	    break;
 	case XK_s:
-	    g.silhouette ^= 1;
-	    printf("silhouette: %i\n", g.silhouette);
 	    break;
 	case XK_t:
-	    g.trees ^= 1;
 	    break;
 	case XK_u:
-	    g.showUmbrella ^= 1;
 	    break;
 	case XK_f:
-	    umbrella.shape ^= 1;
 	    break;
 	case XK_r:
-	    g.showRain ^= 1;
+	    if (g.showPauseScreen) {
+		    // reset game 
+	    }
 	    break;
 	case XK_Left:
-	    VecCopy(umbrella.pos, umbrella.lastpos);
-	    umbrella.pos[0] -= 10.0;
 	    break;
 	case XK_Right:
-	    VecCopy(umbrella.pos, umbrella.lastpos);
-	    umbrella.pos[0] += 10.0;
 	    break;
 	case XK_Up:
-	    VecCopy(umbrella.pos, umbrella.lastpos);
-	    umbrella.pos[1] += 10.0;
 	    break;
 	case XK_Down:
-	    VecCopy(umbrella.pos, umbrella.lastpos);
-	    umbrella.pos[1] -= 10.0;
 	    break;
 	case XK_equal:
-	    if (++ndrops > 40)
-		ndrops=40;
 	    break;
 	case XK_minus:
-	    if (--ndrops < 0)
-		ndrops = 0;
 	    break;
 	case XK_n:
 	    break;
 	case XK_w:
-	    if (shift) {
-		//shrink the umbrella
-		umbrella.width *= (1.0 / 1.05);
-	    } else {
-		//enlarge the umbrella
-		umbrella.width *= 1.05;
-	    }
-	    //half the width
-	    umbrella.width2 = umbrella.width * 0.5;
-	    umbrella.radius = (float)umbrella.width2;
 	    break;
 	case XK_Escape:
 	    return 1;
@@ -815,281 +689,34 @@ Flt VecNormalize(Vec vec)
     return(len);
 }
 
-void cleanupRaindrops()
-{
-    Raindrop *s;
-    while (rainhead) {
-	s = rainhead->next;
-	free(rainhead);
-	rainhead = s;
-    }
-    rainhead=NULL;
-}
-
-void deleteRain(Raindrop *node)
-{
-    //remove a node from linked list
-    //Log("deleteRain()...\n");
-    if (node->prev == NULL) {
-	if (node->next == NULL) {
-	    //Log("only 1 item in list.\n");
-	    rainhead = NULL;
-	} else {
-	    //Log("at beginning of list.\n");
-	    node->next->prev = NULL;
-	    rainhead = node->next;
-	}
-    } else {
-	if (node->next == NULL) {
-	    //Log("at end of list.\n");
-	    node->prev->next = NULL;
-	} else {
-	    //Log("in middle of list.\n");
-	    node->prev->next = node->next;
-	    node->next->prev = node->prev;
-	}
-    }
-    free(node);
-    node = NULL;
-}
-
 void moveBigfoot()
 {
-    //move bigfoot...
-    int addgrav = 1;
-    //Update position
-    bigfoot.pos[0] += bigfoot.vel[0];
-    bigfoot.pos[1] += bigfoot.vel[1];
-    //Check for collision with window edges
-    if ((bigfoot.pos[0] < -140.0 && bigfoot.vel[0] < 0.0) ||
-	    (bigfoot.pos[0] >= (float)g.xres+140.0 &&
-	     bigfoot.vel[0] > 0.0))
-    {
-	bigfoot.vel[0] = -bigfoot.vel[0];
-	addgrav = 0;
-    }
-    if ((bigfoot.pos[1] < 150.0 && bigfoot.vel[1] < 0.0) ||
-	    (bigfoot.pos[1] >= (float)g.yres && bigfoot.vel[1] > 0.0)) {
-	bigfoot.vel[1] = -bigfoot.vel[1];
-	addgrav = 0;
-    }
-    //Gravity?
-    if (addgrav)
-	bigfoot.vel[1] -= 0.75;
+	player.pos[0] += player.vel[0];
+	//Check for collision with window edges
+	if ((player.pos[0] > (g.xres*0.5 - player.img.width / player.frame_count) 
+				&& player.vel[0] > 0.0))
+	{
+		player.pos[0] = g.xres*0.5 - (player.img.width / player.frame_count);
+	}
 }
-
-
-void createRaindrop(const int n)
-{
-    //create new rain drops...
-    int i;
-    for (i=0; i<n; i++) {
-	Raindrop *node = (Raindrop *)malloc(sizeof(Raindrop));
-	if (node == NULL) {
-	    Log("error allocating node.\n");
-	    exit(EXIT_FAILURE);
-	}
-	node->prev = NULL;
-	node->next = NULL;
-	node->sound=0;
-	node->pos[0] = rand() * (float)g.xres;
-	node->pos[1] = rand() * 100.0f + (float)g.yres;
-	VecCopy(node->pos, node->lastpos);
-	node->vel[0] = 
-	    node->vel[1] = 0.0f;
-	node->color[0] = rand() * 0.2f + 0.8f;
-	node->color[1] = rand() * 0.2f + 0.8f;
-	node->color[2] = rand() * 0.2f + 0.8f;
-	node->color[3] = rand() * 0.5f + 0.3f; //alpha
-	node->linewidth = (rand()% 8)+1;
-	//larger linewidth = faster speed
-	node->maxvel[1] = (float)(node->linewidth*16);
-	node->length = node->maxvel[1] * 0.2f + rand();
-	//put raindrop into linked list
-	node->next = rainhead;
-	if (rainhead != NULL)
-	    rainhead->prev = node;
-	rainhead = node;
-	++totrain;
-    }
-}
-
-void checkRaindrops()
-{
-    if ((rand()%100) < 50) {
-	createRaindrop(ndrops);
-    }
-    //
-    //move rain droplets
-    Raindrop *node = rainhead;
-    while (node) {
-	//force is toward the ground
-	node->vel[1] += gravity;
-	VecCopy(node->pos, node->lastpos);
-	node->pos[0] += node->vel[0] * timeslice;
-	node->pos[1] += node->vel[1] * timeslice;
-	if (fabs(node->vel[1]) > node->maxvel[1])
-	    node->vel[1] *= 0.96;
-	node->vel[0] *= 0.999;
-	node = node->next;
-    }
-    //}
-    //
-    //check rain droplets
-int n=0;
-node = rainhead;
-while (node) {
-    n++;
-#ifdef USE_SOUND
-    if (node->pos[1] < 0.0f) {
-	//raindrop hit ground
-	if (!node->sound && play_sounds) {
-	    //small chance that a sound will play
-	    int r = random(50);
-	    if (r==1) {
-		//play sound here...
-
-
-	    }
-	    //sound plays once per raindrop
-	    node->sound=1;
-	}
-    }
-#endif //USE_SOUND
-    //collision detection for raindrop on umbrella
-    if (g.showUmbrella) {
-	if (umbrella.shape == UMBRELLA_FLAT) {
-	    if (node->pos[0] >= (umbrella.pos[0] - umbrella.width2) &&
-		    node->pos[0] <= (umbrella.pos[0] + umbrella.width2)) {
-		if (node->lastpos[1] > umbrella.lastpos[1] ||
-			node->lastpos[1] > umbrella.pos[1]) {
-		    if (node->pos[1] <= umbrella.pos[1] ||
-			    node->pos[1] <= umbrella.lastpos[1]) {
-			if (node->linewidth > 1) {
-			    Raindrop *savenode = node->next;
-			    deleteRain(node);
-			    node = savenode;
-			    continue;
-			}
-		    }
-		}
-	    }
-	}
-	if (umbrella.shape == UMBRELLA_ROUND) {
-	    float d0 = node->pos[0] - umbrella.pos[0];
-	    float d1 = node->pos[1] - umbrella.pos[1];
-	    float distance = sqrt((d0*d0)+(d1*d1));
-	    //Log("distance: %f  umbrella.radius: %f\n",
-	    //	stance,umbrella.radius);
-	    if (distance <= umbrella.radius &&
-		    node->pos[1] > umbrella.pos[1]) {
-		if (node->linewidth > 1) {
-		    if (g.deflection) {
-			//deflect raindrop
-			double dot;
-			Vec v, up = {0,1,0};
-			VecSub(node->pos, umbrella.pos, v);
-			VecNormalize(v);
-			node->pos[0] =
-			    umbrella.pos[0] + v[0] * umbrella.radius;
-			node->pos[1] =
-			    umbrella.pos[1] + v[1] * umbrella.radius;
-			dot = VecDot(v,up);
-			dot += 1.0;
-			node->vel[0] += v[0] * dot * 1.0;
-			node->vel[1] += v[1] * dot * 1.0;
-		    } else {
-			Raindrop *savenode = node->next;
-			deleteRain(node);
-			node = savenode;
-			continue;
-		    }
-		}
-	    }
-	}
-    }
-    if (node->pos[1] < -20.0f) {
-	//rain drop is below the visible area
-	Raindrop *savenode = node->next;
-	deleteRain(node);
-	node = savenode;
-	continue;
-    }
-    node = node->next;
-}
-if (maxrain < n)
-    maxrain = n;
-    }
 
 void physics()
 {
-	if (g.showBigfoot) {
+	/*if (g.showBigfoot) {
 		moveBigfoot();
 		for (int i = 0; i < 2; i++) 
 			g.tex.xc[i] += 0.003;
-	}
-	if (g.showRain)
-		checkRaindrops();
+	}*/
 	if (player.move) {
-		// enable character move
-		recordTime(&timeCurrent);
-		double timeSpan = timeDiff(&moveTime, &timeCurrent);
-		if (timeSpan > player.delay) {
-			++player.currentFrame;
-			if (player.currentFrame >= player.frame_count)
-				player.currentFrame -= player.frame_count;
-			recordTime(&moveTime);
+		animateCharacter(&player, &moveTime, &timeCurrent);
+		//moveBigfoot();
+		moveCharacter(&player, &g);
+		if (player.pos[0] == (float)(g.xres*0.5 - 
+					player.img.width / player.frame_count)) {
+			for (int i = 0; i < 2; i++) 
+				g.tex.xc[i] += 0.003;
 		}
 	}
-}
-
-void drawUmbrella()
-{
-    //Log("drawUmbrella()...\n");
-    if (umbrella.shape == UMBRELLA_FLAT) {
-	glColor4f(1.0f, 0.2f, 0.2f, 0.5f);
-	glLineWidth(8);
-	glBegin(GL_LINES);
-	glVertex2f(umbrella.pos[0]-umbrella.width2, umbrella.pos[1]);
-	glVertex2f(umbrella.pos[0]+umbrella.width2, umbrella.pos[1]);
-	glEnd();
-	glLineWidth(1);
-    } else {
-	glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-	glPushMatrix();
-	glTranslatef(umbrella.pos[0],umbrella.pos[1],umbrella.pos[2]);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glBindTexture(GL_TEXTURE_2D, g.umbrellaTexture);
-	glBegin(GL_QUADS);
-	float w = umbrella.width2;
-	glTexCoord2f(0.0f, 0.0f); glVertex2f(-w,  w);
-	glTexCoord2f(1.0f, 0.0f); glVertex2f( w,  w);
-	glTexCoord2f(1.0f, 1.0f); glVertex2f( w, -w);
-	glTexCoord2f(0.0f, 1.0f); glVertex2f(-w, -w);
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_ALPHA_TEST);
-	glPopMatrix();
-    }
-}
-
-void drawRaindrops()
-{
-    Raindrop *node = rainhead;
-    while (node) {
-	glPushMatrix();
-	glTranslated(node->pos[0],node->pos[1],node->pos[2]);
-	glColor4fv(node->color);
-	glLineWidth(node->linewidth);
-	glBegin(GL_LINES);
-	glVertex2f(0.0f, 0.0f);
-	glVertex2f(0.0f, node->length);
-	glEnd();
-	glPopMatrix();
-	node = node->next;
-    }
-    glLineWidth(1);
 }
 
 void render()
@@ -1110,15 +737,16 @@ void render()
 	
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+	glEnd();
+
 	r.bot = g.yres - 20;
 	r.left = 10;
 	r.center = 0;
 
-	glEnd();
 	int widt = 80, xoff = 320, yoff = 300;
 	//showLogo
 	showLogo(g.logoTexture, widt, xoff, yoff);
@@ -1128,46 +756,55 @@ void render()
 
     }
 
-    if (g.showBigfoot) {
+    if (g.play) {
 	//do timer
 	new_clock(r);	
 	
  	//BACKGROUND GOES HERE
+	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 1.0, 1.0); // white
 	glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
 	glBegin(GL_QUADS);
-		glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
-		glTexCoord2f(g.tex.xc[0], g.tex.yc[0]); glVertex2i(0, g.yres);	
-		glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);	
-		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
+	    glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
+	    glTexCoord2f(g.tex.xc[0], g.tex.yc[0]); glVertex2i(0, g.yres);	
+	    glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);	
+	    glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
 	glEnd();
-
+	//show ground
+	glBegin(GL_QUADS);
+		// dark grey
+		glColor3f(0.2, 0.2, 0.2);
+		glVertex2i(0, g.floor.height);
+		//glVertex2i(0, g.yres*0.05);
+		glVertex2i(g.floor.width, g.floor.height);
+		//glVertex2i(g.xres, g.yres*0.05);
+		// lighter grey
+		glColor3f(0.4, 0.4, 0.4);
+		glVertex2i(g.floor.width, 0);
+		//glVertex2i(g.xres, 0);
+		glVertex2i(0, 0);
+	glEnd();
 	//PLAYER CHARACTER GOES HERE
+	// enabling the next two will clear the background
 	//glClearColor(0.1, 0.1, 0.1, 1.0);
 	//glClear(GL_COLOR_BUFFER_BIT);
 	
-	float cx = g.xres*0.13;
-	float cy = g.yres*0.13;
-	//show ground
-	glBegin(GL_QUADS);
-		glColor3f(0.2, 0.2, 0.2);
-		glVertex2i(0, g.yres*0.05);
-		glVertex2i(g.xres, g.yres*0.05);
-		glColor3f(0.4, 0.4, 0.4);
-		glVertex2i(g.xres, 0);
-		glVertex2i(0, 0);
-	glEnd();
+	float cx = g.xres*0.1;
+	float cy = g.yres*0.1;
 	float h = g.yres*0.08;
 	float w = g.xres*0.08;
 	//float h = player.img.height;
 	//float w = player.img.width / player.frame_count;
 	//
 	glPushMatrix();
+	glTranslatef(player.pos[0], player.pos[1], player.pos[2]);
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, player.glTexture);
-	//
+	// enable alpha testing
 	glEnable(GL_ALPHA_TEST);
+	// specify alpha comparison func and referenece value that incoming
+	// alpha values are to be compared to
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255, 255, 255, 255);
 	// denominator corresponds to # of frames
@@ -1177,6 +814,7 @@ void render()
 	int iy = 0;
 	if (player.currentFrame >= player.frame_count)
 		iy = 1;
+	// width percentage for sprite 
 	float tx = (float)ix / (float)player.frame_count;
 	float ty = (float)iy / 2.0;
 	// x_off is percentage that each frame takes up in the sprite sheet
@@ -1189,9 +827,14 @@ void render()
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
+
 	showPicture(obsTexture, 550, 100);
-	bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
-/*	if (!collision)
+	/*player.pos[0] = tx;
+	player.pos[1] = ty;
+	player.pos[2] = 10;
+	drawcircle(player.pos);*/
+	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
+	/*if (!collision)
 	{
 		//end game
 	}*/
@@ -1231,22 +874,19 @@ void render()
 	}*/
 	glDisable(GL_ALPHA_TEST);
     }
-    if(g.showCredits)
-    {
+    if (g.showCredits) {
 	//keep trees in background
 	r.bot = g.yres - 20;
 	r.left = 10;
 	r.center = 0;
     	glClearColor(1.0, 1.0, 1.0, 1.0);
-    	//glClearColor(1.0, 1.0, 1.0, 1.0);
     	glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
 	glEnd();
 	
 	//show the credits and credit pictures
@@ -1257,20 +897,19 @@ void render()
 	showPicture(agTexture, 220, 350);
 
     }
-    if (g.highScore)
-    {
+    if (g.highScore) {
 	//glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(1.0, 1.0, 1.0, 1.0);
     	//glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, g.forestTexture);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-	r.bot = g.yres - 20;
-	r.left = 10;
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+	//r.bot = g.yres - 20;
+	//r.left = 10;
 	r.center = 0;
 	glEnd();
 	
@@ -1279,20 +918,15 @@ void render()
 	char tmp[20] = "";
 	parseScores(r, g.buf, tmp);
     }
-    if (g.showPauseScreen)
-    {
+    if (g.showPauseScreen) {
 	showPause(r, g.forestTexture, g.xres, g.yres);
     }
-    glDisable(GL_TEXTURE_2D);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    if (g.showRain)
-	drawRaindrops();
-    glDisable(GL_BLEND);
-    glEnable(GL_TEXTURE_2D);
+    //glDisable(GL_TEXTURE_2D);
+    //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glDisable(GL_BLEND);
+    //glEnable(GL_TEXTURE_2D);
     //
-    if (g.showUmbrella)
-	drawUmbrella();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
