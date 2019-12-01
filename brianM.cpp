@@ -10,6 +10,7 @@
 #include "fonts.h"
 #include "timers.h"
 #include "Player.h"
+#include "Global.h"
 #include <math.h>
 #include <time.h>
 #include <stdio.h>
@@ -113,9 +114,18 @@ void cleanupAudio(ALuint *alBuffer, ALuint *alSource, int n)
 }
 #endif
 
-void moveCharacter()
+void moveCharacter(Player *player, const Global *g)
 {
-
+	int addgrav = 1;
+	Player *p = player;
+	p->pos[0] += p->vel[0];
+	p->pos[1] += p->vel[1];
+	//Check for collision with window edges
+	if ((p->pos[0] > (g->xres*0.5 - p->img.width / p->frame_count)
+				&& p->vel[0] > 0.0))
+		p->pos[0] = g->xres*0.5 - (p->img.width / p->frame_count);
+	if (addgrav)
+		p->vel[1] -= 0.75;
 }
 
 void animateCharacter(Player *player, struct timespec *moveTime, 

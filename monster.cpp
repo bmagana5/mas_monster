@@ -57,7 +57,7 @@ extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Rect);
 extern bool checkCollision(int, int, float, int, int, float);
 extern void drawcircle(Vec);
-extern void moveCharacter(Player *, Global);
+extern void moveCharacter(Player *, const Global *);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
@@ -617,6 +617,7 @@ int checkKeys(XEvent *e)
 	    }
 	    break;
 	case XK_space:
+	    player.vel[1] = 12.0;
 	    break;
 	case XK_c:
 	    if (!g.play && !g.showPauseScreen && !g.highScore) {
@@ -690,29 +691,6 @@ Flt VecNormalize(Vec vec)
 
 void moveBigfoot()
 {
-/*
-    //move bigfoot...
-    int addgrav = 1;
-    //Update position
-    bigfoot.pos[0] += bigfoot.vel[0];
-    bigfoot.pos[1] += bigfoot.vel[1];
-    //Check for collision with window edges
-    if ((bigfoot.pos[0] < -140.0 && bigfoot.vel[0] < 0.0) ||
-	    (bigfoot.pos[0] >= (float)g.xres+140.0 &&
-	     bigfoot.vel[0] > 0.0))
-    {
-	bigfoot.vel[0] = -bigfoot.vel[0];
-	addgrav = 0;
-    }
-    if ((bigfoot.pos[1] < 150.0 && bigfoot.vel[1] < 0.0) ||
-	    (bigfoot.pos[1] >= (float)g.yres && bigfoot.vel[1] > 0.0)) {
-	bigfoot.vel[1] = -bigfoot.vel[1];
-	addgrav = 0;
-    }
-    //Gravity?
-    if (addgrav)
-	bigfoot.vel[1] -= 0.75;
-*/
 	player.pos[0] += player.vel[0];
 	//Check for collision with window edges
 	if ((player.pos[0] > (g.xres*0.5 - player.img.width / player.frame_count) 
@@ -731,8 +709,8 @@ void physics()
 	}*/
 	if (player.move) {
 		animateCharacter(&player, &moveTime, &timeCurrent);
-		moveBigfoot();
-		//moveCharacter(&player, g);
+		//moveBigfoot();
+		moveCharacter(&player, &g);
 		if (player.pos[0] == (float)(g.xres*0.5 - 
 					player.img.width / player.frame_count)) {
 			for (int i = 0; i < 2; i++) 
@@ -788,10 +766,10 @@ void render()
 	glColor3f(1.0, 1.0, 1.0); // white
 	glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
 	glBegin(GL_QUADS);
-		glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
-		glTexCoord2f(g.tex.xc[0], g.tex.yc[0]); glVertex2i(0, g.yres);	
-		glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);	
-		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
+	    glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
+	    glTexCoord2f(g.tex.xc[0], g.tex.yc[0]); glVertex2i(0, g.yres);	
+	    glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);	
+	    glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
 	glEnd();
 	//show ground
 	glBegin(GL_QUADS);
