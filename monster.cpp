@@ -716,16 +716,11 @@ void moveBigfoot()
 
 void physics()
 {
-	/*if (g.showBigfoot) {
-		moveBigfoot();
-		for (int i = 0; i < 2; i++) 
-			g.tex.xc[i] += 0.003;
-	}*/
 	if (player.move) {
 		animateCharacter(&player, &moveTime, &timeCurrent);
 		//moveBigfoot();
 		moveCharacter(&player, &g);
-		if (player.pos[0] == (float)(g.xres*0.5 - player.width)) {
+		if (player.pos[0] == (float)(g.xres*0.5 - player.width*2.0)) {
 			for (int i = 0; i < 2; i++) 
 				g.tex.xc[i] += 0.003;
 		}
@@ -762,11 +757,11 @@ void render()
 
 	int widt = 80, xoff = 320, yoff = 300;
 	//showLogo
-    glPushMatrix();
+	glPushMatrix();
 	showLogo(g.logoTexture, widt, xoff, yoff);
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GREATER, 0.0f);
-    glColor4ub(1.0, 1.0, 1.0, 1.0);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(1.0, 1.0, 1.0, 1.0);
 
 	//print menu options
 	showMenu(r);
@@ -834,10 +829,10 @@ void render()
 	// x_off is percentage that each frame takes up in the sprite sheet
 	float x_off = 1.0 / (float)p->frame_count;
 	glBegin(GL_QUADS);
-		glTexCoord2f(tx, ty+1.0);	glVertex2i(cx-p->width, cy-p->height);
-		glTexCoord2f(tx, ty);		glVertex2i(cx-p->width, cy+p->height);
-		glTexCoord2f(tx+x_off, ty);	glVertex2i(cx+p->width, cy+p->height);
-		glTexCoord2f(tx+x_off, ty+1.0);	glVertex2i(cx+p->width, cy-p->height);
+		glTexCoord2f(tx, ty+1.0);	glVertex2i(cx-p->width*2.0, cy-p->height*2.0);
+		glTexCoord2f(tx, ty);		glVertex2i(cx-p->width*2.0, cy+p->height*2.0);
+		glTexCoord2f(tx+x_off, ty);	glVertex2i(cx+p->width*2.0, cy+p->height*2.0);
+		glTexCoord2f(tx+x_off, ty+1.0);	glVertex2i(cx+p->width*2.0, cy-p->height*2.0);
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);

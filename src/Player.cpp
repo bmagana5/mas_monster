@@ -15,9 +15,10 @@ Player::Player(const char *file)
 	// unique, so adjust according to # of frames in sprite
 	frame_count = 8;
 	delay = 0.1;
+	size_rate = 0.06;
 	// using image height and width to determine player ingame dimmensions
-	height = img.height*0.6;
-	width = img.width / frame_count;
+	height = img.height*size_rate*0.5;
+	width = (img.width/frame_count)*0.5;
 	size_with_screen = 0;
 	/*xpos = ;
 	ypos = ;*/
@@ -36,8 +37,8 @@ Player::Player(const char *file, const Global *g)
 	/* adjust height and width of character here
 	 relative to game screen */
 	size_rate = 0.06;
-	height = g->yres*size_rate;
-	width = g->xres*size_rate;
+	height = g->yres*size_rate*0.5;
+	width = g->xres*size_rate*0.5;
 	size_with_screen = 1;
 	/*xpos = ;
 	ypos = ;*/
