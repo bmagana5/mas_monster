@@ -51,3 +51,12 @@ void showAngelaPicture (int x, int y, float tx, float ty, GLuint picid)
  * 5. Apply the fix then test your program.
  *
 */
+/*
+void showNewLogo(GLuint logoid, int widt, int xoff, int yoff)
+{
+    glBindTexture(GL_Texture_2D, logoid);
+    glBegin(GL_QUADS);
+
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex2i(-widt+xoff, -widt+yoff);
+}*/

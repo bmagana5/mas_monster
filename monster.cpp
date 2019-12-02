@@ -488,10 +488,10 @@ void initOpengl(void)
     //
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    unsigned char *ltData = buildAlphaData(&img[9]);	
+    unsigned char *clearLogoData = buildAlphaData(&img[9]);	
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, ltData);
-    free(ltData);
+	    GL_RGBA, GL_UNSIGNED_BYTE, clearLogoData);
+    free(clearLogoData);
     lgTexture = g.logoTexture;
     //-------------------------------------------------------------------------
     // moving background
@@ -762,7 +762,11 @@ void render()
 
 	int widt = 80, xoff = 320, yoff = 300;
 	//showLogo
+    glPushMatrix();
 	showLogo(g.logoTexture, widt, xoff, yoff);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(1.0, 1.0, 1.0, 1.0);
 
 	//print menu options
 	showMenu(r);
