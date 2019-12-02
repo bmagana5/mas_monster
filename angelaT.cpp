@@ -63,7 +63,7 @@ void showNewLogo(GLuint logoid, int widt, int xoff, int yoff)
 
 void showStump(GLuint stumpid, int xoff, int yoff)
 {
-    int wid = 300;
+    int wid = 64;
 
     glPushMatrix();
     glBindTexture(GL_TEXTURE_2D, stumpid);

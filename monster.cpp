@@ -103,7 +103,7 @@ Image img[15] = {
     "./images/blackbox.jpeg",
     "./images/stump.gif",
     "./images/potato.gif",
-    "./image/butter.gif"
+    "./images/butter.gif"
 };
 
 // pass in Global object to use resolution x and y values to
@@ -357,9 +357,7 @@ void initOpengl(void)
     //	forestImage      = ppm6GetImage("./images/forest.ppm");
     //	forestTransImage = ppm6GetImage("./images/forestTrans.ppm");
     //	umbrellaImage    = ppm6GetImage("./images/umbrella.ppm");
-    //create opegl tex(1, &g.stumpTexture);
-    //    glGenTextures(1, &g.potatoTexture);
-    //        glGenTextures(1, &g.butterTexture);ure elements
+    //create opegl texture elements
     glGenTextures(1, &g.bigfootTexture);
     glGenTextures(1, &g.silhouetteTexture);
     glGenTextures(1, &g.forestTexture);
@@ -372,6 +370,9 @@ void initOpengl(void)
     glGenTextures(1, &g.tex.backTexture);
     glGenTextures(1, &player.glTexture);
     glGenTextures(1, &g.obsTexture);
+    glGenTextures(1, &g.stumpTexture);
+    glGenTextures(1, &g.potatoTexture);
+    glGenTextures(1, &g.butterTexture);
     //-------------------------------------------------------------------------
     //bigfoot
     //
@@ -760,13 +761,10 @@ void render()
 	r.left = 10;
 	r.center = 0;
 
-	int widt = 80, xoff = 320, yoff = 300;
+	int widt = 110, xoff = 320, yoff = 300;
 	//showLogo
-	glPushMatrix();
 	showLogo(g.logoTexture, widt, xoff, yoff);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(1.0, 1.0, 1.0, 1.0);
+	
 
 	//print menu options
 	showMenu(r);
@@ -846,9 +844,9 @@ void render()
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-    showStump(stumpTexture, 550, 100);
+	
 	showPicture(obsTexture, 550, 100);
+	showStump(stumpTexture, 550, 80);
 	/*player.pos[0] = tx;
 	player.pos[1] = ty;
 	player.pos[2] = 10;
