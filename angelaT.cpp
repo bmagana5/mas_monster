@@ -79,3 +79,43 @@ void showStump(GLuint stumpid, int xoff, int yoff)
     glPopMatrix();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void showPotato(GLuint potatoTex, int xoff, int yoff) 
+{
+    int wid = 32;
+
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, potatoTex);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid+xoff, -wid+yoff);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid+xoff, wid+yoff);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(wid+xoff, wid+yoff);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i(wid+xoff, -wid+yoff);
+    glEnd();
+    glPopMatrix();
+    glBindTexture(GL_TEXTURE_2D, 0);
+}  
+
+void showButter(GLuint butterTex, int xoff, int yoff) 
+{
+    int wid = 32;
+
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, butterTex);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid+xoff, -wid+yoff);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid+xoff, wid+yoff);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(wid+xoff, wid+yoff);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i(wid+xoff, -wid+yoff);
+    glEnd();
+    glPopMatrix();
+    glBindTexture(GL_TEXTURE_2D, 0);
+}  
+
+

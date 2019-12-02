@@ -60,6 +60,8 @@ extern void drawcircle(Vec);
 extern void moveCharacter(Player *, const Global *);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
 extern void showStump(GLuint, int, int);
+extern void showPotato(GLuint, int, int);
+extern void showButter(GLuint, int, int);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -123,6 +125,8 @@ GLuint agTexture;
 GLuint lgTexture;
 GLuint obsTexture;
 GLuint stumpTexture;
+GLuint potatoTexture;
+GLuint butterTexture;
 
 class Bigfoot {
     public:
@@ -540,6 +544,39 @@ void initOpengl(void)
     free(clearStumpData);
     stumpTexture = g.stumpTexture;
     //------------------------------------------------------------------------
+    // potato
+
+    w = 32;
+    h = 32;
+    glBindTexture(GL_TEXTURE_2D, g.potatoTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // alpha data
+
+    unsigned char *clearPotatoData = buildAlphaData(&img[13]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, clearPotatoData);
+    free(clearPotatoData);
+    potatoTexture = g.potatoTexture;
+    //------------------------------------------------------------------------
+    // butter
+
+    w = 32;
+    h = 32;
+    glBindTexture(GL_TEXTURE_2D, g.butterTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // alpha data
+
+    unsigned char *clearButterData = buildAlphaData(&img[14]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, clearButterData);
+    free(clearButterData);
+    butterTexture = g.butterTexture;
+    //------------------------------------------------------------------------
+ 
     // obstacle 
     w = 10;
     h = 10;
@@ -847,6 +884,12 @@ void render()
 	
 	showPicture(obsTexture, 550, 100);
 	showStump(stumpTexture, 550, 80);
+    
+    //showPotato(texture, xoff, yoff);
+    showPotato(potatoTexture, 550, 50);
+    showButter(butterTexture, 0, 0);
+
+
 	/*player.pos[0] = tx;
 	player.pos[1] = ty;
 	player.pos[2] = 10;
