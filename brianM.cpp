@@ -126,11 +126,12 @@ void moveCharacter(Player *player, const Global *g)
 	// 85% of character's height 
 	// (account for the pixels at the bottom of dracula that aren't part of him)
 	if (addgrav) {
-		if (p->pos[1] + p->height*0.85 >= g->floor.center[1] + g->floor.height)
+		if (p->pos[1] + p->height*2.0*0.85 >= g->floor.center[1] + g->floor.height)
 			p->vel[1] -= 1.5;
-		else if (p->pos[1] - p->height*0.85 < 
+		else if (p->pos[1] - p->height*2.0*0.85 < 
 				(g->floor.center[1] + g->floor.height)) {	
-			p->pos[1] = (g->floor.center[1] + g->floor.height) - p->height*0.85; 
+			p->pos[1] = (g->floor.center[1] + g->floor.height) 
+				- p->height*2.0*0.85; 
 			if (p->jumping)
 				p->jumping = 0;
 		}

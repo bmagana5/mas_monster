@@ -560,7 +560,7 @@ void init() {
     collision1.pos[1] = 550;
     // initialize position and velocity of player
     // please handle the next function call with care :)
-    MakeVector(player.width, g.floor.center[1] + g.floor.height - player.height*0.85, 
+    MakeVector(g.xres*0.01, g.floor.center[1] + g.floor.height - player.height*2.0*0.85, 
 		    0.0, player.pos);
     //MakeVector(g.xres*0.01, g.yres*0.008, 0.0, player.pos);
     MakeVector(6.0,0.0,0.0, player.vel);
@@ -829,10 +829,14 @@ void render()
 	// x_off is percentage that each frame takes up in the sprite sheet
 	float x_off = 1.0 / (float)p->frame_count;
 	glBegin(GL_QUADS);
-		glTexCoord2f(tx, ty+1.0);	glVertex2i(cx-p->width*2.0, cy-p->height*2.0);
-		glTexCoord2f(tx, ty);		glVertex2i(cx-p->width*2.0, cy+p->height*2.0);
-		glTexCoord2f(tx+x_off, ty);	glVertex2i(cx+p->width*2.0, cy+p->height*2.0);
-		glTexCoord2f(tx+x_off, ty+1.0);	glVertex2i(cx+p->width*2.0, cy-p->height*2.0);
+		glTexCoord2f(tx, ty+1.0);
+		glVertex2i(cx-p->width*2.0, cy-p->height*2.0);
+		glTexCoord2f(tx, ty);
+		glVertex2i(cx-p->width*2.0, cy+p->height*2.0);
+		glTexCoord2f(tx+x_off, ty);
+		glVertex2i(cx+p->width*2.0, cy+p->height*2.0);
+		glTexCoord2f(tx+x_off, ty+1.0);	
+		glVertex2i(cx+p->width*2.0, cy-p->height*2.0);
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
