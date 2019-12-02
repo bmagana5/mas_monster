@@ -14,7 +14,7 @@
 //Gracelove Simons
 //Krystal Raines
 //
-//
+// top
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +59,7 @@ extern bool checkCollision(int, int, float, int, int, float);
 extern void drawcircle(Vec);
 extern void moveCharacter(Player *, const Global *);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
+extern void showStump(GLuint, int, int);
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -87,7 +88,7 @@ ALuint alSource[TOTAL_SOUNDS];
 
 Global g;
 
-Image img[12] = {
+Image img[15] = {
     "./images/bigfoot.png",
     "./images/creepyforest.jpg",
     "./images/forestTrans.png",
@@ -99,7 +100,10 @@ Image img[12] = {
     "./images/angelapic.png",
     "./images/monsterDash_logo_blkbg.gif",
     "./images/pixelforest.jpg",
-    "./images/blackbox.jpeg"
+    "./images/blackbox.jpeg",
+    "./images/stump.gif",
+    "./images/potato.gif",
+    "./image/butter.gif"
 };
 
 // pass in Global object to use resolution x and y values to
@@ -118,7 +122,7 @@ GLuint krTexture;
 GLuint agTexture;
 GLuint lgTexture;
 GLuint obsTexture;
-
+GLuint stumpTexture;
 
 class Bigfoot {
     public:
@@ -353,7 +357,9 @@ void initOpengl(void)
     //	forestImage      = ppm6GetImage("./images/forest.ppm");
     //	forestTransImage = ppm6GetImage("./images/forestTrans.ppm");
     //	umbrellaImage    = ppm6GetImage("./images/umbrella.ppm");
-    //create opengl texture elements
+    //create opegl tex(1, &g.stumpTexture);
+    //    glGenTextures(1, &g.potatoTexture);
+    //        glGenTextures(1, &g.butterTexture);ure elements
     glGenTextures(1, &g.bigfootTexture);
     glGenTextures(1, &g.silhouetteTexture);
     glGenTextures(1, &g.forestTexture);
@@ -366,10 +372,6 @@ void initOpengl(void)
     glGenTextures(1, &g.tex.backTexture);
     glGenTextures(1, &player.glTexture);
     glGenTextures(1, &g.obsTexture);
-   // glGenTextures(1, &ob[0].glTexture);
-   // glGenTextures(1, &ob[1].glTexture);
-   // glGenTextures(1, &ob[2].glTexture);
-    
     //-------------------------------------------------------------------------
     //bigfoot
     //
@@ -521,18 +523,21 @@ void initOpengl(void)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 		    GL_RGBA, GL_UNSIGNED_BYTE, playerData);
     //------------------------------------------------------------------------
-    // obstacles
-    /*w = ob[0].img.width;
-    h = ob[0].img.height;
-    glBindTexture(GL_TEXTURE_2D, ob.glTexture);
+    // stump
+
+    w = 64;
+    h = 64;
+    glBindTexture(GL_TEXTURE_2D, g.stumpTexture);
     //
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //
-    // must build a new set of data to include alpha val in rgba...
-    unsigned char *playerData = buildAlphaData(&player.img);
+    // alpha data
+
+    unsigned char *clearStumpData = buildAlphaData(&img[12]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, playerData);*/
+            GL_RGBA, GL_UNSIGNED_BYTE, clearStumpData);
+    free(clearStumpData);
+    stumpTexture = g.stumpTexture;
     //------------------------------------------------------------------------
     // obstacle 
     w = 10;
@@ -768,6 +773,7 @@ void render()
 
     }
 
+    //render play
     if (g.play) {
 	//do timer
 	new_clock(r);	
@@ -841,6 +847,7 @@ void render()
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+    showStump(stumpTexture, 550, 100);
 	showPicture(obsTexture, 550, 100);
 	/*player.pos[0] = tx;
 	player.pos[1] = ty;
@@ -853,6 +860,8 @@ void render()
 	}*/
 	glDisable(GL_ALPHA_TEST);
     }
+    
+    //render credits
     if (g.showCredits) {
 	//keep trees in background
 	r.bot = g.yres - 20;

@@ -60,3 +60,22 @@ void showNewLogo(GLuint logoid, int widt, int xoff, int yoff)
     glTexCoord2f(0.0f, 1.0f);
     glVertex2i(-widt+xoff, -widt+yoff);
 }*/
+
+void showStump(GLuint stumpid, int xoff, int yoff)
+{
+    int wid = 300;
+
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, stumpid);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid+xoff, -wid+yoff);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid+xoff, wid+yoff);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(wid+xoff, wid+yoff);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i(wid+xoff, -wid+yoff);
+    glEnd();
+    glPopMatrix();
+    glBindTexture(GL_TEXTURE_2D, 0);
+}

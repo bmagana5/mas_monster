@@ -23,6 +23,9 @@ class Global {
 		GLuint angelaTexture;
 		GLuint logoTexture;
 		GLuint obsTexture;
+		GLuint stumpTexture;
+		GLuint potatoTexture;
+		GLuint butterTexture;
 		int play;
 		int showBigfoot;
 		int forest;
