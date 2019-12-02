@@ -17,10 +17,11 @@ Global::Global()
 	showCredits=0;
 	highScore=0;
 	
-	floor.width = xres; 	  // floor has width of x-axis res
-	floor.height = yres*0.04; // height of floor is only 4% of y-axis res
-	floor.center[0] = floor.width/2;
-	floor.center[1] = floor.height/2;
+	floor.center[0] = xres*0.5;
+	floor.center[1] = yres*0.02;
+	floor.width = floor.center[0]*2; // floor width is half of x-axis res
+	floor.height = floor.center[1]*2; // height of floor will be 4% of y-axis res
+	
 }
 
 Global::~Global()
@@ -28,4 +29,11 @@ Global::~Global()
 	logClose();
 }
 
+void Global::resizeObjects()
+{
+	floor.center[0] = xres*0.5;
+	floor.center[1] = yres*0.02;
+	floor.width = floor.center[0]*2; // floor width is half of x-axis res
+	floor.height = floor.center[1]*2; // height of floor will be 4% of y-axis res
+}
 #endif

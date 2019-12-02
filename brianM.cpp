@@ -121,11 +121,17 @@ void moveCharacter(Player *player, const Global *g)
 	p->pos[0] += p->vel[0];
 	p->pos[1] += p->vel[1];
 	//Check for collision with window edges
-	if ((p->pos[0] > (g->xres*0.5 - p->img.width / p->frame_count)
-				&& p->vel[0] > 0.0))
-		p->pos[0] = g->xres*0.5 - (p->img.width / p->frame_count);
-	if (addgrav)
-		p->vel[1] -= 0.75;
+	if ((p->pos[0] > (g->xres*0.5 - p->width) && p->vel[0] > 0.0))
+		p->pos[0] = g->xres*0.5 - p->width;
+	// 85% of character's height 
+	// (account for the pixels at the bottom of dracula that aren't part of him)
+	if (addgrav && p->pos[1] + p->height*0.85 >= g->floor.center[1] + g->floor.height)
+		p->vel[1] -= 1.5;
+	else if (p->pos[1] - p->height*0.85 < (g->floor.center[1] + g->floor.height)) {	
+		p->pos[1] = (g->floor.center[1] + g->floor.height) - p->height*0.85; 
+		if (p->jumping)
+			p->jumping = 0;
+	}
 }
 
 void animateCharacter(Player *player, struct timespec *moveTime, 
