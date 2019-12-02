@@ -120,17 +120,20 @@ void moveCharacter(Player *player, const Global *g)
 	Player *p = player;
 	p->pos[0] += p->vel[0];
 	p->pos[1] += p->vel[1];
-	//Check for collision with window edges
-	if ((p->pos[0] > (g->xres*0.5 - p->width) && p->vel[0] > 0.0))
-		p->pos[0] = g->xres*0.5 - p->width;
+	//Check for collision with top of floor 
+	if ((p->pos[0] > (g->xres*0.5 - p->width*2.0) && p->vel[0] > 0.0))
+		p->pos[0] = g->xres*0.5 - p->width*2.0;
 	// 85% of character's height 
 	// (account for the pixels at the bottom of dracula that aren't part of him)
-	if (addgrav && p->pos[1] + p->height*0.85 >= g->floor.center[1] + g->floor.height)
-		p->vel[1] -= 1.5;
-	else if (p->pos[1] - p->height*0.85 < (g->floor.center[1] + g->floor.height)) {	
-		p->pos[1] = (g->floor.center[1] + g->floor.height) - p->height*0.85; 
-		if (p->jumping)
-			p->jumping = 0;
+	if (addgrav) {
+		if (p->pos[1] + p->height*0.85 >= g->floor.center[1] + g->floor.height)
+			p->vel[1] -= 1.5;
+		else if (p->pos[1] - p->height*0.85 < 
+				(g->floor.center[1] + g->floor.height)) {	
+			p->pos[1] = (g->floor.center[1] + g->floor.height) - p->height*0.85; 
+			if (p->jumping)
+				p->jumping = 0;
+		}
 	}
 }
 
