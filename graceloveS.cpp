@@ -98,7 +98,7 @@ void showPause(Rect r, GLuint textid3, int xres, int yres)
 	glPopMatrix();
 }
 
-void drawcircle(Vec ob1)
+void drawcircle(Vec ob1, float r)
 {
 	// draw the radius on each image
 	// need center: (x,y)
@@ -107,7 +107,7 @@ void drawcircle(Vec ob1)
 	//
 	glBegin(GL_LINE_LOOP);
 	int num_segs = 10;
-	float r = 15.0;
+	//float r = 15.0;
 	for (int i=0; i<num_segs; i++) {
 	    float theta = 2.0f * 3.1415296f * float(i) / float(num_segs);
 

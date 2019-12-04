@@ -56,7 +56,7 @@ extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Global *, struct timespec *);
 extern bool checkCollision(int, int, float, int, int, float);
-extern void drawcircle(Vec);
+extern void drawcircle(Vec, float);
 extern void moveCharacter(Player *, const Global *);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
 extern void showStump(GLuint, int, int);
@@ -891,6 +891,12 @@ void render()
 	
 	showPicture(obsTexture, 550, 100);
 	showStump(stumpTexture, 550, 80);
+	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
+	
+	/*if (!collision)
+	{
+		//end game
+	}*/
     
     	//showPotato(texture, xoff, yoff);
     	showPotato(potatoTexture, 550, 50);
@@ -899,13 +905,9 @@ void render()
 
 	/*player.pos[0] = tx;
 	player.pos[1] = ty;
-	player.pos[2] = 10;
-	drawcircle(player.pos);*/
-	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
-	/*if (!collision)
-	{
-		//end game
-	}*/
+	player.pos[2] = 10;*/
+	drawcircle(player.pos, 15.0);
+	//drawcircle(player.pos, 15.0);
 	glDisable(GL_ALPHA_TEST);
 	//do timer
 	new_clock(&g, &gameclock);	
