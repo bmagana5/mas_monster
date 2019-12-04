@@ -12,6 +12,7 @@
 #include <math.h>
 #include "Player.h"
 #include "defs.h"
+#include "Global.h"
 void displayGracelove(Rect r)
 {
     	r.bot = 250;
@@ -47,7 +48,7 @@ void showPicture(GLuint textid, int xoff, int yoff)
 
 void showLogo(GLuint textid2, int widt, int xoff, int yoff)
 {
-    int len = 200;
+	int len = 200;
 	// show logo
 	glBindTexture(GL_TEXTURE_2D, textid2);
 	glEnable(GL_ALPHA_TEST);
@@ -61,10 +62,12 @@ void showLogo(GLuint textid2, int widt, int xoff, int yoff)
 	glDisable(GL_ALPHA_TEST);
 }
 
-void showMenu(Rect r)
+void showMenu(Rect r, const Global &g)
 {
-    	r.bot = 155;
-	r.left = 260;
+    	//r.bot = 155;
+	//r.left = 260;
+	r.bot = g.yres*0.3;
+	r.left = g.xres*0.4;
 	ggprint8b(&r, 40, 0x00ffff00, "RETURN - Start Game");
 	ggprint8b(&r, 40, 0x00ffff00, "     C - Credits  ");
 	ggprint8b(&r, 40, 0x00ffff00, "  E - Score Board ");

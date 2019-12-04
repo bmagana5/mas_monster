@@ -231,10 +231,8 @@ void new_clock(Global *g, struct timespec *gameclock)
 	static int minutes  = 0;
 	static int hours = 0;
 	Rect r;
-	r.centerx = g->xres*0.75;
-	r.centery = g->yres*0.125;
-	r.top = 20;
-	r.bot = 20;
+	r.bot = g->yres*0.95;
+	r.left = g->xres*0.94;
 	struct timespec currentTime;
 	recordTime(&currentTime);
 	seconds = (int)timeDiff(gameclock, &currentTime);
@@ -248,10 +246,10 @@ void new_clock(Global *g, struct timespec *gameclock)
 		hours++;
 	}
 	char str[80];
-	int n;
-	n = sprintf (str,"%02i:%02i:%02i", hours, minutes, seconds);
-	system("clear");
-	printf ("time: %s %d\n", str, n);
-	//ggprint13(&r, 40, 0xDEADBEEF, "%s", str);
+	//int n;
+	sprintf (str,"%02i:%02i:%02i", hours, minutes, seconds);
+	//system("clear");
+	//printf ("time: %s %d\n", str, n);
+	ggprint13(&r, 40, 0xDEADAFBB, "%s", str);
 }
 //------------------------------RUNNING CLOCK END-----------------------------//

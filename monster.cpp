@@ -51,7 +51,7 @@ extern void showCredits(Rect);
 extern void highScore(char *, char *);
 extern void parseScores(Rect, char *, char *);
 extern void showPicture(GLuint, int, int);
-extern void showMenu(Rect);
+extern void showMenu(Rect, const Global &);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Global *, struct timespec *);
@@ -117,7 +117,8 @@ Player player("images/new_drac_run_sprite.gif", &g);
 Obstacle ob[3] = {
     "./images/stump.gif",
     "./images/potato.gif",
-    "./images/butter.gif"};
+    "./images/butter.gif"
+};
 
 GLuint glTexture;
 GLuint brTexture;
@@ -673,7 +674,7 @@ int checkKeys(XEvent *e)
 	    break;
 	case XK_space:
 	    // hardcoded value for now...
-	    if (!player.jumping) {
+	    if (!player.jumping && g.play) {
 		    player.jumping = 1;
 		    player.vel[1] = 18.0;
 	    }
@@ -806,14 +807,13 @@ void render()
 	
 
 	//print menu options
-	showMenu(r);
+	showMenu(r, g);
+	//showMenu(r);
 
     }
 
     //render play
     if (g.play) {
-	//do timer
-	new_clock(&g, &gameclock);	
 	
  	//BACKGROUND GOES HERE
 	/*glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -892,9 +892,9 @@ void render()
 	showPicture(obsTexture, 550, 100);
 	showStump(stumpTexture, 550, 80);
     
-    //showPotato(texture, xoff, yoff);
-    showPotato(potatoTexture, 550, 50);
-    showButter(butterTexture, 0, 0);
+    	//showPotato(texture, xoff, yoff);
+    	showPotato(potatoTexture, 550, 50);
+    	showButter(butterTexture, 400, 50);
 
 
 	/*player.pos[0] = tx;
@@ -907,6 +907,8 @@ void render()
 		//end game
 	}*/
 	glDisable(GL_ALPHA_TEST);
+	//do timer
+	new_clock(&g, &gameclock);	
     }
     
     //render credits
