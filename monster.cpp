@@ -54,7 +54,7 @@ extern void showPicture(GLuint, int, int);
 extern void showMenu(Rect);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
-extern void new_clock(Rect);
+extern void new_clock(Global *, struct timespec *);
 extern bool checkCollision(int, int, float, int, int, float);
 extern void drawcircle(Vec);
 extern void moveCharacter(Player *, const Global *);
@@ -75,6 +75,7 @@ double timeSpan=0.0;
 unsigned int upause=0;
 struct timespec timeStart, timeEnd, timeCurrent;
 struct timespec timePause, moveTime;
+struct timespec gameclock;
 //-----------------------------------------------------------------------------
 
 //define audio globals
@@ -667,6 +668,7 @@ int checkKeys(XEvent *e)
 		    player.move ^= 1;
 		    g.forest ^= 1;
 		    recordTime(&moveTime);
+		    recordTime(&gameclock);
 	    }
 	    break;
 	case XK_space:
@@ -811,7 +813,7 @@ void render()
     //render play
     if (g.play) {
 	//do timer
-	new_clock(r);	
+	new_clock(&g, &gameclock);	
 	
  	//BACKGROUND GOES HERE
 	/*glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -869,6 +871,11 @@ void render()
 	float ty = (float)iy / 2.0;
 	// x_off is percentage that each frame takes up in the sprite sheet
 	float x_off = 1.0 / (float)p->frame_count;
+	// sprite frame to show when jumping
+	if (player.jumping) {
+		ix = p->frame_count - 1; // use the last one
+		tx = (float)ix / (float)p->frame_count;
+	}
 	glBegin(GL_QUADS);
 		glTexCoord2f(tx, ty+1.0);
 		glVertex2i(cx-p->width*2.0, cy-p->height*2.0);

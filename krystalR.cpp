@@ -8,6 +8,8 @@
 //-------------------------------CREDITS BEGIN--------------------------------//
 
 #include "fonts.h"
+#include "Global.h"
+#include "timers.h"
 #include <GL/glx.h>
 extern void credits(Rect);
 
@@ -222,18 +224,26 @@ void set_to_non_blocking(const int sock)
 #include <stdlib.h>
 #include <iostream>
 
-int seconds = 0;
-int minutes  = 0;
-int hours = 0;
 
-void new_clock(Rect r)
+void new_clock(Global *g, struct timespec *gameclock)
 {
-	seconds++;
-	if (seconds >= 60) {
+	static int seconds = 0;
+	static int minutes  = 0;
+	static int hours = 0;
+	Rect r;
+	r.centerx = g->xres*0.75;
+	r.centery = g->yres*0.125;
+	r.top = 20;
+	r.bot = 20;
+	struct timespec currentTime;
+	recordTime(&currentTime);
+	seconds = (int)timeDiff(gameclock, &currentTime);
+	if (seconds == 60) {
+		recordTime(gameclock);
 		seconds = 0;
 		minutes++;
 	}
-	if (minutes >= 60) {
+	if (minutes == 60) {
 		minutes = 0;
 		hours++;
 	}
@@ -242,5 +252,6 @@ void new_clock(Rect r)
 	n = sprintf (str,"%02i:%02i:%02i", hours, minutes, seconds);
 	system("clear");
 	printf ("time: %s %d\n", str, n);
+	//ggprint13(&r, 40, 0xDEADBEEF, "%s", str);
 }
 //------------------------------RUNNING CLOCK END-----------------------------//
