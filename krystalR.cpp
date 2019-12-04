@@ -232,7 +232,7 @@ void new_clock(Global *g, struct timespec *gameclock)
 	static int hours = 0;
 	Rect r;
 	r.bot = g->yres*0.95;
-	r.left = g->xres*0.94;
+	r.left = g->xres*0.90;
 	struct timespec currentTime;
 	recordTime(&currentTime);
 	seconds = (int)timeDiff(gameclock, &currentTime);

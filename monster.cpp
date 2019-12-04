@@ -907,6 +907,7 @@ void render()
 	player.pos[1] = ty;
 	player.pos[2] = 10;*/
 	drawcircle(player.pos, 15.0);
+	//drawcircle(player.pos, 15.0);
 	glDisable(GL_ALPHA_TEST);
 	//do timer
 	new_clock(&g, &gameclock);	
