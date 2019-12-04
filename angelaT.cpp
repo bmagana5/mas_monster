@@ -71,10 +71,10 @@ void showStump(GLuint stumpid, int xoff, int yoff)
     glAlphaFunc(GL_GREATER, 0.0f);
 
     glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid+xoff, -wid+yoff);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid+xoff, wid+yoff);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i(wid+xoff, wid+yoff);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i(wid+xoff, -wid+yoff);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid+xoff, -wid+yoff); //upper-left
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid+xoff, wid+yoff); //lower-left
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(wid+xoff, wid+yoff); //lower-right
+    glTexCoord2f(1.0f, 1.0f); glVertex2i(wid+xoff, -wid+yoff); //upper-right
     glEnd();
     glPopMatrix();
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -84,7 +84,21 @@ void showPotato(GLuint potatoTex, int xoff, int yoff)
 {
     int wid = 32;
 
+    int x = 0;
+    int y = 10;
+
     glPushMatrix();
+    //glTranslatef(0, 100.0, 0);
+    float fy = 0.0f;
+    static float angle = 0.0f;
+
+    angle += 0.05;
+    fy = sin(angle);
+    //y = y -40;
+
+    glPushMatrix();
+    glTranslatef(x, y + (int)(fy*10.0), 0);
+    
     glBindTexture(GL_TEXTURE_2D, potatoTex);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
@@ -102,8 +116,21 @@ void showPotato(GLuint potatoTex, int xoff, int yoff)
 void showButter(GLuint butterTex, int xoff, int yoff) 
 {
     int wid = 32;
+    int x = 0;
+    int y = 10;
 
     glPushMatrix();
+    //glTranslatef(0, 100.0, 0);
+    float fy = 0.0f;
+    static float angle = 0.0f;
+
+    angle += 0.05;
+    fy = sin(angle);
+    //y = y -40;
+
+    glPushMatrix();
+    glTranslatef(x, y + (int)(fy*10.0), 0);
+ 
     glBindTexture(GL_TEXTURE_2D, butterTex);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);

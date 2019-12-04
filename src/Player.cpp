@@ -36,7 +36,7 @@ Player::Player(const char *file, const Global *g)
 	delay = 0.1;
 	/* adjust height and width of character here
 	 relative to game screen */
-	size_rate = 0.06;
+	size_rate = 0.08;
 	height = g->yres*size_rate*0.5;
 	width = g->xres*size_rate*0.5;
 	size_with_screen = 1;
