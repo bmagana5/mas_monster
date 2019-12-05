@@ -118,7 +118,6 @@ Image img[15] = {
 //Player player("images/new_drac_run_sprite.gif");
 //Player player("images/skeleton_dance.gif", &g);
 Player player("images/dracula_run.gif", &g);
-//Player player("images/new_drac_run_sprite.gif", &g);
 
 Obstacle ob[3] = {
     "./images/stump.gif",
