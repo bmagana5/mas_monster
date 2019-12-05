@@ -62,6 +62,10 @@ extern void animateCharacter(Player *, struct timespec *, struct timespec *);
 extern void showStump(GLuint, int, int);
 extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
+#ifdef COORD_TEST 
+extern void checkPlayerCoords(Player *);
+extern void checkFloorCoords(Global *);
+#endif
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
 extern void cleanupAudio(ALuint *, ALuint *, int);
@@ -112,7 +116,9 @@ Image img[15] = {
 // pass in Global object to use resolution x and y values to
 // determine player size in game
 //Player player("images/new_drac_run_sprite.gif");
-Player player("images/new_drac_run_sprite.gif", &g);
+//Player player("images/skeleton_dance.gif", &g);
+Player player("images/dracula_run.gif", &g);
+//Player player("images/new_drac_run_sprite.gif", &g);
 
 Obstacle ob[3] = {
     "./images/stump.gif",
@@ -605,10 +611,10 @@ void init() {
     collision1.pos[1] = 550;
     // initialize position and velocity of player
     // please handle the next function call with care :)
-    MakeVector(g.xres*0.01, g.floor.center[1] + g.floor.height - player.height*2.0*0.85, 
+    MakeVector(g.xres*0.01, g.floor.center[1] + g.floor.height + player.height, 
 		    0.0, player.pos);
     //MakeVector(g.xres*0.01, g.yres*0.008, 0.0, player.pos);
-    MakeVector(6.0,0.0,0.0, player.vel);
+    MakeVector(player.width*0.4, 0.0, 0.0, player.vel);
 }
 
 void checkMouse(XEvent *e)
@@ -639,11 +645,11 @@ void checkMouse(XEvent *e)
 int checkKeys(XEvent *e)
 {
     //keyboard input?
-    static int shift=0;
+    //static int shift=0;
     if (e->type != KeyPress && e->type != KeyRelease)
 	return 0;
     int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
-    if (e->type == KeyRelease) {
+    /*if (e->type == KeyRelease) {
 	if (key == XK_Shift_L || key == XK_Shift_R)
 	    shift=0;
 	return 0;
@@ -651,7 +657,7 @@ int checkKeys(XEvent *e)
     if (key == XK_Shift_L || key == XK_Shift_R) {
 	shift=1;
 	return 0;
-    }
+    }*/
 
     switch (key) {
 	case XK_e:
@@ -766,7 +772,7 @@ void physics()
 		animateCharacter(&player, &moveTime, &timeCurrent);
 		//moveBigfoot();
 		moveCharacter(&player, &g);
-		if (player.pos[0] == (float)(g.xres*0.5 - player.width*2.0)) {
+		if (player.pos[0] == (float)g.xres*0.5) {
 			for (int i = 0; i < 2; i++) 
 				g.tex.xc[i] += 0.003;
 		}
@@ -830,11 +836,11 @@ void render()
 	glBegin(GL_QUADS);
 		// dark grey
 		glColor3f(0.2, 0.2, 0.2);
-		glVertex2i(0, g.floor.height);
-		glVertex2i(g.floor.width, g.floor.height);
+		glVertex2i(0, g.floor.height*2.0);
+		glVertex2i(g.floor.width*2.0, g.floor.height*2.0);
 		// lighter grey
 		glColor3f(0.4, 0.4, 0.4);
-		glVertex2i(g.floor.width, 0);
+		glVertex2i(g.floor.width*2.0, 0);
 		glVertex2i(0, 0);
 	glEnd();
 	//PLAYER CHARACTER GOES HERE
@@ -850,7 +856,7 @@ void render()
 	//float w = g.xres*0.08;
 	
 	glPushMatrix();
-	glTranslatef(p->pos[0], p->pos[1], p->pos[2]);
+	glTranslatef(p->pos[0] - p->width*2.0, p->pos[1] - p->height*2.0, p->pos[2]);
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, p->glTexture);
 	// enable alpha testing
@@ -873,7 +879,7 @@ void render()
 	float x_off = 1.0 / (float)p->frame_count;
 	// sprite frame to show when jumping
 	if (player.jumping) {
-		ix = p->frame_count - 1; // use the last one
+		ix = p->frame_count - 5; // use the fourth one
 		tx = (float)ix / (float)p->frame_count;
 	}
 	glBegin(GL_QUADS);
@@ -910,7 +916,13 @@ void render()
 	//drawcircle(player.pos, 15.0);
 	glDisable(GL_ALPHA_TEST);
 	//do timer
-	new_clock(&g, &gameclock);	
+	new_clock(&g, &gameclock);
+#ifdef COORD_TEST 
+	// this section can be used for testing collision box
+	// alignment with respective images
+	checkPlayerCoords(&player);
+	checkFloorCoords(&g);
+#endif
     }
     
     //render credits

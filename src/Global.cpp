@@ -19,8 +19,8 @@ Global::Global()
 	
 	floor.center[0] = xres*0.5;
 	floor.center[1] = yres*0.02;
-	floor.width = floor.center[0]*2; // floor width is half of x-axis res
-	floor.height = floor.center[1]*2; // height of floor will be 4% of y-axis res
+	floor.width = floor.center[0]; // floor width is half of x-axis res
+	floor.height = floor.center[1]; // height of floor will be 4% of y-axis res
 	
 }
 
@@ -33,7 +33,7 @@ void Global::resizeObjects()
 {
 	floor.center[0] = xres*0.5;
 	floor.center[1] = yres*0.02;
-	floor.width = floor.center[0]*2; // floor width is half of x-axis res
-	floor.height = floor.center[1]*2; // height of floor will be 4% of y-axis res
+	floor.width = floor.center[0]; // floor width is half of x-axis res
+	floor.height = floor.center[1]; // height of floor will be 4% of y-axis res
 }
 #endif

@@ -121,17 +121,15 @@ void moveCharacter(Player *player, const Global *g)
 	p->pos[0] += p->vel[0];
 	p->pos[1] += p->vel[1];
 	//Check for collision with top of floor 
-	if ((p->pos[0] > (g->xres*0.5 - p->width*2.0) && p->vel[0] > 0.0))
-		p->pos[0] = g->xres*0.5 - p->width*2.0;
+	if ((p->pos[0] > g->xres*0.5 && p->vel[0] > 0.0))
+		p->pos[0] = g->xres*0.5;
 	// 85% of character's height 
 	// (account for the pixels at the bottom of dracula that aren't part of him)
 	if (addgrav) {
-		if (p->pos[1] + p->height*2.0*0.85 >= g->floor.center[1] + g->floor.height)
+		if (p->pos[1] >= g->floor.center[1] + g->floor.height + p->height)
 			p->vel[1] -= 1.5;
-		else if (p->pos[1] - p->height*2.0*0.85 < 
-				(g->floor.center[1] + g->floor.height)) {	
-			p->pos[1] = (g->floor.center[1] + g->floor.height) 
-				- p->height*2.0*0.85; 
+		else if (p->pos[1] < (g->floor.center[1] + g->floor.height) + p->height) {	
+			p->pos[1] = (g->floor.center[1] + g->floor.height) + p->height; 
 			if (p->jumping)
 				p->jumping = 0;
 		}
@@ -149,4 +147,59 @@ void animateCharacter(Player *player, struct timespec *moveTime,
 			player->currentFrame -= player->frame_count;
 		recordTime(moveTime);
 	}
+}
+
+void checkPlayerCoords(Player *player)
+{
+	// this will draw characters on the screen to test 
+	// collision box and character image alignment
+	Player *p = player;
+	Rect re;
+	int color = 0xffffffff;
+	// center
+	re.bot = p->pos[1];
+	re.left = p->pos[0];
+	ggprint12(&re, 10, color, "x");
+	// left bottom
+	re.bot = p->pos[1] - p->height;
+	re.left = p->pos[0] - p->width;
+	ggprint12(&re, 10, color, "1");
+	// right bottom
+	re.bot = p->pos[1] - p->height;
+	re.left = p->pos[0] + p->width;
+	ggprint12(&re, 10, color, "2");
+	// top right
+	re.bot = p->pos[1] + p->height;
+	re.left = p->pos[0] + p->width;
+	ggprint12(&re, 10, color, "3");
+	// top left
+	re.bot = p->pos[1] + p->height;
+	re.left = p->pos[0] - p->width;
+	ggprint12(&re, 10, color, "4");
+}
+
+void checkFloorCoords(Global *g)
+{
+	Rect re;
+	int color = 0xffffffff;
+	// center
+	re.bot = g->floor.center[1];
+	re.left = g->floor.center[0];
+	ggprint8b(&re, 10, color, ".");
+	// left bottom
+	re.bot = g->floor.center[1] - g->floor.height;
+	re.left =g->floor.center[0] - g->floor.width;
+	ggprint8b(&re, 10, color, "1");
+	// right bottom
+	re.bot = g->floor.center[1] - g->floor.height;
+	re.left = g->floor.center[0] + g->floor.width;
+	ggprint8b(&re, 10, color, "2");
+	// top right
+	re.bot = g->floor.center[1] + g->floor.height;
+	re.left = g->floor.center[0] + g->floor.width;
+	ggprint8b(&re, 10, color, "3");
+	// top left
+	re.bot = g->floor.center[1] + g->floor.height;
+	re.left = g->floor.center[0] - g->floor.width;
+	ggprint8b(&re, 10, color, "4");
 }
