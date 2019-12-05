@@ -65,7 +65,14 @@ void showStump(GLuint stumpid, int xoff, int yoff)
 {
     int wid = 64;
 
+    static int x = 50;
+    float fx = 0.0f; 
+    fx = 4.2;
+
+    x -= fx;
+
     glPushMatrix();
+    glTranslatef(x - (int)fx, 0, 0);
     glBindTexture(GL_TEXTURE_2D, stumpid);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
