@@ -13,16 +13,11 @@
 #include <GL/glx.h>
 extern void credits(Rect);
 
-void showCredits(Rect r/*, int x, int y, float tx, float ty, GLuint textid*/)
-{
-    //glClearColor(0, 0, 0, 0);
-    //glClear(GL_COLOR_BUFFER_BIT);
+void showCredits(Rect r/*, int x, int y, float tx, float ty, GLuint textid*/) {
     credits(r);
-    //showPicture(x, y, tx, ty, textid);
 }
 
-void printKrystal(Rect r)
-{
+void printKrystal(Rect r) {
     r.bot = 100;
     r.left = 310;
     ggprint8b(&r, 50, 0x00ffff00, "Krystal");
@@ -30,7 +25,11 @@ void printKrystal(Rect r)
 
 //-------------------------------CREDITS END----------------------------------//
 
-
+//---------------------------------HUD BEGIN----------------------------------//
+void showHUD(GLuint hud_id, int xoff, int yoff) {
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
 //--------------------------------PHP BEGIN-----------------------------------//
 //Written by: Gordon Griesel
 //Purpose:    Example of HTTP request using SSL.
