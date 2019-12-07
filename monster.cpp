@@ -59,6 +59,7 @@ extern bool checkCollision(int, int, float, int, int, float);
 extern void drawcircle(Vec, float);
 extern void moveCharacter(Player *, const Global *);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
+extern void displayScore(const Global &, Player *);
 extern void showStump(GLuint, int, int);
 extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
@@ -771,9 +772,10 @@ void physics()
 		animateCharacter(&player, &moveTime, &timeCurrent);
 		//moveBigfoot();
 		moveCharacter(&player, &g);
-		if (player.pos[0] == (float)g.xres*0.5) {
+		if (player.pos[0] == (float)g.xres*0.3) {
 			for (int i = 0; i < 2; i++) 
-				g.tex.xc[i] += 0.003;
+				g.tex.xc[i] += 0.005;
+				//g.tex.xc[i] += 0.003;
 		}
 	}
 }
@@ -916,6 +918,7 @@ void render()
 	glDisable(GL_ALPHA_TEST);
 	//do timer
 	new_clock(&g, &gameclock);
+	displayScore(g, p);
 #ifdef COORD_TEST 
 	// this section can be used for testing collision box
 	// alignment with respective images

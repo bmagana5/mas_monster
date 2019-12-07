@@ -19,6 +19,7 @@ class Player {
 		int width;
 		int size_with_screen;
 		int jumping;
+		int score;
 		Player(const char *file);
 		Player(const char *file, const Global *g);
 		void resize(Global *g);

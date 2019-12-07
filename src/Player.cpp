@@ -11,6 +11,7 @@ Player::Player(const char *file)
 	move = 0;
 	jumping = 0;
 	currentFrame = 0;
+	score = 0;
 	// this value represents frames in a sprite sheet
 	// unique, so adjust according to # of frames in sprite
 	frame_count = 8;
@@ -30,6 +31,7 @@ Player::Player(const char *file, const Global *g)
 	move = 0;
 	jumping = 0;
 	currentFrame = 0;
+	score = 0;
 	// this value represents frames in a sprite sheet
 	// unique, so adjust according to # of frames in sprite
 	frame_count = 8;

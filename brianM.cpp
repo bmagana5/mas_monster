@@ -121,8 +121,8 @@ void moveCharacter(Player *player, const Global *g)
 	p->pos[0] += p->vel[0];
 	p->pos[1] += p->vel[1];
 	//Check for collision with top of floor 
-	if ((p->pos[0] > g->xres*0.5 && p->vel[0] > 0.0))
-		p->pos[0] = g->xres*0.5;
+	if ((p->pos[0] > g->xres*0.3 && p->vel[0] > 0.0))
+		p->pos[0] = g->xres*0.3;
 	// 85% of character's height 
 	// (account for the pixels at the bottom of dracula that aren't part of him)
 	if (addgrav) {
@@ -139,12 +139,22 @@ void moveCharacter(Player *player, const Global *g)
 void animateCharacter(Player *player, struct timespec *moveTime, 
 		struct timespec *timeCurrent)
 {
+	Player *p = player;
 	recordTime(timeCurrent);
 	double timeSpan = timeDiff(moveTime, timeCurrent);
-	if (timeSpan > player->delay) {
-		++player->currentFrame;
-		if (player->currentFrame >= player->frame_count)
-			player->currentFrame -= player->frame_count;
+	if (timeSpan > p->delay) {
+		++p->currentFrame;
+		switch (p->currentFrame % p->frame_count) {
+			// 3rd and 7th frame, player foot touches down
+			// increment score by one for any of these two frames
+			case 3:
+			case 7: p->score++;
+					break;
+			default:
+					break;
+		}
+		if (p->currentFrame >= p->frame_count)
+			p->currentFrame -= p->frame_count;
 		recordTime(moveTime);
 	}
 }
@@ -202,4 +212,18 @@ void checkFloorCoords(Global *g)
 	re.bot = g->floor.center[1] + g->floor.height;
 	re.left = g->floor.center[0] - g->floor.width;
 	ggprint8b(&re, 10, color, "4");
+}
+
+void displayScore(const Global &g, Player *p)
+{
+	Rect r;
+	r.bot = g.yres*0.95;
+	r.left = g.xres*0.7;
+	char string[64];
+	sprintf(string, "SCORE: %05d", p->score);
+	ggprint13(&r, 40, 0xDEADAFBB, "%s", string);
+}
+
+void startGame() 
+{
 }
