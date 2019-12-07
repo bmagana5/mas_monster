@@ -26,21 +26,21 @@ void printKrystal(Rect r) {
 //-------------------------------CREDITS END----------------------------------//
 
 //---------------------------------HUD BEGIN----------------------------------//
-void showHUD(GLuint hud_id, int xoff, int yoff) {
-	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
+
+const int WIDTH = 800;
+const int HEIGHT = 400;
+
+const double PI = 3.14159265;
+
+enum GameState { MENU, GAME, GAMEOVER };
+enum ObjectID { PLAYER, STUMP };
+
 //--------------------------------PHP BEGIN-----------------------------------//
 //Written by: Gordon Griesel
 //Purpose:    Example of HTTP request using SSL.
 //            Used to contact a web server and receive a page as text.
 //Build:
 //  gcc lab3sget.c -Wall -olab3sget -lssl -lcrypto
-//Usage:
-//  ./lab3sget <host> <page>
-
-//The program will contact a web server with host and page, and receive
-//back the page requested or other information.
 
 #include <stdio.h>
 #include <string.h>
@@ -101,8 +101,8 @@ void highScore(char *buf, char *tmpbuf)
     if (connect(sd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
 	BIO_printf(outbio, 
 		"%s: Cannot connect to host %s [%s] on port %d.\n", 
-		//argv[0], hostname, inet_ntoa(addr.sin_addr), port);
-		hostname, inet_ntoa(addr.sin_addr), port);
+		buf, hostname, inet_ntoa(addr.sin_addr), port);
+		//hostname, inet_ntoa(addr.sin_addr), port);
     }
     
     //Connect using the SSL certificate.
