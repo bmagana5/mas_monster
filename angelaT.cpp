@@ -63,20 +63,20 @@ void showNewLogo(GLuint logoid, int widt, int xoff, int yoff)
 
 void showStump(GLuint stumpid, int xoff, int yoff)
 {
-    int wid = 64;
+    int wid = 32;
 
-    static int x = 50;
+    static int x = 25;
     float fx = 0.0f; 
     fx = 4.2;
 
     x -= fx;
+    yoff = yoff-30;
 
     glPushMatrix();
     glTranslatef(x - (int)fx, 0, 0);
     glBindTexture(GL_TEXTURE_2D, stumpid);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
-
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid+xoff, -wid+yoff); //upper-left
     glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid+xoff, wid+yoff); //lower-left
