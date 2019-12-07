@@ -229,6 +229,12 @@ void new_clock(Global *g, struct timespec *gameclock)
 	static int seconds = 0;
 	static int minutes  = 0;
 	static int hours = 0;
+	if (g->time_reset) {
+		seconds = 0;
+		minutes = 0;
+		hours = 0;
+		g->time_reset = 0;
+	}
 	Rect r;
 	r.bot = g->yres*0.95;
 	r.left = g->xres*0.90;

@@ -12,6 +12,7 @@ Global::Global()
 	xres=800; // these next two set window resolution size
 	yres=600;
 	play = 0;
+	time_reset = 0;
 	showBigfoot=0;
 	forest=1;
 	showCredits=0;

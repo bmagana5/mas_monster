@@ -60,6 +60,7 @@ extern void drawcircle(Vec, float);
 extern void moveCharacter(Player *, const Global *);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
 extern void displayScore(const Global &, Player *);
+extern void startGame(Global &, Player *);
 extern void showStump(GLuint, int, int);
 extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
@@ -610,11 +611,7 @@ void init() {
     collision1.pos[0] = 50;
     collision1.pos[1] = 550;
     // initialize position and velocity of player
-    // please handle the next function call with care :)
-    MakeVector(g.xres*0.01, g.floor.center[1] + g.floor.height + player.height, 
-		    0.0, player.pos);
-    //MakeVector(g.xres*0.01, g.yres*0.008, 0.0, player.pos);
-    MakeVector(player.width*0.4, 0.0, 0.0, player.vel);
+	startGame(g, &player);
 }
 
 void checkMouse(XEvent *e)
@@ -645,94 +642,85 @@ void checkMouse(XEvent *e)
 int checkKeys(XEvent *e)
 {
     //keyboard input?
-    //static int shift=0;
+    static int shift=0;
     if (e->type != KeyPress && e->type != KeyRelease)
-	return 0;
-    int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
-    /*if (e->type == KeyRelease) {
-	if (key == XK_Shift_L || key == XK_Shift_R)
-	    shift=0;
-	return 0;
-    }
-    if (key == XK_Shift_L || key == XK_Shift_R) {
-	shift=1;
-	return 0;
-    }*/
+		return 0;
+	int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
+	if (e->type == KeyRelease) {
+		if (key == XK_Shift_L || key == XK_Shift_R)
+			shift=0;
+		return 0;
+	}
+	if (key == XK_Shift_L || key == XK_Shift_R) {
+		shift=1;
+		return 0;
+	}
 
-    switch (key) {
-	case XK_e:
-	    if (!g.play && !g.showCredits && !g.showPauseScreen) {
-		if (!g.highScore) {
-			highScore(g.buf, g.tmpbuf);
-			g.highScore ^= 1;
-		} else g.highScore = 0;
-		g.forest ^= 1;
-	    }	    
-	    break;
-	case XK_Return:
-	    if (!g.play && !g.showPauseScreen && !g.showCredits && !g.highScore) {
-		    g.play ^= 1;
-		    player.move ^= 1;
-		    g.forest ^= 1;
-		    recordTime(&moveTime);
-		    recordTime(&gameclock);
-	    }
-	    break;
-	case XK_space:
-	    // hardcoded value for now...
-	    if (!player.jumping && g.play) {
-		    player.jumping = 1;
-		    player.vel[1] = 18.0;
-	    }
-	    break;
-	case XK_c:
-	    if (!g.play && !g.showPauseScreen && !g.highScore) {
-	    	g.showCredits ^= 1;
-		g.forest ^= 1;
-	    }
-	    break;
-	case XK_d:
-	    break;
-	case XK_p:
-	    if (!g.forest && !g.showCredits && !g.highScore) {
-		    g.showPauseScreen ^= 1;
-		    g.play ^= 1;
-		    player.move ^= 1;
-	    }
-	    break;
-	case XK_s:
-	    break;
-	case XK_t:
-	    break;
-	case XK_u:
-	    break;
-	case XK_f:
-	    break;
-	case XK_r:
-	    if (g.showPauseScreen) {
-		    // reset game 
-	    }
-	    break;
-	case XK_Left:
-	    break;
-	case XK_Right:
-	    break;
-	case XK_Up:
-	    break;
-	case XK_Down:
-	    break;
-	case XK_equal:
-	    break;
-	case XK_minus:
-	    break;
-	case XK_n:
-	    break;
-	case XK_w:
-	    break;
-	case XK_Escape:
-	    return 1;
-	    //break;
-    }
+	switch (key) {
+		case XK_e:
+			if (!g.play && !g.showCredits && !g.showPauseScreen) {
+				g.forest ^= 1;
+				if (!g.highScore) {
+					highScore(g.buf, g.tmpbuf);
+					g.highScore ^= 1;
+				} else g.highScore = 0;
+			}	    
+			break;
+		case XK_Return:
+			if (!g.play && !g.showPauseScreen && !g.showCredits && !g.highScore) {
+				g.play ^= 1;
+				player.move ^= 1;
+				g.forest ^= 1;
+				recordTime(&moveTime);
+				recordTime(&gameclock);
+			}
+			break;
+		case XK_space:
+			if (!player.jumping && g.play) {
+				player.jumping = 1;
+				// hardcoded value for now...
+				player.vel[1] = 19.0;
+			}
+			break;
+		case XK_c:
+			if (!g.play && !g.showPauseScreen && !g.highScore) {
+				g.forest ^= 1;
+				g.showCredits ^= 1;
+			}
+			break;
+		case XK_p:
+			if (!g.forest && !g.showCredits && !g.highScore) {
+				g.showPauseScreen ^= 1;
+				g.play ^= 1;
+				player.move ^= 1;
+			}
+			break;
+		case XK_r:
+			if (g.showPauseScreen) {
+				// reset game
+				startGame(g, &player);
+				g.showPauseScreen ^= 1;
+				g.play ^= 1;
+				player.move ^= 1;
+				// get new time
+				recordTime(&moveTime);
+				recordTime(&gameclock);
+			}
+			break;
+		case XK_m:
+			// used at pause screen
+			// return to main menu
+			if (g.showPauseScreen) {
+				// reset game
+				startGame(g, &player);
+				g.showPauseScreen ^= 1;
+				g.forest ^= 1;
+			}
+			break;
+		case XK_Escape:
+			return 1;
+			//break;
+	}
     return 0;
 }
 

@@ -27,6 +27,7 @@ class Global {
 		GLuint potatoTexture;
 		GLuint butterTexture;
 		int play;
+		int time_reset;
 		int showBigfoot;
 		int forest;
 		int showCredits;

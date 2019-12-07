@@ -224,6 +224,14 @@ void displayScore(const Global &g, Player *p)
 	ggprint13(&r, 40, 0xDEADAFBB, "%s", string);
 }
 
-void startGame() 
+void startGame(Global &g, Player *player) 
 {
+	Player *p = player;
+    // please handle the next function call with care :)
+	MakeVector(g.xres*0.01, 
+			g.floor.center[1] + g.floor.height + p->height, 0.0,
+			p->pos);
+    MakeVector(p->width*0.4, 0.0, 0.0, p->vel);
+	p->score = 0;
+	g.time_reset = 1; // flag to reset game time
 }
