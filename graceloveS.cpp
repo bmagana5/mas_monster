@@ -94,7 +94,8 @@ void showPause(Rect r, GLuint textid3, int xres, int yres)
         r.bot = 300;
         r.left = 250;
         ggprint8b(&r, 40, 0x00ffff44, "P - Resume Game");
-        ggprint8b(&r, 40, 0x00ffff44, "     R - Restart  ");
+        ggprint8b(&r, 40, 0x00ffff44, "     R - Restart");
+        ggprint8b(&r, 40, 0x00ffff44, " M - Main Menu");
 	glPopMatrix();
 }
 
