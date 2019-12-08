@@ -120,17 +120,33 @@ void drawcircle(Vec ob1, float r)
 	glEnd();
 }
 
-bool checkCollision(int x1, int y1, int rad1, int x2, int y2, int rad2)
+bool checkcollision(Vec obj1, float rad1, Vec obj2, float rad2)
 {
 	int xd, yd, Distance;
 
-	xd = x2-x1;
-	yd = y2-y1;
+	xd = obj2[0]-obj1[0];
+	yd = obj2[1]-obj1[1];
 	Distance = sqrt(xd*xd + yd*yd);
 	
 	if (rad1 + rad2 >= Distance)
 		return true;
-
-	return false;
+	else
+		return false;
 }
 
+void showDied(Rect r, GLuint ftexture, int xres, int yres)
+{
+	r.bot = 250;
+	r.left = 300;
+	r.center = 0;
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glBindTexture(GL_TEXTURE_2D, ftexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);	glVertex2i(0,0);
+		glTexCoord2f(0.0f, 0.0f);	glVertex2i(0,yres);
+		glTexCoord2f(1.0f, 0.0f);	glVertex2i(xres,yres);
+		glTexCoord2f(1.0f, 1.0f);	glVertex2i(xres,0);
+	glEnd();
+	ggprint8b(&r, 50, 0x00ffff00, "You Died!!");
+}	

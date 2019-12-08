@@ -55,7 +55,7 @@ extern void showMenu(Rect, const Global &);
 extern void showLogo(GLuint, int, int, int);
 extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Global *, struct timespec *);
-extern bool checkCollision(int, int, float, int, int, float);
+extern bool checkcollision(Vec, float, Vec, float);
 extern void drawcircle(Vec, float);
 extern void moveCharacter(Player *, const Global *);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
@@ -64,6 +64,7 @@ extern void startGame(Global &, Player *);
 extern void showStump(GLuint, int, int);
 extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
+extern void showDied(Rect, GLuint, int, int);
 #ifdef COORD_TEST 
 extern void checkPlayerCoords(Player *);
 extern void checkFloorCoords(Global *);
@@ -884,14 +885,13 @@ void render()
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
-	showPicture(obsTexture, 550, 100);
+	//showPicture(obsTexture, 550, 100);
+	Vec stump;
 	showStump(stumpTexture, 550, 80);
-	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
+	stump[0] = 550;
+	stump[1] = 80;
 	
-	/*if (!collision)
-	{
-		//end game
-	}*/
+
     
     	//showPotato(texture, xoff, yoff);
     	showPotato(potatoTexture, 550, 50);
@@ -902,11 +902,20 @@ void render()
 	player.pos[1] = ty;
 	player.pos[2] = 10;*/
 	drawcircle(player.pos, 15.0);
-	//drawcircle(player.pos, 15.0);
+	drawcircle(stump, 15.0);
+	
 	glDisable(GL_ALPHA_TEST);
 	//do timer
 	new_clock(&g, &gameclock);
 	displayScore(g, p);
+	
+	bool collision = checkcollision(player.pos, 15.0, stump, 15.0);
+	if (collision == true)
+	//if (player.pos[0]==stump[0])
+	{
+		//end game
+		showDied(r, g.forestTexture, g.xres, g.yres);
+	}
 #ifdef COORD_TEST 
 	// this section can be used for testing collision box
 	// alignment with respective images
