@@ -885,7 +885,8 @@ void render()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
 	showPicture(obsTexture, 550, 100);
-	showStump(stumpTexture, 550, 80);
+	if (p->currentFrame % 25 == 0)
+    showStump(stumpTexture, 550, 80);
 	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
 	
 	/*if (!collision)
@@ -894,8 +895,8 @@ void render()
 	}*/
     
     	//showPotato(texture, xoff, yoff);
-    	showPotato(potatoTexture, 550, 50);
-    	showButter(butterTexture, 400, 50);
+    	//showPotato(potatoTexture, 550, 50);
+    	//showButter(butterTexture, 400, 50);
 
 
 	/*player.pos[0] = tx;
