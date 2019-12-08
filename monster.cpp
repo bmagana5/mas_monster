@@ -885,17 +885,24 @@ void render()
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
+
 	//showPicture(obsTexture, 550, 100);
 	Vec stump;
 	showStump(stumpTexture, 550, 80);
 	stump[0] = 550;
 	stump[1] = 80;
+
+	showPicture(obsTexture, 550, 100);
+	if (p->currentFrame % 25 == 0)
+    		showStump(stumpTexture, 550, 80);
+	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
+
 	
 
     
     	//showPotato(texture, xoff, yoff);
-    	showPotato(potatoTexture, 550, 50);
-    	showButter(butterTexture, 400, 50);
+    	//showPotato(potatoTexture, 550, 50);
+    	//showButter(butterTexture, 400, 50);
 
 
 	/*player.pos[0] = tx;
