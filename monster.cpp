@@ -98,7 +98,7 @@ ALuint alSource[TOTAL_SOUNDS];
 
 Global g;
 
-Image img[15] = {
+Image img[14] = {
     "./images/bigfoot.png",
     "./images/creepyforest.jpg",
     "./images/forestTrans.png",
@@ -110,7 +110,7 @@ Image img[15] = {
     "./images/angelapic.png",
     "./images/monsterDash_logo_blkbg.gif",
     "./images/pixelforest.jpg",
-    "./images/blackbox.jpeg",
+    //"./images/blackbox.jpeg",
     "./images/stump.gif",
     "./images/potato.gif",
     "./images/butter.gif"
@@ -133,7 +133,7 @@ GLuint brTexture;
 GLuint krTexture;
 GLuint agTexture;
 GLuint lgTexture;
-GLuint obsTexture;
+//GLuint obsTexture;
 GLuint stumpTexture;
 GLuint potatoTexture;
 GLuint butterTexture;
@@ -383,7 +383,7 @@ void initOpengl(void)
     glGenTextures(1, &g.logoTexture);
     glGenTextures(1, &g.tex.backTexture);
     glGenTextures(1, &player.glTexture);
-    glGenTextures(1, &g.obsTexture);
+    //glGenTextures(1, &g.obsTexture);
     glGenTextures(1, &g.stumpTexture);
     glGenTextures(1, &g.potatoTexture);
     glGenTextures(1, &g.butterTexture);
@@ -548,7 +548,7 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     // alpha data
 
-    unsigned char *clearStumpData = buildAlphaData(&img[12]);
+    unsigned char *clearStumpData = buildAlphaData(&img[11]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, clearStumpData);
     free(clearStumpData);
@@ -564,7 +564,7 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     // alpha data
 
-    unsigned char *clearPotatoData = buildAlphaData(&img[13]);
+    unsigned char *clearPotatoData = buildAlphaData(&img[12]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, clearPotatoData);
     free(clearPotatoData);
@@ -580,14 +580,14 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     // alpha data
 
-    unsigned char *clearButterData = buildAlphaData(&img[14]);
+    unsigned char *clearButterData = buildAlphaData(&img[13]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, clearButterData);
     free(clearButterData);
     butterTexture = g.butterTexture;
     //------------------------------------------------------------------------
  
-    // obstacle 
+    /* obstacle 
     w = 10;
     h = 10;
     glBindTexture(GL_TEXTURE_2D, g.obsTexture);
@@ -596,7 +596,7 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h,
 	    0, GL_RGB, GL_UNSIGNED_BYTE, img[11].data);
-    obsTexture = g.obsTexture;
+    obsTexture = g.obsTexture;*/
 }
 
 #ifdef USE_OPENAL_SOUND
@@ -892,7 +892,7 @@ void render()
 	stump[0] = 550;
 	stump[1] = 80;
 
-	showPicture(obsTexture, 550, 100);
+	//showPicture(obsTexture, 550, 100);
 	if (p->currentFrame % 25 == 0)
     		showStump(stumpTexture, 550, 80);
 	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
