@@ -12,7 +12,7 @@
 //Angela Tante
 //Brian Magana
 //Gracelove Simons
-//Krystal Raines
+//Krystal Raynes
 //
 // top
 #include <stdio.h>
@@ -36,6 +36,7 @@
 #include "Obstacle.h"
 #include "Global.h"
 #include "Texture.h"
+#include "stump.h"
 
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
@@ -47,6 +48,7 @@ const float gravity = -0.2f;
 #define ALPHA 1
 //----------------------------------------------------------------------------
 //user defined prototypes
+//#include "krystalR.cpp"
 extern void showCredits(Rect);
 extern void highScore(char *, char *);
 extern void parseScores(Rect, char *, char *);
@@ -121,7 +123,7 @@ Image img[14] = {
 //Player player("images/new_drac_run_sprite.gif");
 //Player player("images/skeleton_dance.gif", &g);
 Player player("images/dracula_run.gif", &g);
-
+Stump stump("images/stump.gif",&g);
 Obstacle ob[3] = {
     "./images/stump.gif",
     "./images/potato.gif",
@@ -842,8 +844,6 @@ void render()
 	
 	// gave Player obj 'player' height and width member variables
 	// no longer need 'h' and 'w'
-	//float h = g.yres*0.08;
-	//float w = g.xres*0.08;
 	
 	glPushMatrix();
 	glTranslatef(p->pos[0] - p->width*2.0, p->pos[1] - p->height*2.0, p->pos[2]);
@@ -886,8 +886,8 @@ void render()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
 
-	//showPicture(obsTexture, 550, 100);
-	Vec stump;
+    //stump class in Krystal's file.	
+    Vec stump;
 	showStump(stumpTexture, 550, 80);
 	stump[0] = 550;
 	stump[1] = 80;
