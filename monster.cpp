@@ -542,8 +542,9 @@ void initOpengl(void)
     //------------------------------------------------------------------------
     // stump
 
-    w = 64;
-    h = 64;
+    
+    w = 32;
+    h = 32;
     glBindTexture(GL_TEXTURE_2D, g.stumpTexture);
     //
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -887,14 +888,30 @@ void render()
 	
 
     //stump class in Krystal's file.	
-    Vec stump;
-	showStump(stumpTexture, 550, 80);
-	stump[0] = 550;
-	stump[1] = 80;
+    Stump *s = &stump;
+    
+	glBegin(GL_QUADS);
+		glTexCoord2f(tx, ty+1.0);
+		glVertex2i(cx-s->width*2.0, cy-s->height*2.0);
+		glTexCoord2f(tx, ty);
+		glVertex2i(cx-s->width*2.0, cy+s->height*2.0);
+		glTexCoord2f(tx+x_off, ty);
+		glVertex2i(cx+s->width*2.0, cy+s->height*2.0);
+		glTexCoord2f(tx+x_off, ty+1.0);	
+        glBindTexture(GL_TEXTURE_2D, 0);
+		glVertex2i(cx+s->width*2.0, cy-s->height*2.0);
+	glEnd();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+    
+    //Vec stump;
+	//showStump(stumpTexture, 550, 80);
+	//stump[0] = 550;
+	//stump[1] = 80;
 
 	//showPicture(obsTexture, 550, 100);
-	if (p->currentFrame % 25 == 0)
-    		showStump(stumpTexture, 550, 80);
+	//if (p->currentFrame % 25 == 0)
+    //		showStump(stumpTexture, 550, 80);
 	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
 
 	
@@ -909,20 +926,21 @@ void render()
 	player.pos[1] = ty;
 	player.pos[2] = 10;*/
 	drawcircle(player.pos, 15.0);
-	drawcircle(stump, 15.0);
+	//drawcircle(stump, 15.0);
 	
 	glDisable(GL_ALPHA_TEST);
 	//do timer
 	new_clock(&g, &gameclock);
 	displayScore(g, p);
 	
+    /*
 	bool collision = checkcollision(player.pos, 15.0, stump, 15.0);
 	if (collision == true)
 	//if (player.pos[0]==stump[0])
 	{
 		//end game
 		showDied(r, g.forestTexture, g.xres, g.yres);
-	}
+	}*/
 #ifdef COORD_TEST 
 	// this section can be used for testing collision box
 	// alignment with respective images
