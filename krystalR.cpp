@@ -27,7 +27,8 @@ void printKrystal(Rect r) {
 
 //--------------------------------STUMP BEGIN---------------------------------//
 #include "Image.h"
-#include "Stump.h"
+#include "stump.h"
+
 Stump::Stump(const char *file) {
     img.readImage(file);
     move = 0;
