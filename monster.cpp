@@ -963,10 +963,10 @@ void render()
 			//end game
 			//printf("you died\n");
 			showDied(r, g.forestTexture, g.xres, g.yres);
-			startGame(g, &player);
+			/*startGame(g, &player);
 			generateObstacle(g, &stump);
 			recordTime(&moveTime);
-			recordTime(&gameclock);
+			recordTime(&gameclock);*/
 		}
 #ifdef COORD_TEST 
 		// this section can be used for testing collision box
