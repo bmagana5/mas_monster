@@ -115,26 +115,55 @@ void cleanupAudio(ALuint *alBuffer, ALuint *alSource, int n)
 }
 #endif
 
-void moveCharacter(Player *player, const Global *g)
+void startGame(Global &g, Player *player) 
+{
+	Player *p = player;
+    // please handle the next function call with care :)
+	MakeVector(g.xres*0.01, 
+			g.floor.center[1] + g.floor.height + p->height, 0.0,
+			p->pos);
+    MakeVector(p->width*0.4, 0.0, 0.0, p->vel);
+	p->score = 0;
+	g.time_reset = 1; // flag to reset game time
+}
+
+void generateObstacle(const Global &g, Stump *stump)
+{
+	Stump *s = stump;
+	MakeVector(g.xres+s->width,
+			g.floor.center[1] + g.floor.height + s->height, 0.0,
+			s->pos);
+	MakeVector(-s->width*0.4, 0.0, 0.0, s->vel);
+}
+
+void moveCharacter(Player *player, const Global &g)
 {
 	int addgrav = 1;
 	Player *p = player;
 	p->pos[0] += p->vel[0];
 	p->pos[1] += p->vel[1];
 	//Check for collision with top of floor 
-	if ((p->pos[0] > g->xres*0.3 && p->vel[0] > 0.0))
-		p->pos[0] = g->xres*0.3;
-	// 85% of character's height 
-	// (account for the pixels at the bottom of dracula that aren't part of him)
+	if ((p->pos[0] > g.xres*0.3 && p->vel[0] > 0.0))
+		p->pos[0] = g.xres*0.3;
 	if (addgrav) {
-		if (p->pos[1] >= g->floor.center[1] + g->floor.height + p->height)
+		if (p->pos[1] >= g.floor.center[1] + g.floor.height + p->height)
 			p->vel[1] -= 1.5;
-		else if (p->pos[1] < (g->floor.center[1] + g->floor.height) + p->height) {	
-			p->pos[1] = (g->floor.center[1] + g->floor.height) + p->height; 
+		else if (p->pos[1] < (g.floor.center[1] + g.floor.height) + p->height) {	
+			p->pos[1] = (g.floor.center[1] + g.floor.height) + p->height; 
 			if (p->jumping)
 				p->jumping = 0;
 		}
 	}
+}
+
+void moveObstacle(Stump *stump, const Global &g)
+{
+	Stump *s = stump;
+	s->pos[0] += s->vel[0]; // velocity is initialized to a negative value
+	//Check for collision with top of floor 
+	if ((s->pos[0] + s->width < 0 && s->vel[0] < 0.0))
+		generateObstacle(g, s);
+		//s->pos[0] = g.xres*0.3;
 }
 
 void animateCharacter(Player *player, struct timespec *moveTime, 
@@ -189,7 +218,7 @@ void checkPlayerCoords(Player *player)
 	ggprint12(&re, 10, color, "4");
 }
 
-void checkObjectCoords(Stump *stump)
+void checkObstacleCoords(Stump *stump)
 {
 	// this will draw characters on the screen to test 
 	// collision box and stump image alignment
@@ -254,23 +283,3 @@ void displayScore(const Global &g, Player *p)
 	ggprint13(&r, 40, 0xDEADAFBB, "%s", string);
 }
 
-void startGame(Global &g, Player *player) 
-{
-	Player *p = player;
-    // please handle the next function call with care :)
-	MakeVector(g.xres*0.01, 
-			g.floor.center[1] + g.floor.height + p->height, 0.0,
-			p->pos);
-    MakeVector(p->width*0.4, 0.0, 0.0, p->vel);
-	p->score = 0;
-	g.time_reset = 1; // flag to reset game time
-}
-
-void generateObstacle(const Global &g, Stump *stump)
-{
-	Stump *s = stump;
-	MakeVector(g.xres+s->width,
-			g.floor.center[1] + g.floor.height + s->height, 0.0,
-			s->pos);
-	MakeVector(-s->width*0.4, 0.0, 0.0, s->vel);
-}

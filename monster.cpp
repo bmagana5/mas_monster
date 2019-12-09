@@ -59,8 +59,9 @@ extern void showPause(Rect, GLuint, int, int);
 extern void new_clock(Global *, struct timespec *);
 extern bool checkcollision(Vec, float, Vec, float);
 extern void drawcircle(Vec, float);
-extern void moveCharacter(Player *, const Global *);
+extern void moveCharacter(Player *, const Global &);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
+extern void moveObstacle(Stump *, const Global &);
 extern void displayScore(const Global &, Player *);
 extern void startGame(Global &, Player *);
 extern void generateObstacle(const Global &, Stump *);
@@ -71,6 +72,7 @@ extern void showDied(Rect, GLuint, int, int);
 #ifdef COORD_TEST 
 extern void checkPlayerCoords(Player *);
 extern void checkFloorCoords(Global *);
+extern void checkObstacleCoords(Stump *);
 #endif
 #ifdef USE_OPENAL_SOUND
 extern void initAudio(char (*)[32], ALuint *, ALuint *, int);
@@ -765,7 +767,8 @@ void physics()
 	if (player.move) {
 		animateCharacter(&player, &moveTime, &timeCurrent);
 		//moveBigfoot();
-		moveCharacter(&player, &g);
+		moveCharacter(&player, g);
+		moveObstacle(&stump, g);
 		if (player.pos[0] == (float)g.xres*0.3) {
 			for (int i = 0; i < 2; i++) 
 				g.tex.xc[i] += 0.005;
@@ -938,7 +941,7 @@ void render()
     /*
 	bool collision = checkcollision(player.pos, 15.0, stump, 15.0);
 	if (collision == true)
-	//if (player.pos[0]==stump[0])
+	//if (player.pos[0]+player.width <= stump.pos[0]+stump.width)
 	{
 		//end game
 		showDied(r, g.forestTexture, g.xres, g.yres);
@@ -947,7 +950,8 @@ void render()
 	// this section can be used for testing collision box
 	// alignment with respective images
 	checkPlayerCoords(&player);
-	checkFloorCoords(&g);
+	//checkFloorCoords(&g);
+	checkObstacleCoords(&stump);
 #endif
     }
     
