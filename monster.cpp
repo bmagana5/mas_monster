@@ -70,7 +70,7 @@ extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
 extern void showDied(Rect, GLuint, int, int);
 extern void showEndMenu(Rect);
-extern void stopGame(Global &, Player *);
+//extern void stopGame(Global &, Player *);
 #ifdef COORD_TEST 
 extern void checkPlayerCoords(Player *);
 extern void checkFloorCoords(Global *);
@@ -983,7 +983,7 @@ void render()
 	    //end game
 	    //printf("you died\n");
 	    showDied(r, g.forestTexture, g.xres, g.yres);
-	    stopGame(g, &player);
+	    //stopGame(g, &player);
 	    //stopObstacle();
 	    //resetTime();
 	    showEndMenu(r);
