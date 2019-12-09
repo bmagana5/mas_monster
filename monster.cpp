@@ -166,7 +166,6 @@ class X11_wrapper {
     public:
 	X11_wrapper() {
 	    GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-	    //GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
 	    XSetWindowAttributes swa;
 	    setupScreenRes(640, 480);
 	    dpy = XOpenDisplay(NULL);
@@ -953,6 +952,8 @@ void render()
 
 	glPushMatrix();
 	glTranslatef(x, y + (int)(fy*10.0), 0);
+	//butter.pos[0] = rand() % int(s->pos[0]) + 1;
+	glTranslatef((s->pos[0]) - (b->xoff) - 300, (s->pos[1]) - b->yoff, s->pos[2]);
 	glBindTexture(GL_TEXTURE_2D, butter.glTexture);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
