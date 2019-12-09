@@ -909,7 +909,7 @@ void render()
         glBindTexture(GL_TEXTURE_2D, 0);
         //decrement xoff to move off the screen
         if (s->xoff > 0) {
-            s->xoff -= 50;
+            s->xoff -= 22;
         }
         else {
             s->xoff = 550;
