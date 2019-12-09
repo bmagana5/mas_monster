@@ -32,6 +32,8 @@ void printKrystal(Rect r) {
 Stump::Stump(const char *file) {
     img.readImage(file);
     move = 0;
+    xoff = 550;
+    yoff = 50;
     // this value represents frames in a sprite sheet
     // unique, so adjust according to # of frames in sprite
     //frame_count = 8;
@@ -45,6 +47,8 @@ Stump::Stump(const char *file) {
 Stump::Stump(const char *file, const Global *g) {
     img.readImage(file);
     move = 0;
+    xoff = 550;
+    yoff = 50;
     /* adjust height and width of character here
        relative to game screen */
     size_rate = 0.075;

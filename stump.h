@@ -18,7 +18,8 @@ class Stump
         int height;
         int width;
         int size_with_screen;
-
+        int xoff;
+        int yoff;
         Stump(const char *file);
         Stump(const char *file, const Global *g);
         void resize(Global *g);

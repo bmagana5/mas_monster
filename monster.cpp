@@ -891,22 +891,30 @@ void render()
         glPopMatrix();
         glBindTexture(GL_TEXTURE_2D, 0);
 
-
+        
         Stump *s = &stump;
-        int xoff = 550;
-        int yoff = 50;
+        //int xoff = 550;
+        //int yoff = 50;
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 1.0f); 
-            glVertex2i(-(s->width)+xoff, -(s->width)+yoff); //upper-left
+            glVertex2i(-(s->width)+(s->xoff), -(s->width)+(s->yoff)); //upper-left
             glTexCoord2f(0.0f, 0.0f); 
-            glVertex2i(-(s->width)+xoff, s->width+yoff); //lower-left
+            glVertex2i(-(s->width)+(s->xoff), s->width+(s->yoff)); //lower-left
             glTexCoord2f(1.0f, 0.0f); 
-            glVertex2i(s->width+xoff, s->width+yoff); //lower-right
+            glVertex2i(s->width+s->xoff, s->width+s->yoff); //lower-right
             glTexCoord2f(1.0f, 1.0f); 
-            glVertex2i(s->width+xoff, -(s->width)+yoff); //upper-right
+            glVertex2i(s->width+s->xoff, -(s->width)+s->yoff); //upper-right
         glEnd();
         glPopMatrix();
         glBindTexture(GL_TEXTURE_2D, 0);
+        //decrement xoff to move off the screen
+        if (s->xoff > 0) {
+            s->xoff -= 50;
+        }
+        else {
+            s->xoff = 550;
+
+        }
 
         //stump class in Krystal's file.	
 
@@ -952,7 +960,7 @@ void render()
         // alignment with respective images
         checkPlayerCoords(&player);
         //checkFloorCoords(&g);
-        checkObstacleCoords(&stump);
+        //checkObstacleCoords(&stump);
 #endif
     }
 
