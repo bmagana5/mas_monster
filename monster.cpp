@@ -36,7 +36,7 @@
 #include "Obstacle.h"
 #include "Global.h"
 #include "Texture.h"
-#include "stump.h"
+#include "Stump.h"
 
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
@@ -63,6 +63,7 @@ extern void moveCharacter(Player *, const Global *);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
 extern void displayScore(const Global &, Player *);
 extern void startGame(Global &, Player *);
+extern void generateObstacle(const Global &, Stump *);
 extern void showStump(GLuint, int, int);
 extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
@@ -616,6 +617,7 @@ void init() {
     collision1.pos[1] = 550;
     // initialize position and velocity of player
 	startGame(g, &player);
+	generateObstacle(g, &stump);
 }
 
 void checkMouse(XEvent *e)

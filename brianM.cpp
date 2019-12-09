@@ -11,6 +11,7 @@
 #include "timers.h"
 #include "Player.h"
 #include "Global.h"
+#include "Stump.h"
 #include <math.h>
 #include <time.h>
 #include <stdio.h>
@@ -188,6 +189,35 @@ void checkPlayerCoords(Player *player)
 	ggprint12(&re, 10, color, "4");
 }
 
+void checkObjectCoords(Stump *stump)
+{
+	// this will draw characters on the screen to test 
+	// collision box and stump image alignment
+	Stump *s = stump;
+	Rect re;
+	int color = 0xffffffff;
+	// center
+	re.bot = s->pos[1];
+	re.left = s->pos[0];
+	ggprint12(&re, 10, color, "x");
+	// left bottom
+	re.bot = s->pos[1] - s->height;
+	re.left = s->pos[0] - s->width;
+	ggprint12(&re, 10, color, "1");
+	// right bottom
+	re.bot = s->pos[1] - s->height;
+	re.left = s->pos[0] + s->width;
+	ggprint12(&re, 10, color, "2");
+	// top right
+	re.bot = s->pos[1] + s->height;
+	re.left = s->pos[0] + s->width;
+	ggprint12(&re, 10, color, "3");
+	// top left
+	re.bot = s->pos[1] + s->height;
+	re.left = s->pos[0] - s->width;
+	ggprint12(&re, 10, color, "4");
+}
+
 void checkFloorCoords(Global *g)
 {
 	Rect re;
@@ -234,4 +264,13 @@ void startGame(Global &g, Player *player)
     MakeVector(p->width*0.4, 0.0, 0.0, p->vel);
 	p->score = 0;
 	g.time_reset = 1; // flag to reset game time
+}
+
+void generateObstacle(const Global &g, Stump *stump)
+{
+	Stump *s = stump;
+	MakeVector(g.xres+s->width,
+			g.floor.center[1] + g.floor.height + s->height, 0.0,
+			s->pos);
+	MakeVector(-s->width*0.4, 0.0, 0.0, s->vel);
 }
