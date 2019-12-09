@@ -159,11 +159,12 @@ void moveCharacter(Player *player, const Global &g)
 void moveObstacle(Stump *stump, const Global &g)
 {
 	Stump *s = stump;
-	s->pos[0] += s->vel[0]; // velocity is initialized to a negative value
-	//Check for collision with top of floor 
-	if ((s->pos[0] + s->width < 0 && s->vel[0] < 0.0))
-		generateObstacle(g, s);
-		//s->pos[0] = g.xres*0.3;
+	if (s->move) {
+		s->pos[0] += s->vel[0]; // velocity is initialized to a negative value
+		//Check for collision with top of floor 
+		if ((s->pos[0] + s->width < 0 && s->vel[0] < 0.0))
+			generateObstacle(g, s);
+	}
 }
 
 void animateCharacter(Player *player, struct timespec *moveTime, 

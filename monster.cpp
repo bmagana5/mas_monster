@@ -674,6 +674,7 @@ int checkKeys(XEvent *e)
         case XK_Return:
             if (!g.play && !g.showPauseScreen && !g.showCredits && !g.highScore) {
                 g.play ^= 1;
+				stump.move ^= 1;
                 player.move ^= 1;
                 g.forest ^= 1;
                 recordTime(&moveTime);
@@ -698,15 +699,18 @@ int checkKeys(XEvent *e)
                 g.showPauseScreen ^= 1;
                 g.play ^= 1;
                 player.move ^= 1;
+				stump.move ^= 1;
             }
             break;
         case XK_r:
             if (g.showPauseScreen) {
                 // reset game
                 startGame(g, &player);
+				generateObstacle(g, &stump);
                 g.showPauseScreen ^= 1;
                 g.play ^= 1;
                 player.move ^= 1;
+				stump.move ^= 1;
                 // get new time
                 recordTime(&moveTime);
                 recordTime(&gameclock);
@@ -718,6 +722,7 @@ int checkKeys(XEvent *e)
             if (g.showPauseScreen) {
                 // reset game
                 startGame(g, &player);
+				generateObstacle(g, &stump);
                 g.showPauseScreen ^= 1;
                 g.forest ^= 1;
             }
@@ -952,13 +957,16 @@ void render()
 		new_clock(&g, &gameclock);
 		displayScore(g, p);
 
-		printf("player xpos = %f , stump xpos = %f\n", player.pos[0], s->pos[0]); 
+		//printf("player xpos = %f , stump xpos = %f\n", player.pos[0], s->pos[0]); 
 		bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
 		if (collision == true) {
 			//end game
-			printf("you died\n");
+			//printf("you died\n");
 			showDied(r, g.forestTexture, g.xres, g.yres);
+			startGame(g, &player);
 			generateObstacle(g, &stump);
+			recordTime(&moveTime);
+			recordTime(&gameclock);
 		}
 #ifdef COORD_TEST 
 		// this section can be used for testing collision box
