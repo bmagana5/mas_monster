@@ -8,11 +8,13 @@
 
 #include "fonts.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <GL/glx.h>
 #include <math.h>
 #include "Player.h"
 #include "defs.h"
 #include "Global.h"
+#include "timers.h"
 void displayGracelove(Rect r)
 {
     	r.bot = 250;
@@ -150,6 +152,8 @@ void showDied(Rect r, GLuint ftexture, int xres, int yres)
 		glTexCoord2f(1.0f, 1.0f);	glVertex2i(xres,0);
 	glEnd();
 	ggprint8b(&r, 50, 0x00ffff00, "You Died!!");
+	ggprint8b(&r, 50, 0x00ffff00, "Score: ");
+	ggprint8b(&r, 50, 0x00ffff00, "Time: ");
 }
 
 void showEndMenu(Rect r) 
@@ -159,4 +163,12 @@ void showEndMenu(Rect r)
 	ggprint8b(&r, 50, 0x00ffff00, "  Menu - M ");
 	ggprint8b(&r, 50, 0x00ffff00, "Restart - R");
 
+}
+void stopGame(Global &g, Player *player)
+{
+    Player *p = player;
+    MakeVector(0, 0, 0, 0);
+    // instantiate to whatever the score is when they die here
+    //p->score = ;
+    g.time_reset = 0;
 }
