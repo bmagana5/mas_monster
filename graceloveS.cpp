@@ -114,6 +114,7 @@ void drawcircle(Vec ob1, float r)
 
 	    float x = r*cosf(theta);
 	    float y = r*sinf(theta);
+	    //printf("%f		%f\n", x, y);
 
 	    glVertex2f(x + ob1[0], y + ob1[1]);
 	}

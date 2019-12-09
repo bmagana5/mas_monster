@@ -909,7 +909,7 @@ void render()
         glBindTexture(GL_TEXTURE_2D, 0);
         //decrement xoff to move off the screen
         if (s->xoff > 0) {
-            s->xoff -= 22;
+            s->xoff -= 3.5;
         }
         else {
             s->xoff = 550;
@@ -940,27 +940,26 @@ void render()
           player.pos[1] = ty;
           player.pos[2] = 10;*/
         drawcircle(player.pos, 15.0);
-        //drawcircle(stump, 15.0);
+        drawcircle(s->pos, 15.0);
 
         glDisable(GL_ALPHA_TEST);
         //do timer
         new_clock(&g, &gameclock);
         displayScore(g, p);
 
-        /*
-           bool collision = checkcollision(player.pos, 15.0, stump, 15.0);
-           if (collision == true)
-        //if (player.pos[0]+player.width <= stump.pos[0]+stump.width)
-        {
-        //end game
-        showDied(r, g.forestTexture, g.xres, g.yres);
-        }*/
+       printf("player xpos = %f , stump xpos = %f\n", player.pos[0], s->pos[0]); 
+       bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
+       if (collision == true) {
+       //if (player.pos[0]+player.width <= stump.pos[0]+stump.width) {
+       		//end game
+        	showDied(r, g.forestTexture, g.xres, g.yres);
+       }
 #ifdef COORD_TEST 
         // this section can be used for testing collision box
         // alignment with respective images
         checkPlayerCoords(&player);
         //checkFloorCoords(&g);
-        //checkObstacleCoords(&stump);
+        checkObstacleCoords(&stump);
 #endif
     }
 
