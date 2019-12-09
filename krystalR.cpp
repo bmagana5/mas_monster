@@ -72,7 +72,7 @@ Butter::Butter(const char *file) {
     img.readImage(file);
     move = 0;
     xoff = 550;
-    yoff = 50;
+    yoff = 125;
     // this value represents frames in a sprite sheet
     // unique, so adjust according to # of frames in sprite
     //frame_count = 8;
@@ -87,7 +87,7 @@ Butter::Butter(const char *file, const Global *g) {
     img.readImage(file);
     move = 0;
     xoff = 550;
-    yoff = 50;
+    yoff = 125;
     //adjust height and width of character here relative to game screen
     size_rate = 0.075;
     height = g->yres*size_rate*0.5;
