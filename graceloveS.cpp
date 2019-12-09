@@ -164,11 +164,11 @@ void showEndMenu(Rect r)
 	ggprint8b(&r, 50, 0x00ffff00, "Restart - R");
 
 }
-void stopGame(Global &g, Player *player)
+/*void stopGame(Global &g, Player *player)
 {
     Player *p = player;
     MakeVector(0, 0, 0, 0);
     // instantiate to whatever the score is when they die here
     //p->score = ;
     g.time_reset = 0;
-}
+}*/
