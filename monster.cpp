@@ -69,6 +69,7 @@ extern void showStump(GLuint, int, int);
 extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
 extern void showDied(Rect, GLuint, int, int);
+extern void showEndMenu(Rect);
 #ifdef COORD_TEST 
 extern void checkPlayerCoords(Player *);
 extern void checkFloorCoords(Global *);
@@ -963,6 +964,10 @@ void render()
 			//end game
 			//printf("you died\n");
 			showDied(r, g.forestTexture, g.xres, g.yres);
+			//stopGame();
+			//stopObstacle();
+			//resetTime();
+			showEndMenu(r);
 			/*startGame(g, &player);
 			generateObstacle(g, &stump);
 			recordTime(&moveTime);

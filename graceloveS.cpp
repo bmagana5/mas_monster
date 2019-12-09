@@ -150,4 +150,13 @@ void showDied(Rect r, GLuint ftexture, int xres, int yres)
 		glTexCoord2f(1.0f, 1.0f);	glVertex2i(xres,0);
 	glEnd();
 	ggprint8b(&r, 50, 0x00ffff00, "You Died!!");
-}	
+}
+
+void showEndMenu(Rect r) 
+{
+	r.bot = 150;
+	r.left = 300;
+	ggprint8b(&r, 50, 0x00ffff00, "  Menu - M ");
+	ggprint8b(&r, 50, 0x00ffff00, "Restart - R");
+
+}
