@@ -64,6 +64,44 @@ void Stump::resize(Global *g) {
     }	
 
 }
+//-----------------------------STUMP END--------------------------------------//
+
+#include "butter.h"
+
+Butter::Butter(const char *file) {
+    img.readImage(file);
+    move = 0;
+    xoff = 550;
+    yoff = 50;
+    // this value represents frames in a sprite sheet
+    // unique, so adjust according to # of frames in sprite
+    //frame_count = 8;
+    size_rate = 0.06;
+    // using image height and width to determine player ingame dimmensions
+    height = img.height*size_rate*0.5;
+    width = 32;
+    size_with_screen = 0;
+    }
+
+Butter::Butter(const char *file, const Global *g) {
+    img.readImage(file);
+    move = 0;
+    xoff = 550;
+    yoff = 50;
+    //adjust height and width of character here relative to game screen
+    size_rate = 0.075;
+    height = g->yres*size_rate*0.5;
+    width = g->xres*size_rate*0.5;
+    size_with_screen = 1;
+}
+void Butter::resize(Global *g) {
+    if (size_with_screen)
+    {
+        height = g->yres*size_rate*0.5;
+        width = g->xres*size_rate*0.5;
+    }
+}
+
 //--------------------------------P BEGIN-----------------------------------//
 //Written by: Gordon Griesel
 //Purpose:    Example of HTTP request using SSL.

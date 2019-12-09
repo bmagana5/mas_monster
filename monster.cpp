@@ -37,6 +37,7 @@
 #include "Global.h"
 #include "Texture.h"
 #include "stump.h"
+#include "butter.h"
 
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
@@ -128,6 +129,7 @@ Image img[14] = {
 //Player player("images/skeleton_dance.gif", &g);
 Player player("images/dracula_run.gif", &g);
 Stump stump("images/stump.gif",&g);
+Butter butter("images/butter.gif",&g);
 Obstacle ob[3] = {
     "./images/stump.gif",
     "./images/potato.gif",
