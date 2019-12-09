@@ -4,7 +4,7 @@
 #include <GL/glx.h>
 #include "Image.h" 
 #include "Global.h" 
-#include "../defs.h" 
+#include "defs.h" 
 class Stump 
 {
     public:
@@ -20,9 +20,9 @@ class Stump
         int size_with_screen;
         int xoff;
         int yoff;
-        Stump(const char *file);
-        Stump(const char *file, const Global *g);
-        void resize(Global *g);
+        Stump(const char *);
+        Stump(const char *, const Global *);
+        void resize(Global *);
 
 };
 #endif

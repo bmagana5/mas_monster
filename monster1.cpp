@@ -389,7 +389,7 @@ void initOpengl(void)
     glGenTextures(1, &g.tex.backTexture);
     glGenTextures(1, &player.glTexture);
     //glGenTextures(1, &g.obsTexture);
-    glGenTextures(1, &stump.glTexture);
+    glGenTextures(1, &g.stumpTexture);
     glGenTextures(1, &g.potatoTexture);
     glGenTextures(1, &g.butterTexture);
     //-------------------------------------------------------------------------
@@ -542,11 +542,12 @@ void initOpengl(void)
     unsigned char *playerData = buildAlphaData(&player.img);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, playerData);
+    free(playerData);
     //------------------------------------------------------------------------
     // stump
     w = stump.img.width;
     h = stump.img.height;
-    glBindTexture(GL_TEXTURE_2D, stump.glTexture);
+    glBindTexture(GL_TEXTURE_2D, g.stumpTexture);
     //
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -555,7 +556,7 @@ void initOpengl(void)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, clearStumpData);
     free(clearStumpData);
-    stumpTexture = stump.glTexture;
+    stumpTexture = g.stumpTexture;
     //------------------------------------------------------------------------
     // potato
 
@@ -748,28 +749,15 @@ Flt VecNormalize(Vec vec)
     return(len);
 }
 
-void moveBigfoot()
-{
-    player.pos[0] += player.vel[0];
-    //Check for collision with window edges
-    if ((player.pos[0] > (g.xres*0.5 - player.img.width / player.frame_count) 
-                && player.vel[0] > 0.0))
-    {
-        player.pos[0] = g.xres*0.5 - (player.img.width / player.frame_count);
-    }
-}
-
 void physics()
 {
     if (player.move) {
         animateCharacter(&player, &moveTime, &timeCurrent);
-        //moveBigfoot();
         moveCharacter(&player, g);
         moveObstacle(&stump, g);
         if (player.pos[0] == (float)g.xres*0.3) {
             for (int i = 0; i < 2; i++) 
                 g.tex.xc[i] += 0.005;
-            //g.tex.xc[i] += 0.003;
         }
     }
 }
@@ -792,10 +780,10 @@ void render()
 
         glBindTexture(GL_TEXTURE_2D, g.forestTexture);
         glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-        glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-        glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
         glEnd();
 
         r.bot = g.yres - 20;
@@ -814,70 +802,69 @@ void render()
     }
 
     //render play
-	if (g.play) {
+    if (g.play) {
 
-		//BACKGROUND GOES HERE
-		/*glClearColor(1.0, 1.0, 1.0, 1.0);
-		  glClear(GL_COLOR_BUFFER_BIT);
-		  glColor3f(1.0, 1.0, 1.0); // white*/
-		glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
-		glBegin(GL_QUADS);
+        //BACKGROUND GOES HERE
+        /*glClearColor(1.0, 1.0, 1.0, 1.0);
+          glClear(GL_COLOR_BUFFER_BIT);
+          glColor3f(1.0, 1.0, 1.0); // white*/
+        glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
+        glBegin(GL_QUADS);
 			glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
 			glTexCoord2f(g.tex.xc[0], g.tex.yc[0]); glVertex2i(0, g.yres);	
 			glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);	
 			glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
-		glEnd();
-		//show ground
-		glBegin(GL_QUADS);
-		// dark grey
-		glColor3f(0.2, 0.2, 0.2);
-		glVertex2i(0, g.floor.height*2.0);
-		glVertex2i(g.floor.width*2.0, g.floor.height*2.0);
-		// lighter grey
-		glColor3f(0.4, 0.4, 0.4);
-		glVertex2i(g.floor.width*2.0, 0);
-		glVertex2i(0, 0);
-		glEnd();
-		//PLAYER CHARACTER GOES HERE
+        glEnd();
+        //show ground
+        glBegin(GL_QUADS);
+			// dark grey
+			glColor3f(0.2, 0.2, 0.2);
+			glVertex2i(0, g.floor.height*2.0);
+			glVertex2i(g.floor.width*2.0, g.floor.height*2.0);
+			// lighter grey
+			glColor3f(0.4, 0.4, 0.4);
+			glVertex2i(g.floor.width*2.0, 0);
+			glVertex2i(0, 0);
+        glEnd();
+        //PLAYER CHARACTER GOES HERE
 
-		Player *p = &player;
-		// center coordinates
-		float cx = g.xres*0.1;
-		float cy = g.yres*0.1;
+        Player *p = &player;
+        // center coordinates
+        float cx = g.xres*0.1;
+        float cy = g.yres*0.1;
 
-		// gave Player obj 'player' height and width member variables
-		// no longer need 'h' and 'w'
+        // gave Player obj 'player' height and width member variables
+        // no longer need 'h' and 'w'
 
-		glPushMatrix();
-		glTranslatef(p->pos[0] - p->width*2.0, p->pos[1] - p->height*2.0, p->pos[2]);
-		glColor3f(1.0, 1.0, 1.0);
-		glBindTexture(GL_TEXTURE_2D, p->glTexture);
-		// enable alpha testing
-		glEnable(GL_ALPHA_TEST);
-		// specify alpha comparison func and referenece value that incoming
-		// alpha values are to be compared to
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255, 255, 255, 255);
-		// denominator corresponds to # of frames
-		// player.currentFrame is incremented in physics()
-		// this ensures that ix remains between 0 and (player.frame_count - 1)
-		int ix = p->currentFrame % p->frame_count;
-		int iy = 0;
-		if (p->currentFrame >= p->frame_count)
-			iy = 1;
-		// width percentage for sprite 
-		float tx = (float)ix / (float)p->frame_count;
-		float ty = (float)iy / 2.0;
-		// x_off is percentage that each frame takes up in the sprite sheet
-		float x_off = 1.0 / (float)p->frame_count;
-		// sprite frame to show when jumping
-		if (player.jumping) {
-			ix = p->frame_count - 5; // use the fourth one
-			tx = (float)ix / (float)p->frame_count;
+        glPushMatrix();
+        glTranslatef(p->pos[0] - p->width*2.0, p->pos[1] - p->height*2.0, p->pos[2]);
+        glColor3f(1.0, 1.0, 1.0);
+        glBindTexture(GL_TEXTURE_2D, p->glTexture);
+        // enable alpha testing
+        glEnable(GL_ALPHA_TEST);
+        // specify alpha comparison func and referenece value that incoming
+        // alpha values are to be compared to
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glColor4ub(255, 255, 255, 255);
+        // denominator corresponds to # of frames
+        // player.currentFrame is incremented in physics()
+        // this ensures that ix remains between 0 and (player.frame_count - 1)
+        int ix = p->currentFrame % p->frame_count;
+        int iy = 0;
+        if (p->currentFrame >= p->frame_count)
+            iy = 1;
+        // width percentage for sprite 
+        float tx = (float)ix / (float)p->frame_count;
+        float ty = (float)iy / 2.0;
+        // x_off is percentage that each frame takes up in the sprite sheet
+        float x_off = 1.0 / (float)p->frame_count;
+        // sprite frame to show when jumping
+        if (player.jumping) {
+            ix = p->frame_count - 5; // use the fourth one
+            tx = (float)ix / (float)p->frame_count;
 
-		}
-
-		glBegin(GL_QUADS);
+        }
+        glBegin(GL_QUADS);
 			glTexCoord2f(tx, ty+1.0);
 			glVertex2i(cx-p->width*2.0, cy-p->height*2.0);
 			glTexCoord2f(tx, ty);
@@ -887,87 +874,89 @@ void render()
 			glTexCoord2f(tx+x_off, ty+1.0);	
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glVertex2i(cx+p->width*2.0, cy-p->height*2.0);
-		glEnd();
-		glPopMatrix();
-		glBindTexture(GL_TEXTURE_2D, 0);
+        glEnd();
+        glPopMatrix();
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        Stump *s = &stump;
+        glPushMatrix();
+        glTranslatef(s->pos[0] - s->xoff, s->pos[1] - s->yoff, s->pos[2]);
+        glColor3f(1.0, 1.0, 1.0);
+        glBindTexture(GL_TEXTURE_2D, g.stumpTexture);
+        // enable alpha testing
+        glEnable(GL_ALPHA_TEST);
+        // specify alpha comparison func and referenece value that incoming
+        // alpha values are to be compared to
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glColor4ub(255, 255, 255, 255);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); 
+            glVertex2i(-(s->width)+(s->xoff), -(s->width)+(s->yoff)); //upper-left
+            glTexCoord2f(0.0f, 0.0f); 
+            glVertex2i(-(s->width)+(s->xoff), s->width+(s->yoff)); //lower-left
+            glTexCoord2f(1.0f, 0.0f); 
+            glVertex2i(s->width+s->xoff, s->width+s->yoff); //lower-right
+            glTexCoord2f(1.0f, 1.0f); 
+            glVertex2i(s->width+s->xoff, -(s->width)+s->yoff); //upper-right
+        glEnd();
+        glPopMatrix();
+        glBindTexture(GL_TEXTURE_2D, 0);
+        //decrement xoff to move off the screen
+        /*if (s->xoff > 0) {
+            s->xoff -= 22;
+        }
+        else {
+            s->xoff = 550;
+
+        }*/
+
+        //stump class in Krystal's file.	
+
+        //Vec stump;
+        //showStump(stumpTexture, 550, 80);
+        //stump[0] = 550;
+        //stump[1] = 80;
+
+        //showPicture(obsTexture, 550, 100);
+        //if (p->currentFrame % 25 == 0)
+        //		showStump(stumpTexture, 550, 80);
+        //bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
 
 
-		Stump *s = &stump;
-		glPushMatrix();
-		glTranslatef(s->pos[0] - s->xoff, s->pos[1] - s->yoff, s->pos[2]);
-		glColor3f(1.0, 1.0, 1.0);
-		glBindTexture(GL_TEXTURE_2D, stump.glTexture);
-		// enable alpha testing
-		glEnable(GL_ALPHA_TEST);
-		// specify alpha comparison func and referenece value that incoming
-		// alpha values are to be compared to
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255, 255, 255, 255);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 1.0f); 
-			glVertex2i(-(s->width)+(s->xoff), -(s->width)+(s->yoff)); //upper-left
-			glTexCoord2f(0.0f, 0.0f); 
-			glVertex2i(-(s->width)+(s->xoff), s->width+(s->yoff)); //lower-left
-			glTexCoord2f(1.0f, 0.0f); 
-			glVertex2i(s->width+s->xoff, s->width+s->yoff); //lower-right
-			glTexCoord2f(1.0f, 1.0f); 
-			glVertex2i(s->width+s->xoff, -(s->width)+s->yoff); //upper-right
-		glEnd();
-		glPopMatrix();
-		glBindTexture(GL_TEXTURE_2D, 0);
-		//decrement xoff to move off the screen
-		/*if (s->xoff > 0) {
-		  s->xoff -= 3.5;
-		  }
-		  else {
-		  s->xoff = 550;
-
-		  }*/
-
-		//stump class in Krystal's file.	
-
-		//Vec stump;
-		//showStump(stumpTexture, 550, 80);
-		//stump[0] = 550;
-		//stump[1] = 80;
-
-		//showPicture(obsTexture, 550, 100);
-		//if (p->currentFrame % 25 == 0)
-		//		showStump(stumpTexture, 550, 80);
-		//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
-
-		//showPotato(texture, xoff, yoff);
-		//showPotato(potatoTexture, 550, 50);
-		//showButter(butterTexture, 400, 50);
 
 
-		/*player.pos[0] = tx;
-		  player.pos[1] = ty;
-		  player.pos[2] = 10;*/
-		drawcircle(player.pos, 15.0);
-		drawcircle(s->pos, 15.0);
+        //showPotato(texture, xoff, yoff);
+        //showPotato(potatoTexture, 550, 50);
+        //showButter(butterTexture, 400, 50);
 
-		glDisable(GL_ALPHA_TEST);
-		//do timer
-		new_clock(&g, &gameclock);
-		displayScore(g, p);
 
-		printf("player xpos = %f , stump xpos = %f\n", player.pos[0], s->pos[0]); 
-		bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
-		if (collision == true) {
-			//end game
-			printf("you died\n");
-			showDied(r, g.forestTexture, g.xres, g.yres);
-			generateObstacle(g, &stump);
-		}
+        /*player.pos[0] = tx;
+          player.pos[1] = ty;
+          player.pos[2] = 10;*/
+        drawcircle(player.pos, 15.0);
+        //drawcircle(stump, 15.0);
+
+        glDisable(GL_ALPHA_TEST);
+        //do timer
+        new_clock(&g, &gameclock);
+        displayScore(g, p);
+
+        /*
+           bool collision = checkcollision(player.pos, 15.0, stump, 15.0);
+           if (collision == true)
+        //if (player.pos[0]+player.width <= stump.pos[0]+stump.width)
+        {
+        //end game
+        showDied(r, g.forestTexture, g.xres, g.yres);
+        }*/
 #ifdef COORD_TEST 
-		// this section can be used for testing collision box
-		// alignment with respective images
-		checkPlayerCoords(&player);
-		//checkFloorCoords(&g);
-		checkObstacleCoords(&stump);
+        // this section can be used for testing collision box
+        // alignment with respective images
+        checkPlayerCoords(&player);
+        //checkFloorCoords(&g);
+        checkObstacleCoords(&stump);
 #endif
-	}
+    }
 
     //render credits
     if (g.showCredits) {

@@ -11,7 +11,7 @@
 #include "timers.h"
 #include "Player.h"
 #include "Global.h"
-#include "Stump.h"
+#include "stump.h"
 #include <math.h>
 #include <time.h>
 #include <stdio.h>
