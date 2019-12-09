@@ -647,11 +647,11 @@ void checkMouse(XEvent *e)
 int checkKeys(XEvent *e)
 {
     //keyboard input?
-    static int shift=0;
+    //static int shift=0;
     if (e->type != KeyPress && e->type != KeyRelease)
         return 0;
     int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
-    if (e->type == KeyRelease) {
+    /*if (e->type == KeyRelease) {
         if (key == XK_Shift_L || key == XK_Shift_R)
             shift=0;
         return 0;
@@ -659,7 +659,7 @@ int checkKeys(XEvent *e)
     if (key == XK_Shift_L || key == XK_Shift_R) {
         shift=1;
         return 0;
-    }
+    }*/ 
 
     switch (key) {
         case XK_e:
