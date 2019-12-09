@@ -26,15 +26,7 @@ void showPicture(GLuint textid, int xoff, int yoff)
 {
     int wid = 40;
     
-    //float fx = 0.0f;
-    //static float angle = 0.0f;
-
-    //angle += 0.01;
-    //fx = sin(angle);
-    //y = y - 40;
-
     glPushMatrix();
-    //glTranslatef(x + (int)(fx*30.0),y,0);
     glColor3f(1.0, 1.0, 1.0);
     glBindTexture(GL_TEXTURE_2D, textid);
     glBegin(GL_QUADS);
@@ -164,7 +156,7 @@ void showDied(Rect r, GLuint ftexture, int xres, int yres, int end_score, char *
 void showEndMenu(Rect r, GLuint ftexture, int xres, int yres) 
 {
 	r.bot = yres*0.5;
-	r.left = xres*0.5;
+	r.left = xres*0.5-50;
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, ftexture);
@@ -174,15 +166,7 @@ void showEndMenu(Rect r, GLuint ftexture, int xres, int yres)
 		glTexCoord2f(1.0f, 0.0f);	glVertex2i(xres,yres);
 		glTexCoord2f(1.0f, 1.0f);	glVertex2i(xres,0);
 	glEnd();
-	ggprint8b(&r, 50, 0x00ffff00, "  Return to Main Menu - M ");
-	ggprint8b(&r, 50, 0x00ffff00, "Restart Game - R");
+	ggprint8b(&r, 50, 0x00ffff00, "Return to Main Menu - M ");
+	ggprint8b(&r, 50, 0x00ffff00, "     Restart Game - R   ");
 
 }
-/*void stopGame(Global &g, Player *player)
-{
-    Player *p = player;
-    MakeVector(0, 0, 0, 0);
-    // instantiate to whatever the score is when they die here
-    //p->score = ;
-    g.time_reset = 0;
-}*/

@@ -1013,13 +1013,6 @@ void render()
 			player.move = 0;
 			player.dead = 1;
 			stump.move = 0;
-			//stopGame(g, &player);
-			//stopObstacle();
-			//resetTime();
-			/*startGame(g, &player);
-			  generateObstacle(g, &stump);
-			  recordTime(&moveTime);
-			  recordTime(&gameclock);*/
 		}
 #ifdef COORD_TEST 
 		// this section can be used for testing collision box
