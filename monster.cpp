@@ -36,7 +36,7 @@
 #include "Obstacle.h"
 #include "Global.h"
 #include "Texture.h"
-#include "Stump.h"
+#include "stump.h"
 
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
@@ -544,16 +544,13 @@ void initOpengl(void)
 		    GL_RGBA, GL_UNSIGNED_BYTE, playerData);
     //------------------------------------------------------------------------
     // stump
-
-    
-    w = 32;
-    h = 32;
-    glBindTexture(GL_TEXTURE_2D, g.stumpTexture);
+    w = stump.img.width;
+    h = stump.img.height;
+    glBindTexture(GL_TEXTURE_2D, stump.glTexture);
     //
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     // alpha data
-
     unsigned char *clearStumpData = buildAlphaData(&img[11]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, clearStumpData);
