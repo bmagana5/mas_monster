@@ -949,9 +949,15 @@ void render()
 	glPushMatrix();
 	glTranslatef(x, y + (int)(fy*10.0), 0);
 	//butter.pos[0] = rand() % int(s->pos[0]) + 1;
+	if (b->pos[0] < 0) {
+		b->pos[0] = 928;
+	}
+	else {
+		b->pos[0] -= 5;
+	}
 	glTranslatef(b->pos[0]-(b->xoff), b->pos[1]- (b->yoff), b->pos[2]);
 	//glTranslatef((b->pos[0]) - (b->xoff) - 300, (b->pos[1]) - b->yoff, b->pos[2]);
-	std::cout << s->pos[0] << " " << s->pos[1] << " " << s->pos[2] << std::endl;
+	//std::cout << s->pos[0] << " " << s->pos[1] << " " << s->pos[2] << std::endl;
 	glBindTexture(GL_TEXTURE_2D, butter.glTexture);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
