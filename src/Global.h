@@ -45,6 +45,7 @@ class Global {
 		int showPauseScreen;
 		int mainMenu;
 		int endMenu;
+		int showHowTo;
 		char run_time[16];
 		//buffers
 		char buf[2048];

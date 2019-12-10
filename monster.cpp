@@ -77,9 +77,13 @@ extern void showDied(Rect, Global *, int);
 extern void showEndMenu(Rect, GLuint, int, int);
 extern void dancingDrac(Global *, struct timespec *);
 extern void startButton(Global *, struct timespec *);
+extern void creditsButton(Global *, struct timespec *);
+extern void scoreButton(Global *, struct timespec *);
 extern void showStartTitle(GLuint, int, int);
 extern void showCreditsTitle(GLuint, int, int);
 extern void showScoreTitle(GLuint, int, int);
+extern void showHow(Rect, const Global &);
+extern void showHowTo(Rect, GLuint, int, int);
 
 //extern void stopGame(Global &, Player *);
 #ifdef COORD_TEST
@@ -103,6 +107,8 @@ struct timespec timePause, moveTime;
 struct timespec gameclock, skeletime;
 struct timespec animateclock, dractime;
 struct timespec buttonclock, buttontime;
+struct timespec buttonclock2, creditstime;
+struct timespec buttonclock3, scoretime;
 
 //-----------------------------------------------------------------------------
 
@@ -298,6 +304,8 @@ int main()
 	recordTime(&skeletime);
 	recordTime(&dractime);
 	recordTime(&buttontime);
+	recordTime(&creditstime);
+	recordTime(&scoretime);
 	while (!done) {
 		while (x11.getXPending()) {
 			//XEvent e;
@@ -726,6 +734,36 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, transbutt);
 	free(transbutt);
 	//------------------------------------------------------------------------
+	// credits button
+
+	w = 52;
+	h = 21;
+	glBindTexture(GL_TEXTURE_2D, g.cButtonTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// alpha data
+
+	unsigned char *transbutt1 = buildAlphaData(&buttons[1]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, transbutt1);
+	free(transbutt1);
+	//------------------------------------------------------------------------
+	// score button
+
+	w = 52;
+	h = 21;
+	glBindTexture(GL_TEXTURE_2D, g.eButtonTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// alpha data
+
+	unsigned char *transbutt2 = buildAlphaData(&buttons[2]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, transbutt2);
+	free(transbutt2);
+	//------------------------------------------------------------------------
 	/* obstacle
 	   w = 10;
 	   h = 10;
@@ -895,6 +933,12 @@ int checkKeys(XEvent *e)
 				g.endMenu = 1;
 			}
 			break;
+		case XK_h:
+			if (g.forest) {
+				g.forest ^= 1;
+				g.showHowTo ^= 1;
+			}
+			break;
 		case XK_Escape:
 			return 1;
 			//break;
@@ -980,10 +1024,10 @@ void render()
 		showScoreTitle(scoreTex, g.xres*0.61, g.yres*0.13);
 
 		startButton(&g, &buttontime);
+		creditsButton(&g, &creditstime);
+		scoreButton(&g, &scoretime);
 
-
-
-
+		showHow (r, g);
 	}
 
 	//render play
@@ -1234,4 +1278,8 @@ void render()
 	//glEnable(GL_TEXTURE_2D);
 	//
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	if(g.showHowTo) {
+		showHowTo(r, g.forestTexture, g.xres, g.yres);
+	}
 }

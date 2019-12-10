@@ -260,10 +260,10 @@ void startButton(Global *g, struct timespec *moveTime)
 			currentFrame -= totalFrames;
 		recordTime(moveTime);
 	}
-	int width = g->xres/8;
-	int height = g->yres/7;
-	float cx = g->xres*0.20;
-	float cy = g->yres*0.20;
+	int width = g->xres/22;
+	int height = g->yres/21;
+	float cx = g->xres*0.39;
+	float cy = g->yres*0.31;
 	glBindTexture(GL_TEXTURE_2D, g->enterButtonTexture);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
@@ -284,4 +284,119 @@ void startButton(Global *g, struct timespec *moveTime)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glVertex2i(cx+width, cy-height);
 	glEnd();
+}
+
+void creditsButton(Global *g, struct timespec *moveTime)
+{
+  static int currentFrame = 0;
+	static int totalFrames = 2;
+	static float delay = 0.5f;
+	struct timespec currentTime;
+	recordTime(&currentTime);
+	double timespan = timeDiff(moveTime, &currentTime);
+	if (timespan > delay) {
+		currentFrame++;
+		if (currentFrame >= totalFrames)
+			currentFrame -= totalFrames;
+		recordTime(moveTime);
+	}
+	int width = g->xres/25;
+	int height = g->yres/24;
+	float cx = g->xres*0.39;
+	float cy = g->yres*0.22;
+	glBindTexture(GL_TEXTURE_2D, g->cButtonTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255, 255, 255, 255);
+	int ix = currentFrame % totalFrames;
+	int iy = 0;
+	float tx = (float)ix / (float)totalFrames;
+	float ty = (float)iy / 2.0;
+	float x_off = 1.0 / (float)totalFrames;
+	glBegin(GL_QUADS);
+	glTexCoord2f(tx, ty+1.0);
+	glVertex2i(cx-width, cy-height);
+	glTexCoord2f(tx, ty);
+	glVertex2i(cx-width, cy+height);
+	glTexCoord2f(tx+x_off, ty);
+	glVertex2i(cx+width, cy+height);
+	glTexCoord2f(tx+x_off, ty+1.0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glVertex2i(cx+width, cy-height);
+	glEnd();
+}
+
+void scoreButton(Global *g, struct timespec *moveTime)
+{
+  static int currentFrame = 0;
+	static int totalFrames = 2;
+	static float delay = 0.5f;
+	struct timespec currentTime;
+	recordTime(&currentTime);
+	double timespan = timeDiff(moveTime, &currentTime);
+	if (timespan > delay) {
+		currentFrame++;
+		if (currentFrame >= totalFrames)
+			currentFrame -= totalFrames;
+		recordTime(moveTime);
+	}
+	int width = g->xres/25;
+	int height = g->yres/24;
+	float cx = g->xres*0.39;
+	float cy = g->yres*0.13;
+	glBindTexture(GL_TEXTURE_2D, g->eButtonTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255, 255, 255, 255);
+	int ix = currentFrame % totalFrames;
+	int iy = 0;
+	float tx = (float)ix / (float)totalFrames;
+	float ty = (float)iy / 2.0;
+	float x_off = 1.0 / (float)totalFrames;
+	glBegin(GL_QUADS);
+	glTexCoord2f(tx, ty+1.0);
+	glVertex2i(cx-width, cy-height);
+	glTexCoord2f(tx, ty);
+	glVertex2i(cx-width, cy+height);
+	glTexCoord2f(tx+x_off, ty);
+	glVertex2i(cx+width, cy+height);
+	glTexCoord2f(tx+x_off, ty+1.0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glVertex2i(cx+width, cy-height);
+	glEnd();
+}
+
+void showHow (Rect r, const Global &g) {
+  r.bot = g.yres*0.05;
+  r.left = g.xres*0.49;
+
+  ggprint8b(&r, 40, 0x00ffff00, "H - How to Play");
+}
+void showHowTo(Rect r, GLuint textid3, int xres, int yres)
+{
+        r.bot = yres - 20;
+        r.left = 10;
+        r.center = 0;
+
+	glPushMatrix();
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+        glBindTexture(GL_TEXTURE_2D, textid3);
+        glBegin(GL_QUADS);
+        	glTexCoord2f(0.0f, 1.0f); 	glVertex2i(0, 0);
+        	glTexCoord2f(0.0f, 0.0f); 	glVertex2i(0, yres);
+        	glTexCoord2f(1.0f, 0.0f); 	glVertex2i(xres, yres);
+        	glTexCoord2f(1.0f, 1.0f); 	glVertex2i(xres, 0);
+
+        glEnd();
+
+        r.bot = 300;
+        r.left = 250;
+        ggprint8b(&r, 60, 0x00ffff44, "How To Play This Game");
+        r.bot = 250;
+        r.left = 50;
+        ggprint8b(&r, 40, 0x00ffff44, "Dracula is invited to a party but he's run out of ingredients to make his famous MONSTER MASH!");
+        ggprint8b(&r, 40, 0x00ffff44, "Set off into the enchanted wood and collect butter and potatos but watch out for stumps!");
+        ggprint8b(&r, 40, 0x00ffff44, "Use the SPACE bar to jump and avoid obstacles and collect as many ingredients as you can.");
+	glPopMatrix();
 }
