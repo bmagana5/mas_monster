@@ -25,7 +25,7 @@
 
 void printBriansName(Rect r)
 {
-    	r.bot = 200;
+	r.bot = 200;
 	r.left = 275;
 	ggprint8b(&r, 50, 0x00ffff00, "Brian");
 }
@@ -33,6 +33,8 @@ void printBriansName(Rect r)
 void parseScores(Rect r, char *buf, char *tmp)
 {
 	int i = 0;
+	ggprint16(&r, 20, 0x00ffff00, "    High Scores");
+	ggprint16(&r, 20, 0x00ffff00, "    ---------------");
 	while (i < (int)strlen(buf)) {
 		if (buf[i] == '*') {
 			i++;
@@ -41,7 +43,7 @@ void parseScores(Rect r, char *buf, char *tmp)
 				i++;
 			}
 			strcat(tmp, "\n");
-			ggprint12(&r, 20, 0xffff0000, tmp);
+			ggprint16(&r, 20, 0x00ffff00, tmp);
 			strcpy(tmp, "");
 		} else i++;
 	}
@@ -91,9 +93,9 @@ void initAudio(char audio[][32], ALuint *alBuffer, ALuint *alSource, int n)
 		}
 	}
 	/*for (int i = 1; i < n; i++) {
-		alSourcePlay(alSource[i]);
-		usleep(500000);
-	}*/
+	  alSourcePlay(alSource[i]);
+	  usleep(500000);
+	  }*/
 }
 #endif
 
@@ -118,11 +120,11 @@ void cleanupAudio(ALuint *alBuffer, ALuint *alSource, int n)
 void startGame(Global &g, Player *player) 
 {
 	Player *p = player;
-    // please handle the next function call with care :)
+	// please handle the next function call with care :)
 	MakeVector(g.xres*0.01, 
 			g.floor.center[1] + g.floor.height + p->height, 0.0,
 			p->pos);
-    MakeVector(p->width*0.4, 0.0, 0.0, p->vel);
+	MakeVector(p->width*0.4, 0.0, 0.0, p->vel);
 	p->score = 0;
 	g.time_reset = 1; // flag to reset game time
 }
@@ -218,15 +220,15 @@ void animateSkeleton(Global *g, struct timespec *moveTime)
 	float ty = (float)iy / 2.0;
 	float x_off = 1.0 / (float)totalFrames;
 	glBegin(GL_QUADS);
-		glTexCoord2f(tx, ty+1.0);
-		glVertex2i(cx-width, cy-height);
-		glTexCoord2f(tx, ty);
-		glVertex2i(cx-width, cy+height);
-		glTexCoord2f(tx+x_off, ty);
-		glVertex2i(cx+width, cy+height);
-		glTexCoord2f(tx+x_off, ty+1.0);	
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glVertex2i(cx+width, cy-height);
+	glTexCoord2f(tx, ty+1.0);
+	glVertex2i(cx-width, cy-height);
+	glTexCoord2f(tx, ty);
+	glVertex2i(cx-width, cy+height);
+	glTexCoord2f(tx+x_off, ty);
+	glVertex2i(cx+width, cy+height);
+	glTexCoord2f(tx+x_off, ty+1.0);	
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glVertex2i(cx+width, cy-height);
 	glEnd();
 }
 

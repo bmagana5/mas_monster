@@ -268,6 +268,7 @@ int main()
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	int done = 0;
+	recordTime(&skeletime);
 	while (!done) {
 		while (x11.getXPending()) {
 			//XEvent e;
@@ -1030,7 +1031,6 @@ void render()
 			player.move = 0;
 			player.dead = 1;
 			stump.move = 0;
-			recordTime(&skeletime);
 		}
 #ifdef COORD_TEST 
 		// this section can be used for testing collision box
@@ -1088,10 +1088,11 @@ void render()
 		r.center = 0;
 		glEnd();
 
-		r.bot = 300;
-		r.left = 300;
+		r.bot = g.yres*0.65;
+		r.left = g.xres*0.4;
 		char tmp[20] = "";
 		parseScores(r, g.buf, tmp);
+		animateSkeleton(&g, &skeletime);
 	}
 	if (g.showPauseScreen) {
 		showPause(r, g.forestTexture, g.xres, g.yres);
