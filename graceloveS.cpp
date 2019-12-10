@@ -157,7 +157,7 @@ void showDied(Rect r, Global *g, int end_score)
 void showEndMenu(Rect r, GLuint ftexture, int xres, int yres)
 {
 	r.bot = yres*0.5;
-	r.left = xres*0.5;
+	r.left = xres*0.5-50;
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBindTexture(GL_TEXTURE_2D, ftexture);
