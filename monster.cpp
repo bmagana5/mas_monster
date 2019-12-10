@@ -75,8 +75,14 @@ extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
 extern void showDied(Rect, Global *, int);
 extern void showEndMenu(Rect, GLuint, int, int);
+extern void dancingDrac(Global *, struct timespec *);
+extern void startButton(Global *, struct timespec *);
+extern void showStartTitle(GLuint, int, int);
+extern void showCreditsTitle(GLuint, int, int);
+extern void showScoreTitle(GLuint, int, int);
+
 //extern void stopGame(Global &, Player *);
-#ifdef COORD_TEST 
+#ifdef COORD_TEST
 extern void checkPlayerCoords(Player *);
 extern void checkFloorCoords(Global *);
 extern void checkObstacleCoords(Stump *);
@@ -95,6 +101,9 @@ unsigned int upause=0;
 struct timespec timeStart, timeEnd, timeCurrent;
 struct timespec timePause, moveTime;
 struct timespec gameclock, skeletime;
+struct timespec animateclock, dractime;
+struct timespec buttonclock, buttontime;
+
 //-----------------------------------------------------------------------------
 
 //define audio globals
@@ -111,6 +120,20 @@ ALuint alSource[TOTAL_SOUNDS];
 Global g;
 
 Image skeleton = "./images/skeleton_dance.gif";
+Image danceDrac = "./images/drac_dance.png";
+Image titles[6] = {
+	"./images/start_title.gif",
+	"./images/credits_title.png",
+	"./images/score_title.png",
+	"./images/pause_title.png",
+	"./images/main_menu_title.png",
+	"./images/restart_title.png"
+};
+Image buttons[3] = {
+	"./images/enter_button.png",
+	"./images/c_button.png",
+	"./images/e_button.png"
+};
 Image img[14] = {
 	"./images/bigfoot.png",
 	"./images/creepyforest.jpg",
@@ -151,6 +174,10 @@ GLuint lgTexture;
 GLuint stumpTexture;
 GLuint potatoTexture;
 GLuint butterTexture;
+GLuint startTex;
+GLuint creditsTex;
+GLuint scoreTex;
+
 
 class Bigfoot {
 	public:
@@ -184,7 +211,7 @@ class X11_wrapper {
 			if (vi == NULL) {
 				printf("\n\tno appropriate visual found\n\n");
 				exit(EXIT_FAILURE);
-			} 
+			}
 			Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 			swa.colormap = cmap;
 			swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
@@ -269,6 +296,8 @@ int main()
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	int done = 0;
 	recordTime(&skeletime);
+	recordTime(&dractime);
+	recordTime(&buttontime);
 	while (!done) {
 		while (x11.getXPending()) {
 			//XEvent e;
@@ -288,7 +317,7 @@ int main()
 		timeCopy(&timeStart, &timeCurrent);
 		//4. Add time-span to our countdown amount.
 		physicsCountdown += timeSpan;
-		//5. Has countdown gone beyond our physics rate? 
+		//5. Has countdown gone beyond our physics rate?
 		//       if yes,
 		//           In a loop...
 		//              Apply physics
@@ -402,6 +431,14 @@ void initOpengl(void)
 	glGenTextures(1, &g.potatoTexture);
 	glGenTextures(1, &g.butterTexture);
 	glGenTextures(1, &g.skeletonTexture);
+	glGenTextures(1, &g.dancingDracTexture);
+	glGenTextures(1, &g.startTitleTexture);
+	glGenTextures(1, &g.creditsTitleTexture);
+	glGenTextures(1, &g.scoreTitleTexture);
+	glGenTextures(1, &g.enterButtonTexture);
+	glGenTextures(1, &g.cButtonTexture);
+	glGenTextures(1, &g.eButtonTexture);
+
 	//-------------------------------------------------------------------------
 	//bigfoot
 	//
@@ -434,7 +471,7 @@ void initOpengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	//
 	//must build a new set of data...
-	unsigned char *silhouetteData = buildAlphaData(&img[0]);	
+	unsigned char *silhouetteData = buildAlphaData(&img[0]);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	free(silhouetteData);
@@ -462,7 +499,7 @@ void initOpengl(void)
 	//must build a new set of data...
 	w = img[2].width;
 	h = img[2].height;
-	unsigned char *ftData = buildAlphaData(&img[2]);	
+	unsigned char *ftData = buildAlphaData(&img[2]);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, ftData);
 	free(ftData);
@@ -480,7 +517,7 @@ void initOpengl(void)
 			0, GL_RGB, GL_UNSIGNED_BYTE, img[5].data);
 	glTexture = g.graceloveTexture;
 	//-------------------------------------------------------------------------
-	//Brian 
+	//Brian
 	w = img[6].width;
 	h = img[6].height;
 	glBindTexture(GL_TEXTURE_2D, g.brianTexture);
@@ -491,7 +528,7 @@ void initOpengl(void)
 			0, GL_RGB, GL_UNSIGNED_BYTE, img[6].data);
 	brTexture = g.brianTexture;
 	//-------------------------------------------------------------------------
-	//Krystal 
+	//Krystal
 	w = img[7].width;
 	h = img[7].height;
 	glBindTexture(GL_TEXTURE_2D, g.krystalTexture);
@@ -502,7 +539,7 @@ void initOpengl(void)
 			0, GL_RGB, GL_UNSIGNED_BYTE, img[7].data);
 	krTexture = g.krystalTexture;
 	//-------------------------------------------------------------------------
-	//Angela 
+	//Angela
 	w = img[8].width;
 	h = img[8].height;
 	glBindTexture(GL_TEXTURE_2D, g.angelaTexture);
@@ -513,14 +550,14 @@ void initOpengl(void)
 			0, GL_RGB, GL_UNSIGNED_BYTE, img[8].data);
 	agTexture = g.angelaTexture;
 	//-------------------------------------------------------------------------
-	// logo 
+	// logo
 	w = img[9].width;
 	h = img[9].height;
 	glBindTexture(GL_TEXTURE_2D, g.logoTexture);
 	//
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	unsigned char *clearLogoData = buildAlphaData(&img[9]);	
+	unsigned char *clearLogoData = buildAlphaData(&img[9]);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, clearLogoData);
 	free(clearLogoData);
@@ -599,7 +636,7 @@ void initOpengl(void)
 	butterTexture = g.butterTexture;
 	//------------------------------------------------------------------------
 	// skeleton dance gif
-	
+
 	w = skeleton.width;
 	h = skeleton.height;
 	glBindTexture(GL_TEXTURE_2D, g.skeletonTexture);
@@ -612,8 +649,84 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, skellyData);
 	free(skellyData);
 	//------------------------------------------------------------------------
+	// dancing drac
 
-	/* obstacle 
+	w = 60;
+	h = 39;
+	glBindTexture(GL_TEXTURE_2D, g.dancingDracTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// alpha data
+
+	unsigned char *dancyDData = buildAlphaData(&danceDrac);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, dancyDData);
+	free(dancyDData);
+	//------------------------------------------------------------------------
+	// start title
+
+	w = 91;
+	h = 16;
+	glBindTexture(GL_TEXTURE_2D, g.startTitleTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// alpha data
+
+	unsigned char *transStart = buildAlphaData(&titles[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, transStart);
+	free(transStart);
+	startTex = g.startTitleTexture;
+	//------------------------------------------------------------------------
+	// credits title
+
+	w = 70;
+	h = 16;
+	glBindTexture(GL_TEXTURE_2D, g.creditsTitleTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// alpha data
+
+	unsigned char *transCred = buildAlphaData(&titles[1]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, transCred);
+	free(transCred);
+	creditsTex = g.creditsTitleTexture;
+	//------------------------------------------------------------------------
+	// score board title
+
+	w = 97;
+	h = 16;
+	glBindTexture(GL_TEXTURE_2D, g.scoreTitleTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// alpha data
+
+	unsigned char *trans = buildAlphaData(&titles[2]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, trans);
+	free(trans);
+	scoreTex = g.scoreTitleTexture;
+	//------------------------------------------------------------------------
+	// start button
+
+	w = 76;
+	h = 21;
+	glBindTexture(GL_TEXTURE_2D, g.enterButtonTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// alpha data
+
+	unsigned char *transbutt = buildAlphaData(&buttons[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, transbutt);
+	free(transbutt);
+	//------------------------------------------------------------------------
+	/* obstacle
 	   w = 10;
 	   h = 10;
 	   glBindTexture(GL_TEXTURE_2D, g.obsTexture);
@@ -632,7 +745,7 @@ void initSounds()
 }
 #endif
 
-void init() 
+void init()
 {
 	collision.pos[0] = 100;
 	collision.pos[1] = 550;
@@ -688,17 +801,17 @@ int checkKeys(XEvent *e)
 
 	switch (key) {
 		case XK_e:
-			if (!g.play && !player.dead && !g.endMenu && 
+			if (!g.play && !player.dead && !g.endMenu &&
 					!g.showCredits && !g.showPauseScreen) {
 				g.forest ^= 1;
 				if (!g.highScore) {
 					highScore(g.buf, g.tmpbuf);
 					g.highScore ^= 1;
 				} else g.highScore = 0;
-			}	    
+			}
 			break;
 		case XK_Return:
-			if (!g.play && !g.endMenu && !player.dead 
+			if (!g.play && !g.endMenu && !player.dead
 					&& !g.showPauseScreen && !g.showCredits && !g.highScore) {
 				g.play ^= 1;
 				stump.move ^= 1;
@@ -706,6 +819,7 @@ int checkKeys(XEvent *e)
 				g.forest ^= 1;
 				recordTime(&moveTime);
 				recordTime(&gameclock);
+				recordTime(&animateclock);
 			}
 			break;
 		case XK_space:
@@ -716,7 +830,7 @@ int checkKeys(XEvent *e)
 			}
 			break;
 		case XK_c:
-			if (!g.play && !g.endMenu && !player.dead 
+			if (!g.play && !g.endMenu && !player.dead
 					&& !g.showPauseScreen && !g.highScore) {
 				g.forest ^= 1;
 				g.showCredits ^= 1;
@@ -743,6 +857,7 @@ int checkKeys(XEvent *e)
 				// get new time
 				recordTime(&moveTime);
 				recordTime(&gameclock);
+				recordTime(&animateclock);
 			} else if (g.endMenu) {
 				// reset game
 				startGame(g, &player);
@@ -754,7 +869,8 @@ int checkKeys(XEvent *e)
 				// get new time
 				recordTime(&moveTime);
 				recordTime(&gameclock);
-				
+				recordTime(&animateclock);
+
 			}
 			break;
 		case XK_m:
@@ -813,7 +929,7 @@ void physics()
 		moveObstacle(&stump, g);
 		moveButter(&butter, g);
 		if (player.pos[0] == (float)g.xres*0.3) {
-			for (int i = 0; i < 2; i++) 
+			for (int i = 0; i < 2; i++)
 				g.tex.xc[i] += 0.005;
 		}
 	}
@@ -831,6 +947,7 @@ void render()
 	//draw a quad with texture
 	//float wid = 120.0f;
 	glColor3f(1.0, 1.0, 1.0);
+	// main menu
 	if (g.forest) {
 		//show forest
 		//unsigned int c = 0x00ffff44;
@@ -853,8 +970,19 @@ void render()
 
 
 		//print menu options
-		showMenu(r, g);
+		//showMenu(r, g);
 		//showMenu(r);
+
+		dancingDrac(&g, &dractime);
+
+		showStartTitle(g.startTitleTexture, g.xres*0.6, g.yres*0.3);
+		showCreditsTitle(creditsTex, g.xres*0.57, g.yres*0.22);
+		showScoreTitle(scoreTex, g.xres*0.61, g.yres*0.13);
+
+		startButton(&g, &buttontime);
+
+
+
 
 	}
 
@@ -867,9 +995,9 @@ void render()
 		  glColor3f(1.0, 1.0, 1.0); // white*/
 		glBindTexture(GL_TEXTURE_2D, g.tex.backTexture);
 		glBegin(GL_QUADS);
-		glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);	
-		glTexCoord2f(g.tex.xc[0], g.tex.yc[0]); glVertex2i(0, g.yres);	
-		glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);	
+		glTexCoord2f(g.tex.xc[0], g.tex.yc[1]); glVertex2i(0, 0);
+		glTexCoord2f(g.tex.xc[0], g.tex.yc[0]); glVertex2i(0, g.yres);
+		glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
 		glEnd();
 		//show ground
@@ -910,7 +1038,7 @@ void render()
 		int iy = 0;
 		if (p->currentFrame >= p->frame_count)
 			iy = 1;
-		// width percentage for sprite 
+		// width percentage for sprite
 		float tx = (float)ix / (float)p->frame_count;
 		float ty = (float)iy / 2.0;
 		// x_off is percentage that each frame takes up in the sprite sheet
@@ -929,7 +1057,7 @@ void render()
 		glVertex2i(cx-p->width*2.0, cy+p->height*2.0);
 		glTexCoord2f(tx+x_off, ty);
 		glVertex2i(cx+p->width*2.0, cy+p->height*2.0);
-		glTexCoord2f(tx+x_off, ty+1.0);	
+		glTexCoord2f(tx+x_off, ty+1.0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glVertex2i(cx+p->width*2.0, cy-p->height*2.0);
 		glEnd();
@@ -949,19 +1077,19 @@ void render()
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255, 255, 255, 255);
 		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); 
+		glTexCoord2f(0.0f, 1.0f);
 		glVertex2i(-(s->width)+(s->xoff), -(s->width)+(s->yoff)); //upper-left
-		glTexCoord2f(0.0f, 0.0f); 
+		glTexCoord2f(0.0f, 0.0f);
 		glVertex2i(-(s->width)+(s->xoff), s->width+(s->yoff)); //lower-left
-		glTexCoord2f(1.0f, 0.0f); 
+		glTexCoord2f(1.0f, 0.0f);
 		glVertex2i(s->width+s->xoff, s->width+s->yoff); //lower-right
-		glTexCoord2f(1.0f, 1.0f); 
+		glTexCoord2f(1.0f, 1.0f);
 		glVertex2i(s->width+s->xoff, -(s->width)+s->yoff); //upper-right
 		glEnd();
 		glPopMatrix();
 		glBindTexture(GL_TEXTURE_2D, 0);
 		//decrement xoff to move off the screen
-		//stump class in Krystal's file.	
+		//stump class in Krystal's file.
 
 		//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
 
@@ -984,7 +1112,7 @@ void render()
 		//butter.pos[0] = rand() % int(s->pos[0]) + 1;
 		if (b->pos[0] < 0 || b->pos[1] == 2000) {
 			b->pos[0] = 928;
-			b->pos[1] = 64;    
+			b->pos[1] = 64;
 		}
 		else {
 			b->pos[0] -= 5;
@@ -994,13 +1122,13 @@ void render()
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); 
+		glTexCoord2f(0.0f, 1.0f);
 		glVertex2i(-(b->width)+b->xoff, -(b->width)+b->yoff);
-		glTexCoord2f(0.0f, 0.0f); 
+		glTexCoord2f(0.0f, 0.0f);
 		glVertex2i(-(b->width)+b->xoff, b->width+b->yoff);
-		glTexCoord2f(1.0f, 0.0f); 
+		glTexCoord2f(1.0f, 0.0f);
 		glVertex2i(b->width+b->xoff, b->width+b->yoff);
-		glTexCoord2f(1.0f, 1.0f); 
+		glTexCoord2f(1.0f, 1.0f);
 		glVertex2i(b->width+b->xoff, -(b->width)+b->yoff);
 		glEnd();
 		glPopMatrix();
@@ -1013,6 +1141,8 @@ void render()
 		glDisable(GL_ALPHA_TEST);
 		//do timer
 		new_clock(&g, &gameclock);
+		new_clock(&g, &animateclock);
+
 		displayScore(g, p);
 
 		bool collision1 = checkcollision(player.pos, 15.0, b->pos, 15.0);
@@ -1020,7 +1150,7 @@ void render()
 		if (collision1 == true) {
 			p->score += 60;
 			collision1 = false;
-			b->pos[1] = 2000; 
+			b->pos[1] = 2000;
 		}
 
 		bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
@@ -1032,7 +1162,7 @@ void render()
 			player.dead = 1;
 			stump.move = 0;
 		}
-#ifdef COORD_TEST 
+#ifdef COORD_TEST
 		// this section can be used for testing collision box
 		// alignment with respective images
 		checkPlayerCoords(&player);
@@ -1105,4 +1235,3 @@ void render()
 	//
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
