@@ -15,6 +15,7 @@
 //Krystal Raynes
 //
 // top
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,8 +64,11 @@ extern void moveCharacter(Player *, const Global &);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
 extern void moveObstacle(Stump *, const Global &);
 extern void displayScore(const Global &, Player *);
+extern void moveButter(Butter *, const Global &);
+extern void displayScore(const Global &, Player *);
 extern void startGame(Global &, Player *);
 extern void generateObstacle(const Global &, Stump *);
+extern void generateButter(const Global &, Butter *);
 extern void showStump(GLuint, int, int);
 extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
@@ -618,6 +622,7 @@ void init() {
     // initialize position and velocity of player
     startGame(g, &player);
     generateObstacle(g, &stump);
+    generateButter(g, &butter);
 }
 
 void checkMouse(XEvent *e)
@@ -772,6 +777,7 @@ void physics()
 	//moveBigfoot();
 	moveCharacter(&player, g);
 	moveObstacle(&stump, g);
+	moveButter(&butter, g);
 	if (player.pos[0] == (float)g.xres*0.3) {
 	    for (int i = 0; i < 2; i++) 
 		g.tex.xc[i] += 0.005;
@@ -922,18 +928,8 @@ void render()
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//decrement xoff to move off the screen
-	/*if (s->xoff > 0) {
-	  s->xoff -= 3.5;
-	  }
-	  else {
-	  s->xoff = 550;
-
-	  }*/
-
 	//stump class in Krystal's file.	
 
-	//if (p->currentFrame % 25 == 0)
-	//		showStump(stumpTexture, 550, 80);
 	//bool collision = checkCollision(100, 550, radius1, tx, ty, radius2);
 
 	/*player.pos[0] = tx;
@@ -953,7 +949,9 @@ void render()
 	glPushMatrix();
 	glTranslatef(x, y + (int)(fy*10.0), 0);
 	//butter.pos[0] = rand() % int(s->pos[0]) + 1;
-	glTranslatef((s->pos[0]) - (b->xoff) - 300, (s->pos[1]) - b->yoff, s->pos[2]);
+	glTranslatef(b->pos[0]-(b->xoff), b->pos[1]- (b->yoff), b->pos[2]);
+	//glTranslatef((b->pos[0]) - (b->xoff) - 300, (b->pos[1]) - b->yoff, b->pos[2]);
+	std::cout << s->pos[0] << " " << s->pos[1] << " " << s->pos[2] << std::endl;
 	glBindTexture(GL_TEXTURE_2D, butter.glTexture);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);

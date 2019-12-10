@@ -24,7 +24,6 @@ void printKrystal(Rect r) {
 }
 
 //-------------------------------CREDITS END----------------------------------//
-
 //--------------------------------STUMP BEGIN---------------------------------//
 #include "Image.h"
 #include "stump.h"
@@ -101,6 +100,27 @@ void Butter::resize(Global *g) {
         width = g->xres*size_rate*0.5;
     }
 }
+void generateButter(const Global &g, Butter *butter)
+{
+        Butter *b = butter;
+        MakeVector(g.xres+b->width,
+                        g.floor.center[1] + g.floor.height + b->height, 0.0,
+                        b->pos);
+        MakeVector(-b->width*0.4, 0.0, 0.0, b->vel);
+}
+
+
+void moveButter(Butter *butter, const Global &g)
+{
+        Butter *b = butter;
+        if (b->move) {
+                b->pos[0] += b->vel[0]; // velocity is initialized to a negative value
+                //Check for collision with top of floor 
+                if ((b->pos[0] + b->width < 0 && b->vel[0] < 0.0))
+                        generateButter(g, b);
+        }
+}
+
 
 //--------------------------------P BEGIN-----------------------------------//
 //Written by: Gordon Griesel
