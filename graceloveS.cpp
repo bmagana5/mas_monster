@@ -56,7 +56,7 @@ void showLogo(GLuint textid2, int widt, int xoff, int yoff)
 	glDisable(GL_ALPHA_TEST);
 }
 
-void showMenu(Rect r, const Global &g)
+/*void showMenu(Rect r, const Global &g)
 {
     	//r.bot = 155;
 	//r.left = 260;
@@ -65,7 +65,7 @@ void showMenu(Rect r, const Global &g)
 	ggprint8b(&r, 40, 0x00ffff00, "RETURN - Start Game");
 	ggprint8b(&r, 40, 0x00ffff00, "     C - Credits  ");
 	ggprint8b(&r, 40, 0x00ffff00, "  E - Score Board ");
-}
+}*/
 
 void showPause(Rect r, GLuint textid3, int xres, int yres)
 {
