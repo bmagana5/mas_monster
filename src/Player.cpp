@@ -9,7 +9,7 @@ Player::Player(const char *file)
 {
 	img.readImage(file);
 	move = 0;
-	jumping = 0;
+	jumping = dead = 0;
 	currentFrame = 0;
 	score = 0;
 	// this value represents frames in a sprite sheet
@@ -29,7 +29,7 @@ Player::Player(const char *file, const Global *g)
 {
 	img.readImage(file);
 	move = 0;
-	jumping = 0;
+	jumping = dead = 0;
 	currentFrame = 0;
 	score = 0;
 	// this value represents frames in a sprite sheet

@@ -137,10 +137,10 @@ bool checkcollision(Vec obj1, float rad1, Vec obj2, float rad2)
 		return false;
 }
 
-void showDied(Rect r, GLuint ftexture, int xres, int yres)
+void showDied(Rect r, GLuint ftexture, int xres, int yres, int end_score, char *end_time)
 {
-	r.bot = 250;
-	r.left = 300;
+	r.bot = yres*0.65;
+	r.left = xres*0.45;
 	r.center = 0;
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -151,17 +151,31 @@ void showDied(Rect r, GLuint ftexture, int xres, int yres)
 		glTexCoord2f(1.0f, 0.0f);	glVertex2i(xres,yres);
 		glTexCoord2f(1.0f, 1.0f);	glVertex2i(xres,0);
 	glEnd();
+	char score[32];
+	char time[32];
+	sprintf(score, "Score: %d", end_score);
+	sprintf(time, "Time: %s", end_time);
 	ggprint8b(&r, 50, 0x00ffff00, "You Died!!");
-	ggprint8b(&r, 50, 0x00ffff00, "Score: ");
-	ggprint8b(&r, 50, 0x00ffff00, "Time: ");
+	ggprint8b(&r, 50, 0x00ffff00, score);
+	ggprint8b(&r, 50, 0x00ffff00, time);
+	ggprint8b(&r, 100, 0x00ffff00, "Press X to continue...");
 }
 
-void showEndMenu(Rect r) 
+void showEndMenu(Rect r, GLuint ftexture, int xres, int yres) 
 {
-	r.bot = 150;
-	r.left = 300;
-	ggprint8b(&r, 50, 0x00ffff00, "  Menu - M ");
-	ggprint8b(&r, 50, 0x00ffff00, "Restart - R");
+	r.bot = yres*0.5;
+	r.left = xres*0.5;
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glBindTexture(GL_TEXTURE_2D, ftexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);	glVertex2i(0,0);
+		glTexCoord2f(0.0f, 0.0f);	glVertex2i(0,yres);
+		glTexCoord2f(1.0f, 0.0f);	glVertex2i(xres,yres);
+		glTexCoord2f(1.0f, 1.0f);	glVertex2i(xres,0);
+	glEnd();
+	ggprint8b(&r, 50, 0x00ffff00, "  Return to Main Menu - M ");
+	ggprint8b(&r, 50, 0x00ffff00, "Restart Game - R");
 
 }
 /*void stopGame(Global &g, Player *player)

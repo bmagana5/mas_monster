@@ -25,6 +25,7 @@ class Global {
 		GLuint obsTexture;
 		GLuint potatoTexture;
 		GLuint butterTexture;
+		//flags
 		int play;
 		int time_reset;
 		int showBigfoot;
@@ -32,7 +33,10 @@ class Global {
 		int showCredits;
 		int highScore;
 		int showPauseScreen;
-		int  mainMenu;
+		int mainMenu;
+		int endMenu;
+		char run_time[16];
+		//buffers
 		char buf[2048];
 		char tmpbuf[256];
 

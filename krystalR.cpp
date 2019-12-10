@@ -343,5 +343,6 @@ void new_clock(Global *g, struct timespec *gameclock)
     //system("clear");
     //printf ("time: %s %d\n", str, n);
     ggprint13(&r, 40, 0xDEADAFBB, "%s", str);
+	sprintf(g->run_time, "%s", str);
 }
 //------------------------------RUNNING CLOCK END-----------------------------//

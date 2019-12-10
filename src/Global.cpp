@@ -17,6 +17,7 @@ Global::Global()
 	forest=1;
 	showCredits=0;
 	highScore=0;
+	endMenu=0;
 	
 	floor.center[0] = xres*0.5;
 	floor.center[1] = yres*0.02;

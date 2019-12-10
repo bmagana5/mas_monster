@@ -8,8 +8,7 @@
 class Stump 
 {
     public:
-        int move, currentFrame; //frame_count;
-        float delay;
+        int move; //frame_count;
         GLuint glTexture;
         Image img;
         Vec pos;
