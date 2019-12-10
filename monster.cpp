@@ -839,8 +839,9 @@ int checkKeys(XEvent *e)
 
 	switch (key) {
 		case XK_e:
-			if (!g.play && !player.dead && !g.endMenu &&
-					!g.showCredits && !g.showPauseScreen) {
+			if (!g.play && !player.dead 
+				&& !g.endMenu && !g.showHowTo
+				&& !g.showCredits && !g.showPauseScreen) {
 				g.forest ^= 1;
 				if (!g.highScore) {
 					highScore(g.buf, g.tmpbuf);
@@ -849,8 +850,9 @@ int checkKeys(XEvent *e)
 			}
 			break;
 		case XK_Return:
-			if (!g.play && !g.endMenu && !player.dead
-					&& !g.showPauseScreen && !g.showCredits && !g.highScore) {
+			if (!g.play && !g.endMenu 
+				&& !player.dead && !g.showHowTo
+				&& !g.showPauseScreen && !g.showCredits && !g.highScore) {
 				g.play ^= 1;
 				stump.move ^= 1;
 				player.move ^= 1;
@@ -868,15 +870,17 @@ int checkKeys(XEvent *e)
 			}
 			break;
 		case XK_c:
-			if (!g.play && !g.endMenu && !player.dead
-					&& !g.showPauseScreen && !g.highScore) {
+			if (!g.play && !g.endMenu 
+				&& !player.dead && !g.showHowTo
+				&& !g.showPauseScreen && !g.highScore) {
 				g.forest ^= 1;
 				g.showCredits ^= 1;
 			}
 			break;
 		case XK_p:
-			if (!g.forest && !g.endMenu && !player.dead
-				   	&& !g.showCredits && !g.highScore) {
+			if (!g.forest && !g.endMenu 
+				&& !player.dead && !g.showHowTo
+				&& !g.showCredits && !g.highScore) {
 				g.showPauseScreen ^= 1;
 				g.play ^= 1;
 				player.move ^= 1;
@@ -934,7 +938,9 @@ int checkKeys(XEvent *e)
 			}
 			break;
 		case XK_h:
-			if (g.forest) {
+			if (!g.play && !g.endMenu 
+				&& !player.dead 
+				&& !g.showPauseScreen && !g.highScore) {
 				g.forest ^= 1;
 				g.showHowTo ^= 1;
 			}
