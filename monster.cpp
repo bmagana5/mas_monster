@@ -976,13 +976,22 @@ void render()
 
 	drawcircle(player.pos, 15.0);
 	drawcircle(s->pos, 15.0);
+	drawcircle(b->pos, 15.0);
 
 	glDisable(GL_ALPHA_TEST);
 	//do timer
 	new_clock(&g, &gameclock);
 	displayScore(g, p);
 
+	//bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
 	//printf("player xpos = %f , stump xpos = %f\n", player.pos[0], s->pos[0]); 
+	bool collision1 = checkcollision(player.pos, 15.0, b->pos, 15.0);
+	if (collision1 == true) {
+		p->score += 600;
+		//b->pos[2] = -1;
+		//delete b;
+		collision1 = false;
+	}
 	bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
 	if (collision == true) {
 	    //end game
