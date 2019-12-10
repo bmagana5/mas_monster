@@ -148,8 +148,11 @@ void showDied(Rect r, Global *g, int end_score)
 	sprintf(score, "Score: %d", end_score);
 	sprintf(time, "Time: %s", g->run_time);
 	ggprint8b(&r, 50, 0x00ffff00, "You Died!!");
+	r.left = g->xres*0.46;
 	ggprint8b(&r, 50, 0x00ffff00, score);
+	r.left = g->xres*0.44;
 	ggprint8b(&r, 50, 0x00ffff00, time);
+	r.left = g->xres*0.42;
 	ggprint8b(&r, 100, 0x00ffff00, "Press X to continue...");
 }
 
