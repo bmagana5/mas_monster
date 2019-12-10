@@ -939,7 +939,7 @@ void render()
 	//int wid = 32;
 	int x = 0;
 	int y = 10;
-
+    
 	glPushMatrix();
 	float fy = 0.0f;
 	static float angle = 0.0f;
@@ -949,15 +949,14 @@ void render()
 	glPushMatrix();
 	glTranslatef(x, y + (int)(fy*10.0), 0);
 	//butter.pos[0] = rand() % int(s->pos[0]) + 1;
-	if (b->pos[0] < 0) {
+	if (b->pos[0] < 0 || b->pos[1] == 2000) {
 		b->pos[0] = 928;
+        b->pos[1] = 64;    
 	}
 	else {
 		b->pos[0] -= 5;
 	}
 	glTranslatef(b->pos[0]-(b->xoff), b->pos[1]- (b->yoff), b->pos[2]);
-	//glTranslatef((b->pos[0]) - (b->xoff) - 300, (b->pos[1]) - b->yoff, b->pos[2]);
-	//std::cout << s->pos[0] << " " << s->pos[1] << " " << s->pos[2] << std::endl;
 	glBindTexture(GL_TEXTURE_2D, butter.glTexture);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
@@ -983,16 +982,15 @@ void render()
 	new_clock(&g, &gameclock);
 	displayScore(g, p);
 
-	//bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
-	//printf("player xpos = %f , stump xpos = %f\n", player.pos[0], s->pos[0]); 
 	bool collision1 = checkcollision(player.pos, 15.0, b->pos, 15.0);
-	if (collision1 == true) {
+	//this collision checks if the user hits the butter.
+    if (collision1 == true) {
 		p->score += 600;
-		//b->pos[2] = -1;
-		//delete b;
-		collision1 = false;
-	}
-	bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
+        collision1 = false;
+        b->pos[1] = 2000; 
+    }
+	
+    bool collision = checkcollision(player.pos, 15.0, s->pos, 15.0);
 	if (collision == true) {
 	    //end game
 	    //printf("you died\n");
