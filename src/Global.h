@@ -25,6 +25,7 @@ class Global {
 		GLuint obsTexture;
 		GLuint potatoTexture;
 		GLuint butterTexture;
+		GLuint skeletonTexture;
 		//flags
 		int play;
 		int time_reset;

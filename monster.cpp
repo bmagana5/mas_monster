@@ -62,6 +62,7 @@ extern bool checkcollision(Vec, float, Vec, float);
 extern void drawcircle(Vec, float);
 extern void moveCharacter(Player *, const Global &);
 extern void animateCharacter(Player *, struct timespec *, struct timespec *);
+extern void animateSkeleton(Global *, struct timespec *);
 extern void moveObstacle(Stump *, const Global &);
 extern void displayScore(const Global &, Player *);
 extern void moveButter(Butter *, const Global &);
@@ -72,7 +73,7 @@ extern void generateButter(const Global &, Butter *);
 extern void showStump(GLuint, int, int);
 extern void showPotato(GLuint, int, int);
 extern void showButter(GLuint, int, int);
-extern void showDied(Rect, GLuint, int, int, int, char *);
+extern void showDied(Rect, Global *, int);
 extern void showEndMenu(Rect, GLuint, int, int);
 //extern void stopGame(Global &, Player *);
 #ifdef COORD_TEST 
@@ -93,7 +94,7 @@ double timeSpan=0.0;
 unsigned int upause=0;
 struct timespec timeStart, timeEnd, timeCurrent;
 struct timespec timePause, moveTime;
-struct timespec gameclock;
+struct timespec gameclock, skeletime;
 //-----------------------------------------------------------------------------
 
 //define audio globals
@@ -109,6 +110,7 @@ ALuint alSource[TOTAL_SOUNDS];
 
 Global g;
 
+Image skeleton = "./images/skeleton_dance.gif";
 Image img[14] = {
 	"./images/bigfoot.png",
 	"./images/creepyforest.jpg",
@@ -398,6 +400,7 @@ void initOpengl(void)
 	glGenTextures(1, &stump.glTexture);
 	glGenTextures(1, &g.potatoTexture);
 	glGenTextures(1, &g.butterTexture);
+	glGenTextures(1, &g.skeletonTexture);
 	//-------------------------------------------------------------------------
 	//bigfoot
 	//
@@ -593,6 +596,20 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, clearButterData);
 	free(clearButterData);
 	butterTexture = g.butterTexture;
+	//------------------------------------------------------------------------
+	// skeleton dance gif
+	
+	w = skeleton.width;
+	h = skeleton.height;
+	glBindTexture(GL_TEXTURE_2D, g.skeletonTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// alpha data
+
+	unsigned char *skellyData = buildAlphaData(&skeleton);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, skellyData);
+	free(skellyData);
 	//------------------------------------------------------------------------
 
 	/* obstacle 
@@ -1013,6 +1030,7 @@ void render()
 			player.move = 0;
 			player.dead = 1;
 			stump.move = 0;
+			recordTime(&skeletime);
 		}
 #ifdef COORD_TEST 
 		// this section can be used for testing collision box
@@ -1023,10 +1041,12 @@ void render()
 #endif
 	}
 	if (player.dead) {
-		showDied(r, g.forestTexture, g.xres, g.yres, player.score, g.run_time);
+		showDied(r, &g, player.score);
+		animateSkeleton(&g, &skeletime);
 	}
 	if (g.endMenu) {
 		showEndMenu(r, g.forestTexture, g.xres, g.yres);
+		animateSkeleton(&g, &skeletime);
 	}
 	//render credits
 	if (g.showCredits) {

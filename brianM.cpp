@@ -190,6 +190,46 @@ void animateCharacter(Player *player, struct timespec *moveTime,
 	}
 }
 
+void animateSkeleton(Global *g, struct timespec *moveTime) 
+{
+	static int currentFrame = 0;
+	static int totalFrames = 8;
+	static float delay = 0.1f;
+	struct timespec currentTime;
+	recordTime(&currentTime);
+	double timespan = timeDiff(moveTime, &currentTime);
+	if (timespan > delay) {
+		currentFrame++;
+		if (currentFrame >= totalFrames)
+			currentFrame -= totalFrames;
+		recordTime(moveTime);
+	}
+	int width = g->xres/8;
+	int height = g->yres/8;
+	float cx = g->xres*0.5;
+	float cy = g->yres*0.15;
+	glBindTexture(GL_TEXTURE_2D, g->skeletonTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255, 255, 255, 255);
+	int ix = currentFrame % totalFrames; 
+	int iy = 0;
+	float tx = (float)ix / (float)totalFrames;
+	float ty = (float)iy / 2.0;
+	float x_off = 1.0 / (float)totalFrames;
+	glBegin(GL_QUADS);
+		glTexCoord2f(tx, ty+1.0);
+		glVertex2i(cx-width, cy-height);
+		glTexCoord2f(tx, ty);
+		glVertex2i(cx-width, cy+height);
+		glTexCoord2f(tx+x_off, ty);
+		glVertex2i(cx+width, cy+height);
+		glTexCoord2f(tx+x_off, ty+1.0);	
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glVertex2i(cx+width, cy-height);
+	glEnd();
+}
+
 void checkPlayerCoords(Player *player)
 {
 	// this will draw characters on the screen to test 

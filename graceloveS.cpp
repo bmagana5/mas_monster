@@ -129,24 +129,24 @@ bool checkcollision(Vec obj1, float rad1, Vec obj2, float rad2)
 		return false;
 }
 
-void showDied(Rect r, GLuint ftexture, int xres, int yres, int end_score, char *end_time)
+void showDied(Rect r, Global *g, int end_score)
 {
-	r.bot = yres*0.65;
-	r.left = xres*0.45;
+	r.bot = g->yres*0.65;
+	r.left = g->xres*0.45;
 	r.center = 0;
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glBindTexture(GL_TEXTURE_2D, ftexture);
+	glBindTexture(GL_TEXTURE_2D, g->forestTexture);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f, 1.0f);	glVertex2i(0,0);
-		glTexCoord2f(0.0f, 0.0f);	glVertex2i(0,yres);
-		glTexCoord2f(1.0f, 0.0f);	glVertex2i(xres,yres);
-		glTexCoord2f(1.0f, 1.0f);	glVertex2i(xres,0);
+		glTexCoord2f(0.0f, 0.0f);	glVertex2i(0,g->yres);
+		glTexCoord2f(1.0f, 0.0f);	glVertex2i(g->xres,g->yres);
+		glTexCoord2f(1.0f, 1.0f);	glVertex2i(g->xres,0);
 	glEnd();
 	char score[32];
 	char time[32];
 	sprintf(score, "Score: %d", end_score);
-	sprintf(time, "Time: %s", end_time);
+	sprintf(time, "Time: %s", g->run_time);
 	ggprint8b(&r, 50, 0x00ffff00, "You Died!!");
 	ggprint8b(&r, 50, 0x00ffff00, score);
 	ggprint8b(&r, 50, 0x00ffff00, time);
