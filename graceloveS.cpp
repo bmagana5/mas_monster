@@ -25,7 +25,7 @@ void displayGracelove(Rect r)
 void showPicture(GLuint textid, int xoff, int yoff)
 {
     int wid = 40;
-    
+
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
     glBindTexture(GL_TEXTURE_2D, textid);
@@ -56,23 +56,24 @@ void showLogo(GLuint textid2, int widt, int xoff, int yoff)
 	glDisable(GL_ALPHA_TEST);
 }
 
+/*
 void showMenu(Rect r, const Global &g)
 {
     	//r.bot = 155;
 	//r.left = 260;
-	r.bot = g.yres*0.3;
-	r.left = g.xres*0.4;
-	ggprint8b(&r, 40, 0x00ffff00, "RETURN - Start Game");
-	ggprint8b(&r, 40, 0x00ffff00, "     C - Credits  ");
-	ggprint8b(&r, 40, 0x00ffff00, "  E - Score Board ");
-}
+	//r.bot = g.yres*0.3;
+	//r.left = g.xres*0.4;
+	//ggprint8b(&r, 40, 0x00ffff00, "RETURN - Start Game");
+	//ggprint8b(&r, 40, 0x00ffff00, "     C - Credits  ");
+	//ggprint8b(&r, 40, 0x00ffff00, "  E - Score Board ");
+}*/
 
 void showPause(Rect r, GLuint textid3, int xres, int yres)
 {
         r.bot = yres - 20;
         r.left = 10;
         r.center = 0;
-        
+
 	glPushMatrix();
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -122,7 +123,7 @@ bool checkcollision(Vec obj1, float rad1, Vec obj2, float rad2)
 	xd = obj2[0]-obj1[0];
 	yd = obj2[1]-obj1[1];
 	Distance = sqrt(xd*xd + yd*yd);
-	
+
 	if (rad1 + rad2 >= Distance)
 		return true;
 	else
@@ -153,7 +154,7 @@ void showDied(Rect r, Global *g, int end_score)
 	ggprint8b(&r, 100, 0x00ffff00, "Press X to continue...");
 }
 
-void showEndMenu(Rect r, GLuint ftexture, int xres, int yres) 
+void showEndMenu(Rect r, GLuint ftexture, int xres, int yres)
 {
 	r.bot = yres*0.5;
 	r.left = xres*0.5;

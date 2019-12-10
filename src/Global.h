@@ -6,7 +6,7 @@
 #include "../defs.h"
 
 class Global {
-	public: 
+	public:
 		int done;
 		int xres, yres;
 
@@ -26,6 +26,15 @@ class Global {
 		GLuint potatoTexture;
 		GLuint butterTexture;
 		GLuint skeletonTexture;
+		GLuint dancingDracTexture;
+		GLuint startTitleTexture;
+		GLuint creditsTitleTexture;
+		GLuint scoreTitleTexture;
+		GLuint enterButtonTexture;
+		GLuint cButtonTexture;
+		GLuint eButtonTexture;
+
+
 		//flags
 		int play;
 		int time_reset;
